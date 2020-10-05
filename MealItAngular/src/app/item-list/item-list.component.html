@@ -1,0 +1,13 @@
+<h3>Item List!</h3>
+<form [formGroup]="form" (ngSubmit)="submitForm()" novalidate>
+    <!-- iterates through the itemType json objects -->
+    <div *ngFor="let item of itemType | async">
+        <label>
+            <input type="checkbox" [value]="item.value" (change)="onCheckBoxChange($event)" />
+            {{ item.type }}
+        </label>
+        <span> {{ item.price | currency }} </span>
+        <span> Calories: {{ item.calories }}</span>
+    </div>
+    <input type="submit" value="Submit"/>
+</form>
