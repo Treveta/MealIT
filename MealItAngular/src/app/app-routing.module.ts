@@ -9,7 +9,7 @@ import { LoginPageComponent } from './login-page/login-page.component';
 const routes: Routes = [
   { path: 'itemList', component: ItemListComponent },
   { path: 'createRecipe', component: CreateRecipeComponent},
-  { path: '', component: LoginPageComponent},
+  { path: 'home', component: LoginPageComponent},
 ]
 
 @NgModule({

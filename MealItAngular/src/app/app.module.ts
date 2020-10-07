@@ -10,7 +10,7 @@ import { LoginPageComponent } from './login-page/login-page.component';
 @NgModule({
   declarations: [
     AppComponent,
-    routingComponents
+    routingComponents,
   ],
   imports: [
     BrowserModule,
