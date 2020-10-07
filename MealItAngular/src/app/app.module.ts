@@ -2,8 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule, routingComponents } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { ItemListComponent } from './item-list/item-list.component';
@@ -12,7 +11,8 @@ import { ItemListComponent } from './item-list/item-list.component';
   declarations: [
     AppComponent,
     TopBarComponent,
-    ItemListComponent
+    ItemListComponent,
+    routingComponents
   ],
   imports: [
     BrowserModule,
@@ -25,3 +25,4 @@ import { ItemListComponent } from './item-list/item-list.component';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
