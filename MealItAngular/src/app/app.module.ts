@@ -4,14 +4,11 @@ import { HttpClientModule } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AppRoutingModule, routingComponents } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { TopBarComponent } from './top-bar/top-bar.component';
-import { ItemListComponent } from './item-list/item-list.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
-    TopBarComponent,
-    ItemListComponent,
     routingComponents
   ],
   imports: [
