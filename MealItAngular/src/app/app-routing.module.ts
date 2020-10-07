@@ -4,9 +4,10 @@ import { ItemListComponent } from './item-list/item-list.component';
 import { CreateRecipeComponent } from './create-recipe/create-recipe.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 
+
 const routes: Routes = [
   { path: 'itemList', component: ItemListComponent },
-  { path: 'createRecipe', component: CreateRecipeComponent}
+  { path: 'createRecipe', component: CreateRecipeComponent},
 ]
 
 @NgModule({
@@ -14,4 +15,4 @@ const routes: Routes = [
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
-export const routingComponents = [CreateRecipeComponent, ItemListComponent, TopBarComponent]
+export const routingComponents = [CreateRecipeComponent, ItemListComponent, TopBarComponent, ]
