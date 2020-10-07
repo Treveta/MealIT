@@ -9,7 +9,7 @@ import { ItemService } from '../item.service';
     templateUrl: './item-list.component.html',
     styleUrls: ['./item-list.component.css']
 })
-export class ItemListComponent implements OnInit {
+export class ItemListComponent {
     form: FormGroup;
     itemType;
 
@@ -18,6 +18,7 @@ export class ItemListComponent implements OnInit {
         private itemService: ItemService,
         private fb: FormBuilder
     ) { 
+        this.itemType = this.itemService.getItem();
         this.form = this.fb.group({
             checkArray: this.fb.array([])
         })
@@ -44,9 +45,5 @@ export class ItemListComponent implements OnInit {
     // currently prints the objects into the console as a formarray
     submitForm() {
         console.log(this.form.value);
-    }
-
-    ngOnInit() { 
-        this.itemType = this.itemService.getItem();
     }
 }

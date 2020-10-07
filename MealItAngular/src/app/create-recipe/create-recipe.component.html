@@ -1,0 +1,30 @@
+
+placeholder for recipe name <br>
+  
+    <!--Division for taking input from user --> 
+            <input [(ngModel)]="newIngredient" type="text" 
+                    value=""> 
+   
+  
+            <button (click)="addToList()"> 
+                Add ingredient
+            </button> 
+        
+  
+
+     
+  
+    <!--Tasks added repeated divisions-->
+    <div *ngFor="let x of Ingredients; let index = index;" > 
+  
+            <div>{{x}}</div> 
+  
+            <input (click)="deleteIngredient(index)" type="button"
+                value="Delete"> 
+        </div>  
+        
+        <div>
+            <input (click)="submitRecipe()" type="button"
+            value="Submit Recipe">
+        </div>
+        
