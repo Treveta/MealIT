@@ -42,11 +42,15 @@ export class ItemListComponent {
     }
 
     public saveEdits() {
-        for (let i = 0; i < this.Items.length; i++){
-            if (this.Items[i] == this.form.get('checkArray').value[i]) {
-                this.Items[i] = '';
+        
+        for (let i = 0; i < this.Items.length; i++) {
+            for (let j = 0; j < this.form.get('checkArray').value.length; j++){
+                if (this.Items[i] == this.form.get('checkArray').value[j]) {
+                    this.Items.splice(i, 1);
+                }
             }
         }
+
         this.editBool = false;
     }
 
