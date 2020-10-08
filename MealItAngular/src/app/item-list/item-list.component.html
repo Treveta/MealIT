@@ -14,9 +14,27 @@
 
 </form>
 
-<form (ngSubmit)="submitForm()" novalidate>
-                trying to consolidate some ideas
-                <input type="text"/>
-                <input type="submit" value="Add Item"/>
+<input [(ngModel)]="newItem" type="text" 
+                    value=""> 
+   
+  
+            <button (click)="addToItemList()"> 
+                Add Item
+            </button> 
 
-</form>
+  <!--Tasks added repeated divisions-->
+  <div *ngFor="let x of Items; let index = index;" > 
+  
+    <div>{{x}}</div> 
+
+    <!--
+    <input (click)="deleteIngredient(index)" type="button"
+        value="Delete"> 
+        -->
+</div>  
+<!--
+<div>
+    <input (click)="submitRecipe()" type="button"
+    value="Submit Recipe">
+</div>
+-->

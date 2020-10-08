@@ -46,4 +46,29 @@ export class ItemListComponent {
     submitForm() {
         console.log(this.form.value);
     }
+
+    public Items = []; 
+
+    public newItem; 
+  
+    public addToItemList() { 
+        if (this.newItem == '') { 
+        } 
+        else { 
+            this.Items.push(this.newItem); 
+            this.newItem = ''; 
+        } 
+    } 
+  /*
+    public deleteIngredient(index) { 
+        this.Ingredients.splice(index, 1); 
+    } 
+   
+
+    public submitRecipe(){
+      
+    }
+ */
+
 }
+
