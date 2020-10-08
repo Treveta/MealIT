@@ -13,6 +13,10 @@ export class ItemListComponent {
     form: FormGroup;
     itemType;
 
+    public Items = []; 
+    public newItem; 
+    public editBool;
+
     // sets up the form groups for the checkboxes
     constructor(
         private itemService: ItemService,
@@ -22,6 +26,28 @@ export class ItemListComponent {
         this.form = this.fb.group({
             checkArray: this.fb.array([])
         })
+    }
+  
+    public addToItemList() { 
+        if (this.newItem == '') { 
+        } 
+        else { 
+            this.Items.push(this.newItem); 
+            this.newItem = ''; 
+        } 
+    } 
+
+    public editItemList() {
+        this.editBool = true;
+    }
+
+    public saveEdits() {
+        for (let i = 0; i < this.Items.length; i++){
+            if (this.Items[i] == this.form.get('checkArray').value[i]) {
+                this.Items[i] = '';
+            }
+        }
+        this.editBool = false;
     }
 
     // checks whether the box has been checked
@@ -46,29 +72,6 @@ export class ItemListComponent {
     submitForm() {
         console.log(this.form.value);
     }
-
-    public Items = []; 
-
-    public newItem; 
-  
-    public addToItemList() { 
-        if (this.newItem == '') { 
-        } 
-        else { 
-            this.Items.push(this.newItem); 
-            this.newItem = ''; 
-        } 
-    } 
-  /*
-    public deleteIngredient(index) { 
-        this.Ingredients.splice(index, 1); 
-    } 
-   
-
-    public submitRecipe(){
-      
-    }
- */
 
 }
 
