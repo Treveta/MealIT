@@ -1,12 +1,11 @@
 
 placeholder for recipe name <br>
   
-    <!--Division for taking input from user --> 
-            <input [(ngModel)]="newIngredient" type="text" 
-                    value=""> 
+    <!--input from user--> 
+            <input [(ngModel)]="newIngredient" type="text" value=""> <!--text input box-->
    
   
-            <button (click)="addToList()"> 
+            <button (click)="addToList()"> <!--add button-->
                 Add ingredient
             </button> 
         
@@ -14,17 +13,15 @@ placeholder for recipe name <br>
 
      
   
-    <!--Tasks added repeated divisions-->
-    <div *ngFor="let x of Ingredients; let index = index;" > 
+    <!--Ingredient added and shown in list-->
+    <div *ngFor="let x of Ingredients; let index = index;" > <!--the loop-->
   
-            <div>{{x}}</div> 
+            <div>{{x}}</div>  <!--display ingedient-->
   
-            <input (click)="deleteIngredient(index)" type="button"
-                value="Delete"> 
+            <input (click)="deleteIngredient(index)" type="button" value="Delete"> <!--delete button-->
         </div>  
         
         <div>
-            <input (click)="submitRecipe()" type="button"
-            value="Submit Recipe">
+            <input (click)="submitRecipe()" type="button" value="Submit Recipe"> <!--submit the recipe-->
         </div>
         
