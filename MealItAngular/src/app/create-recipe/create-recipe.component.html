@@ -2,8 +2,9 @@
 placeholder for recipe name <br>
   
     <!--input from user--> 
-            <input [(ngModel)]="newIngredient" type="text" value=""> <!--text input box-->
-   
+            <input [(ngModel)]="newIngredient" type="text" value="" placeholder="enter ingredient name e.g. apple"> <!--text input box-->
+            <input [(ngModel)]="newAmount" type="text" value="" placeholder="number"> 
+            <input [(ngModel)]="newUnit" type="text" value="" placeholder="unit e.g. lb,cups,oz">
   
             <button (click)="addToList()"> <!--add button-->
                 Add ingredient
@@ -14,12 +15,20 @@ placeholder for recipe name <br>
      
   
     <!--Ingredient added and shown in list-->
-    <div *ngFor="let x of Ingredients; let index = index;" > <!--the loop-->
-  
-            <div>{{x}}</div>  <!--display ingedient-->
-  
-            <input (click)="deleteIngredient(index)" type="button" value="Delete"> <!--delete button-->
-        </div>  
+    <table>
+        <tr>
+          <th>Ingredients</th>
+          <th>amount</th>
+          <th>Unit</th>
+          <th> </th>
+        </tr>
+        <tr *ngFor="let x of Ingredients; let index = index;"> <!--the loop-->
+            <th>{{x}}</th>
+            <th>{{amount[index]}}</th>
+            <th>{{units[index]}}</th>
+            <th><input (click)="deleteIngredient(index)" type="button" value="x"></th><!--delete button-->
+        </tr>   
+    </table>
         
         <div>
             <input (click)="submitRecipe()" type="button" value="Submit Recipe"> <!--submit the recipe-->
