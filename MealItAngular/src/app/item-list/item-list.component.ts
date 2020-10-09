@@ -13,6 +13,10 @@ export class ItemListComponent {
     form: FormGroup;
     itemType;
 
+    public Items = []; 
+    public newItem; 
+    public editBool;
+
     // sets up the form groups for the checkboxes
     constructor(
         private itemService: ItemService,
@@ -22,6 +26,32 @@ export class ItemListComponent {
         this.form = this.fb.group({
             checkArray: this.fb.array([])
         })
+    }
+  
+    public addToItemList() { 
+        if (this.newItem == '') { 
+        } 
+        else { 
+            this.Items.push(this.newItem); 
+            this.newItem = ''; 
+        } 
+    } 
+
+    public editItemList() {
+        this.editBool = true;
+    }
+
+    public saveEdits() {
+        
+        for (let i = 0; i < this.Items.length; i++) {
+            for (let j = 0; j < this.form.get('checkArray').value.length; j++){
+                if (this.Items[i] == this.form.get('checkArray').value[j]) {
+                    this.Items.splice(i, 1);
+                }
+            }
+        }
+
+        this.editBool = false;
     }
 
     // checks whether the box has been checked
@@ -46,4 +76,6 @@ export class ItemListComponent {
     submitForm() {
         console.log(this.form.value);
     }
+
 }
+

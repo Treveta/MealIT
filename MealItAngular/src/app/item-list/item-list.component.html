@@ -1,23 +1,22 @@
 <h3>Item List!</h3>
-<form [formGroup]="form" (ngSubmit)="submitForm()" novalidate>
-    <!-- iterates through the itemType json objects -->
-    <div *ngFor="let item of itemType | async">
-        <label>
-            <input type="checkbox" [value]="item.value" (change)="onCheckBoxChange($event)" />
-            {{ item.type }}
-        </label>
-        <span> {{ item.price | currency }} </span>
-        <span> Calories: {{ item.calories }}</span>
-    </div>
-    <input type="submit" value="Submit"/>
+<div>
+    <input [(ngModel)]="newItem" type="text" value="" /> 
+    <button (click)="addToItemList()"> 
+        Add Item
+    </button> 
+    <button (click)="editItemList()">
+        edit Items
+    </button>
+</div>
+<div *ngFor="let x of Items; let index = index;" > 
+    <div>
+        <input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
+        {{x}}
+    </div> 
 
-
-</form>
-<!--
-<form [formGroup]="addItemForm" (ngSubmit)="submitForm()" novalidate>
-                trying to consolidate some ideas
-                <input type="text"/>
-                <input type="submit" value="Add Item"/>
-
-</form>
--->
+</div>
+<div>
+    <button *ngIf="editBool" (click)="saveEdits()">
+        remove
+    </button>
+</div>
