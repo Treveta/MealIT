@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Console } from 'console';
 
 @Component({
   selector: 'app-create-recipe',
@@ -15,6 +16,9 @@ export class CreateRecipeComponent {
        public newIngredient; 
        public newAmount;
        public newUnit;
+       public servings;
+       public calories;
+       public recipeName;
        
      
        public addToList() { 
@@ -39,7 +43,9 @@ export class CreateRecipeComponent {
        } 
 
        public submitRecipe(){
-         
+            var fullRecipe = {"name" : this.recipeName , "Ingredients" : this.Ingredients , "Amounts" : this.amount , "units" : this.units , "calories" : this.calories , "servings" : this.servings};
+            var recipeJSON = JSON.stringify(fullRecipe);
+            window.alert(recipeJSON);
        }
 
 }

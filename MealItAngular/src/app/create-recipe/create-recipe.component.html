@@ -1,10 +1,11 @@
 
-placeholder for recipe name <br>
+            Name <input [(ngModel)]="recipeName" type="text" value="" placeholder="enter ingredient name e.g. apple" required> 
+            <br>
   
     <!--input from user--> 
-            <input [(ngModel)]="newIngredient" type="text" value="" placeholder="enter ingredient name e.g. apple"> <!--text input box-->
-            <input [(ngModel)]="newAmount" type="text" value="" placeholder="number"> 
-            <input [(ngModel)]="newUnit" type="text" value="" placeholder="unit e.g. lb,cups,oz">
+            Ingredient<input [(ngModel)]="newIngredient" type="text" value="" placeholder="enter ingredient name e.g. apple"> <!--text input box-->
+            Amount<input [(ngModel)]="newAmount" type="text" value="" placeholder="number"> 
+            Unit<input [(ngModel)]="newUnit" type="text" value="" placeholder="unit e.g. lb,cups,oz">
   
             <button (click)="addToList()"> <!--add button-->
                 Add ingredient
@@ -29,8 +30,10 @@ placeholder for recipe name <br>
             <th><input (click)="deleteIngredient(index)" type="button" value="x"></th><!--delete button-->
         </tr>   
     </table>
-        
+    Servings <input [(ngModel)]="servings" type="number" value="" min="0" step=".25" required><br>
+    Calories <input [(ngModel)]="calories" type="number" value="" min="0" required>
+    
         <div>
-            <input (click)="submitRecipe()" type="button" value="Submit Recipe"> <!--submit the recipe-->
+            <input (click)="submitRecipe()" type="submit" value="Submit Recipe"> <!--submit the recipe-->
         </div>
         
