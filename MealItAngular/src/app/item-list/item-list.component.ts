@@ -13,6 +13,10 @@ export class ItemListComponent {
     form: FormGroup;
     itemType;
 
+    public Items = []; 
+    public newItem; 
+    public editBool;
+
     // sets up the form groups for the checkboxes
     constructor(
         private itemService: ItemService,
@@ -22,6 +26,32 @@ export class ItemListComponent {
         this.form = this.fb.group({
             checkArray: this.fb.array([])
         })
+    }
+  
+    public addToItemList() { 
+        if (this.newItem == '') { 
+        } 
+        else { 
+            this.Items.push(this.newItem); 
+            this.newItem = ''; 
+        } 
+    } 
+
+    public editItemList() {
+        this.editBool = true;
+    }
+
+    public saveEdits() {
+        
+        for (let i = 0; i < this.Items.length; i++) {
+            for (let j = 0; j < this.form.get('checkArray').value.length; j++){
+                if (this.Items[i] == this.form.get('checkArray').value[j]) {
+                    this.Items.splice(i, 1);
+                }
+            }
+        }
+
+        this.editBool = false;
     }
 
     // checks whether the box has been checked
@@ -46,33 +76,4 @@ export class ItemListComponent {
     submitForm() {
         console.log(this.form.value);
     }
-//Declare the Items array. this stores the user text input
-    public Items = []; 
-
-//newItem is the potential variable to be added to the Items array
-    public newItem; 
-  
-    public addToItemList() { 
-        //check if empty
-        if (this.newItem == '') { 
-        } 
-        //then push newItem to the back of the list
-        else { 
-            this.Items.push(this.newItem); 
-            //reset newItem to be empty
-            this.newItem = ''; 
-        } 
-    } 
-  /*
-    public deleteIngredient(index) { 
-        this.Ingredients.splice(index, 1); 
-    } 
-   
-
-    public submitRecipe(){
-      
-    }
- */
-
 }
-

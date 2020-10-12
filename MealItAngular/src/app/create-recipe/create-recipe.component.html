@@ -1,12 +1,13 @@
 
-placeholder for recipe name <br>
+            Name <input [(ngModel)]="recipeName" type="text" value="" placeholder="enter ingredient name e.g. apple" required> 
+            <br>
   
-    <!--Division for taking input from user --> 
-            <input [(ngModel)]="newIngredient" type="text" 
-                    value=""> 
-   
+    <!--input from user--> 
+            Ingredient<input [(ngModel)]="newIngredient" type="text" value="" placeholder="enter ingredient name e.g. apple"> <!--text input box-->
+            Amount<input [(ngModel)]="newAmount" type="text" value="" placeholder="number"> 
+            Unit<input [(ngModel)]="newUnit" type="text" value="" placeholder="unit e.g. lb,cups,oz">
   
-            <button (click)="addToList()"> 
+            <button (click)="addToList()"> <!--add button-->
                 Add ingredient
             </button> 
         
@@ -14,17 +15,25 @@ placeholder for recipe name <br>
 
      
   
-    <!--Tasks added repeated divisions-->
-    <div *ngFor="let x of Ingredients; let index = index;" > 
-  
-            <div>{{x}}</div> 
-  
-            <input (click)="deleteIngredient(index)" type="button"
-                value="Delete"> 
-        </div>  
-        
+    <!--Ingredient added and shown in list-->
+    <table>
+        <tr>
+          <th>Ingredients</th>
+          <th>amount</th>
+          <th>Unit</th>
+          <th> </th>
+        </tr>
+        <tr *ngFor="let x of Ingredients; let index = index;"> <!--the loop-->
+            <th>{{x}}</th>
+            <th>{{amount[index]}}</th>
+            <th>{{units[index]}}</th>
+            <th><input (click)="deleteIngredient(index)" type="button" value="x"></th><!--delete button-->
+        </tr>   
+    </table>
+    Servings <input [(ngModel)]="servings" type="number" value="" min="0" step=".25" required><br>
+    Calories <input [(ngModel)]="calories" type="number" value="" min="0" required>
+    
         <div>
-            <input (click)="submitRecipe()" type="button"
-            value="Submit Recipe">
+            <input (click)="submitRecipe()" type="submit" value="Submit Recipe"> <!--submit the recipe-->
         </div>
         
