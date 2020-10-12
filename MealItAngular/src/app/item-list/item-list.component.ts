@@ -46,16 +46,20 @@ export class ItemListComponent {
     submitForm() {
         console.log(this.form.value);
     }
-
+//Declare the Items array. this stores the user text input
     public Items = []; 
 
+//newItem is the potential variable to be added to the Items array
     public newItem; 
   
     public addToItemList() { 
+        //check if empty
         if (this.newItem == '') { 
         } 
+        //then push newItem to the back of the list
         else { 
             this.Items.push(this.newItem); 
+            //reset newItem to be empty
             this.newItem = ''; 
         } 
     } 
