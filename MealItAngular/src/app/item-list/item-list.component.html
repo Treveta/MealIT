@@ -1,22 +1,24 @@
-<h3>Item List!</h3>
 <div>
-    <input [(ngModel)]="newItem" type="text" value="" /> 
-    <button (click)="addToItemList()"> 
-        Add Item
-    </button> 
-    <button (click)="editItemList()">
-        edit Items
-    </button>
-</div>
-<div *ngFor="let x of Items; let index = index;" > 
+    <h3>Item List!</h3>
     <div>
-        <input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
-        {{x}}
-    </div> 
+        <input [(ngModel)]="newItem" type="text" value="" /> 
+        <button (click)="addToItemList()"> 
+            Add Item
+        </button> 
+        <button (click)="editItemList()">
+            edit Items
+        </button>
+    </div>
+    <div *ngFor="let x of Items; let index = index;" > 
+        <div>
+            <input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
+            {{x}}
+        </div> 
 
-</div>
-<div>
-    <button *ngIf="editBool" (click)="saveEdits()">
-        remove
-    </button>
+    </div>
+    <div>
+        <button *ngIf="editBool" (click)="saveEdits()">
+            remove
+        </button>
+    </div>
 </div>

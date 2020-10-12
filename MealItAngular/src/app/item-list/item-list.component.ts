@@ -38,11 +38,15 @@ export class ItemListComponent {
     } 
 
     public editItemList() {
-        this.editBool = true;
+        if (this.Items.length === 0) {
+            this.editBool = false;
+        } else {
+            this.editBool = true;
+        }
+        
     }
 
     public saveEdits() {
-        
         for (let i = 0; i < this.Items.length; i++) {
             for (let j = 0; j < this.form.get('checkArray').value.length; j++){
                 if (this.Items[i] == this.form.get('checkArray').value[j]) {
