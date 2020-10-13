@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms'
 
-// this service file pulls the json object and uses it here dynamically
-import { ItemService } from '../item.service';
 import { ModalService } from '../modal-functionality';
 
 @Component({
@@ -12,7 +10,6 @@ import { ModalService } from '../modal-functionality';
 })
 export class ItemListComponent {
     form: FormGroup;
-    itemType;
 
     public Items = []; 
     public newItem; 
@@ -20,11 +17,9 @@ export class ItemListComponent {
 
     // sets up the form groups for the checkboxes
     constructor(
-        private itemService: ItemService,
         private modalService: ModalService,
         private fb: FormBuilder
     ) { 
-        this.itemType = this.itemService.getItem();
         this.form = this.fb.group({
             checkArray: this.fb.array([])
         })
@@ -77,12 +72,11 @@ export class ItemListComponent {
         }
     }
 
-    // can do other things in the future, 
-    // currently prints the objects into the console as a formarray
     submitForm() {
         console.log(this.form.value);
     }
 
+    // these functions are all that is needed to show and hide a modal view
     openModal(id: string) {
         this.modalService.open(id);
     }

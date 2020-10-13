@@ -20,9 +20,10 @@
             remove
         </button>
     </div>
+    <!-- opens the modal -->
     <button (click)="openModal('custom-modal-1')">Open Modal 1</button>
 </div>
-
+<!-- this is the modal view which is called based on the modal service calls -->
 <jw-modal id="custom-modal-1">
     <h1>A custom modal man!</h1>
     <button (click)="closeModal('custom-modal-1');">Close</button>
