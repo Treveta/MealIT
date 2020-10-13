@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms'
 
 // this service file pulls the json object and uses it here dynamically
 import { ItemService } from '../item.service';
+import { ModalService } from '../modal-functionality';
 
 @Component({
     selector: 'item-list',
@@ -20,6 +21,7 @@ export class ItemListComponent {
     // sets up the form groups for the checkboxes
     constructor(
         private itemService: ItemService,
+        private modalService: ModalService,
         private fb: FormBuilder
     ) { 
         this.itemType = this.itemService.getItem();
@@ -79,5 +81,13 @@ export class ItemListComponent {
     // currently prints the objects into the console as a formarray
     submitForm() {
         console.log(this.form.value);
+    }
+
+    openModal(id: string) {
+        this.modalService.open(id);
+    }
+
+    closeModal(id: string) {
+        this.modalService.close(id);
     }
 }

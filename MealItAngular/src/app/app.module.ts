@@ -10,6 +10,7 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AppComponent } from './app.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
+import { ModalModule } from './modal-functionality';
 
 const config = {
   apiKey: "AIzaSyA0F-pFE-PC_2Gr-9r_wakBtCgNXoM2A18",
@@ -38,6 +39,7 @@ const config = {
     AngularFireModule.initializeApp(config),
     AngularFirestoreModule,
     AngularFireAuthModule,
+    ModalModule,
   ],
   providers: [ ],
   bootstrap: [AppComponent]
