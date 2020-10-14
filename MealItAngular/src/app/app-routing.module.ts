@@ -4,13 +4,15 @@ import { ItemListComponent } from './item-list/item-list.component';
 import { CreateRecipeComponent } from './create-recipe/create-recipe.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { LoginPageComponent } from './login-page/login-page.component';
+import { UserProfileComponent } from './user-profile/user-profile.component';
+import { AuthGuard } from './auth.guard'
 
 
 const routes: Routes = [
-  { path: 'itemList', component: ItemListComponent },
-  { path: 'createRecipe', component: CreateRecipeComponent},
-  { path: 'login', component: LoginPageComponent},
-  { path: '',   redirectTo: '/login', pathMatch: 'full' },
+  { path: 'itemList', component: ItemListComponent,  canActivate: [AuthGuard] },
+  { path: 'createRecipe', component: CreateRecipeComponent,  canActivate: [AuthGuard]},
+  { path: 'userLogin', component: UserProfileComponent},
+  { path: '', component: LoginPageComponent},
 ]
 
 @NgModule({
