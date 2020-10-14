@@ -6,7 +6,7 @@
             Add Item
         </button> 
         <button (click)="editItemList()">
-            edit Items
+            Edit Items
         </button>
     </div>
     <div *ngFor="let x of Items; let index = index;" > 
@@ -17,7 +17,7 @@
     </div>
     <div>
         <button *ngIf="editBool" (click)="saveEdits()">
-            remove
+            Remove
         </button>
     </div>
     <!-- opens the modal -->

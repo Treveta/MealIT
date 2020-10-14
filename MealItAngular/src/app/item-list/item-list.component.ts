@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms'
-
+import { Observable } from 'rxjs';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { ModalService } from '../modal-functionality';
+
+export interface Item { name: string, seeds: number;}
 
 @Component({
     selector: 'item-list',

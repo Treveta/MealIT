@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { User } from './user.model'; // optional
+import { User } from './user.model';
+import { shoppingList } from './shoppingList.model';
 
 
 import { auth } from 'firebase/app';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection } from '@angular/fire/firestore';
 
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -46,13 +47,23 @@ export class AuthService {
     private updateUserData(user) {
       // Sets user data to firestore on login
       const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.uid}`);
-  
+      //let shoppingList = this.afs.collection('users/'+user.uid+'/shoppingList')
+      let shoppingList = this.afs.collection('users/'+user.uid+'/shoppingList').doc('InitializationItem');
+
       const data = { 
         uid: user.uid, 
         email: user.email, 
-        displayName: user.displayName, 
+        displayName: user.displayName,
       } 
-  
+
+      const shoppingData = {
+        itemName: null,
+        quantity: null,
+        unit: null
+      }
+
+      shoppingList.set(shoppingData, {merge: true})
+
       return userRef.set(data, { merge: true })
   
     }
