@@ -26,9 +26,9 @@
           <th> </th>
         </tr>
         <tr *ngFor="let x of Ingredients; let index = index;"> <!--the loop-->
-            <th>{{x}}</th>
-            <th>{{amount[index]}}</th>
-            <th>{{units[index]}}</th>
+            <th>{{x}}</th>                                      <!--display name-->
+            <th>{{amount[index]}}</th>                          <!--display amount-->
+            <th>{{units[index]}}</th>                           <!--display unit-->
             <th><input (click)="deleteIngredient(index)" type="button" value="x"></th><!--delete button-->
         </tr>   
     </table>
