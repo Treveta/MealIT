@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms'
 import { Observable } from 'rxjs';
+import { shoppingList } from '../services/shoppingList.model';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { ModalService } from '../modal-functionality';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AuthService } from '../services/auth.service';
 
 export interface Item { name: string, seeds: number;}
 
@@ -14,25 +17,45 @@ export interface Item { name: string, seeds: number;}
 export class ItemListComponent {
     form: FormGroup;
 
+
     public Items = []; 
     public newItem; 
     public editBool;
+    private userInfo;
+
+    shoppingCollection: AngularFirestoreCollection<shoppingList>;
+    listItems: Observable<shoppingList[]>
+    
 
     // sets up the form groups for the checkboxes
     constructor(
         private modalService: ModalService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private afs: AngularFirestore,
+        private afAuth: AngularFireAuth,
+        private authService: AuthService
     ) { 
         this.form = this.fb.group({
             checkArray: this.fb.array([])
         })
+        
+        this.userInfo = authService.fetchUserData()
+        this.shoppingCollection = this.afs.collection<shoppingList>('users/'+this.userInfo.uid+'/shoppingList');
+        this.listItems = this.shoppingCollection.valueChanges();
+        
     }
   
     public addToItemList() { 
         if (this.newItem == '') { 
         } 
         else { 
-            this.Items.push(this.newItem); 
+            this.Items.push(this.newItem);
+            const data = {
+                itemName: this.newItem,
+                quantity: null,
+                unit: null
+            }
+            this.shoppingCollection.add(data)
             this.newItem = ''; 
         } 
     } 

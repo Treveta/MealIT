@@ -17,6 +17,7 @@ import { switchMap } from 'rxjs/operators';
 export class AuthService {
 
   user$: Observable<User>;
+  private userInfo;
 
   constructor(
     private afAuth: AngularFireAuth,
@@ -43,6 +44,24 @@ export class AuthService {
       const credential = await this.afAuth.signInWithPopup(provider);
       return this.updateUserData(credential.user);
     }
+
+    async createEmailUser(email,password){
+      try{
+        const credential = await this.afAuth.createUserWithEmailAndPassword(email,password);
+        return this.updateUserData(credential.user)
+      }catch{
+        //Handle errors here
+      }
+    }
+
+    async signInEmailUser(email,password){
+      try{
+        const credential = await this.afAuth.signInWithEmailAndPassword(email,password);
+        return this.updateUserData(credential.user)
+      }catch{
+        //Handle errors here
+      }
+    }
   
     private updateUserData(user) {
       // Sets user data to firestore on login
@@ -64,6 +83,8 @@ export class AuthService {
 
       shoppingList.set(shoppingData, {merge: true})
 
+      this.userInfo = user;
+
       return userRef.set(data, { merge: true })
   
     }
@@ -71,5 +92,9 @@ export class AuthService {
     async signOut() {
       await this.afAuth.signOut();
       this.router.navigate(['/']);
+    }
+
+    public fetchUserData() {
+      return this.userInfo
     }
 }

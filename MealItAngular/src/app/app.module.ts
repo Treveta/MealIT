@@ -12,9 +12,10 @@ import { LoginPageComponent } from './login-page/login-page.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { ModalModule } from './modal-functionality';
 import { AuthGuard } from './auth.guard';
+import { environment } from './../environments/environment';
 
 const config = {
-  apiKey: "AIzaSyA0F-pFE-PC_2Gr-9r_wakBtCgNXoM2A18",
+  apiKey: environment.apiKey,
   authDomain: "mealit-cfde0.firebaseapp.com",
   databaseURL: "https://mealit-cfde0.firebaseio.com",
   projectId: "mealit-cfde0",

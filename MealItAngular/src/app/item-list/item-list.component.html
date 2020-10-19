@@ -9,10 +9,12 @@
             Edit Items
         </button>
     </div>
-    <div *ngFor="let x of Items; let index = index;" > 
+    <div> 
         <div>
             <input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
-            {{x}}
+            <p *ngFor="let shoppingList of listItems | async">
+                {{ shoppingList.itemName }}
+            </p>
         </div> 
     </div>
     <div>
