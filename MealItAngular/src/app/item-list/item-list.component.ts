@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms'
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs'; //Needed for Database
 import { shoppingList } from '../services/shoppingList.model';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { ModalService } from '../modal-functionality';
-import { AngularFireAuth } from '@angular/fire/auth';
-import { AuthService } from '../services/auth.service';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'; //Needed for Database
+import { ModalService } from '../modal-functionality'; 
+
+import { AuthService } from '../services/auth.service'; //Needed for Database
 
 export interface Item { name: string, seeds: number;}
 
@@ -32,7 +32,6 @@ export class ItemListComponent {
         private modalService: ModalService,
         private fb: FormBuilder,
         private afs: AngularFirestore,
-        private afAuth: AngularFireAuth,
         private authService: AuthService
     ) { 
         this.form = this.fb.group({

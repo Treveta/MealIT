@@ -68,6 +68,7 @@ export class AuthService {
       const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.uid}`);
       //let shoppingList = this.afs.collection('users/'+user.uid+'/shoppingList')
       let shoppingList = this.afs.collection('users/'+user.uid+'/shoppingList').doc('InitializationItem');
+      let recipeList = this.afs.collection('users/'+user.uid+'/recipeList').doc('InitializationItem');
 
       const data = { 
         uid: user.uid, 
@@ -81,7 +82,14 @@ export class AuthService {
         unit: null
       }
 
+      const recipeData = {
+        recipeName: null,
+        calories: null,
+        servings: null
+      }
+
       shoppingList.set(shoppingData, {merge: true})
+      recipeList.set(recipeData, {merge: true})
 
       this.userInfo = user;
 
