@@ -1,4 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { AuthService } from '../services/auth.service';
+import { recipeList } from '../models/recipeList.model';
 // import { Console } from 'console';
 
 @Component({
@@ -19,7 +23,19 @@ export class CreateRecipeComponent {
        public servings;
        public calories;
        public recipeName;
-       
+       private userInfo;
+
+        recipeListCollection: AngularFirestoreCollection<recipeList>;
+        listRecipes: Observable<recipeList[]>
+
+       constructor(
+        private afs: AngularFirestore,
+        private authService: AuthService)
+        {
+            this.userInfo = authService.fetchUserData()
+            this.recipeListCollection = this.afs.collection<recipeList>('users/'+this.userInfo.uid+'/recipeList');
+            this.listRecipes = this.recipeListCollection.valueChanges();
+        }
      
        public addToList() { 
             var amount= parseFloat(this.newAmount);
@@ -42,10 +58,26 @@ export class CreateRecipeComponent {
            this.units.splice(index, 1);
        } 
 
-       public submitRecipe(){
-            var fullRecipe = {"name" : this.recipeName , "Ingredients" : this.Ingredients , "Amounts" : this.amount , "units" : this.units , "calories" : this.calories , "servings" : this.servings};
-            var recipeJSON = JSON.stringify(fullRecipe);
-            window.alert(recipeJSON);
+       async submitRecipe(){
+            const data = {
+                recipeName: this.recipeName,  //get this stuff from auth.service.ts
+                calories: this.calories,
+                servings: this.servings
+            }
+            let documentAdded = await this.recipeListCollection.add(data)
+            let ingredients = this.afs.collection('users/'+this.userInfo.uid+'/recipeList/'+ documentAdded.id + '/ingredients');
+
+            for (var i = 0; i < this.Ingredients.length; i++) {
+                ingredients.add(
+                    {
+                        ingredientName: this.Ingredients[i],
+                        amount: this.amount[i],
+                        unit: this.units[i]
+                    }
+                    );
+            }
+            
+
        }
 
 }
