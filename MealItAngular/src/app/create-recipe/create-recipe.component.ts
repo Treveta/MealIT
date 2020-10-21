@@ -59,25 +59,34 @@ export class CreateRecipeComponent {
        } 
 
        async submitRecipe(){
-            const data = {
-                recipeName: this.recipeName,  //get this stuff from auth.service.ts
-                calories: this.calories,
-                servings: this.servings
-            }
-            let documentAdded = await this.recipeListCollection.add(data)
-            let ingredients = this.afs.collection('users/'+this.userInfo.uid+'/recipeList/'+ documentAdded.id + '/ingredients');
+            if(this.Ingredients.length>0 && this.servings != '' && this.calories != '' && this.recipeName != ''){
+                const data = {
+                    recipeName: this.recipeName,  //get this stuff from auth.service.ts
+                    calories: this.calories,      
+                    servings: this.servings
+                }
+                let documentAdded = await this.recipeListCollection.add(data)
+                let ingredients = this.afs.collection('users/'+this.userInfo.uid+'/recipeList/'+ documentAdded.id + '/ingredients');
 
-            for (var i = 0; i < this.Ingredients.length; i++) {
-                ingredients.add(
-                    {
-                        ingredientName: this.Ingredients[i],
-                        amount: this.amount[i],
-                        unit: this.units[i]
-                    }
-                    );
+                for (var i = 0; i < this.Ingredients.length; i++) {
+                    ingredients.add(
+                        {
+                            ingredientName: this.Ingredients[i],
+                            amount: this.amount[i],
+                            unit: this.units[i]
+                        }
+                        );
+                }
+                this.Ingredients = []; 
+                this.amount = []; 
+                this.units = []; 
+                this.servings='';
+                this.calories='';
+                this.recipeName='';
             }
-            
-
+            else{
+                window.alert("Please fill in all fields and have at least one ingredient");
+            }
        }
 
 }
