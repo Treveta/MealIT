@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms'
+import { Observable } from 'rxjs'; //Needed for Database
+import { shoppingList } from '../services/shoppingList.model';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'; //Needed for Database
+import { ModalService } from '../modal-functionality'; 
 
-import { ModalService } from '../modal-functionality';
+import { AuthService } from '../services/auth.service'; //Needed for Database
+
+export interface Item { name: string, seeds: number;}
 
 @Component({
     selector: 'item-list',
@@ -11,25 +17,48 @@ import { ModalService } from '../modal-functionality';
 export class ItemListComponent {
     form: FormGroup;
 
+
     public Items = []; 
+
     public newItem; 
+    public newQuantity;
+    public newUnit;
+
     public editBool;
+    private userInfo;
+
+    shoppingCollection: AngularFirestoreCollection<shoppingList>;
+    listItems: Observable<shoppingList[]>
+    
 
     // sets up the form groups for the checkboxes
     constructor(
         private modalService: ModalService,
-        private fb: FormBuilder
+        private fb: FormBuilder,
+        private afs: AngularFirestore,
+        private authService: AuthService
     ) { 
         this.form = this.fb.group({
             checkArray: this.fb.array([])
         })
+        
+        this.userInfo = authService.fetchUserData()
+        this.shoppingCollection = this.afs.collection<shoppingList>('users/'+this.userInfo.uid+'/shoppingList');
+        this.listItems = this.shoppingCollection.valueChanges();
+        
     }
   
     public addToItemList() { 
         if (this.newItem == '') { 
         } 
         else { 
-            this.Items.push(this.newItem); 
+            this.Items.push(this.newItem);
+            const data = {
+                itemName: this.newItem,
+                quantity: this.newQuantity,
+                unit: this.newUnit 
+            }
+            this.shoppingCollection.add(data)
             this.newItem = ''; 
         } 
     } 

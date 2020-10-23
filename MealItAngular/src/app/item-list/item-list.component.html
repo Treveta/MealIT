@@ -1,23 +1,34 @@
 <div>
     <h3>Item List!</h3>
     <div>
-        <input [(ngModel)]="newItem" type="text" value="" /> 
+        <!--intake input from user-->
+        <input [(ngModel)]="newItem" type="text" value="" placeholder="Item Name"/> 
+        <input [(ngModel)]="newQuantity" type="text" value="" placeholder="Number"/> 
+        <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> 
+
+        
         <button (click)="addToItemList()"> 
             Add Item
         </button> 
         <button (click)="editItemList()">
-            edit Items
+            Edit Items
         </button>
     </div>
-    <div *ngFor="let x of Items; let index = index;" > 
+    <div> 
         <div>
-            <input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
-            {{x}}
+            <!--this is displaying from the database?-->
+            Item<input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
+            <p *ngFor="let shoppingList of listItems | async">
+                {{ shoppingList.itemName }}
+                {{ shoppingList.quantity }}
+                {{ shoppingList.unit }}
+                <!-- formatting needed?-->
+            </p>
         </div> 
     </div>
     <div>
         <button *ngIf="editBool" (click)="saveEdits()">
-            remove
+            Remove
         </button>
     </div>
     <!-- opens the modal -->
