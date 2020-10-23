@@ -5,18 +5,13 @@
     <!--input from user--> 
         <p>
                 Ingredient<input [(ngModel)]="newIngredient" type="text" value="" placeholder="enter ingredient name e.g. apple">   <!--text input box for Ingredient-->
-                Amount<input [(ngModel)]="newAmount" type="text" value="" placeholder="number">                                     <!--text input box for Amount-->
+                Amount<input [(ngModel)]="newAmount" type="text" value="" placeholder="number">  <!--text input box for Amount-->                                  
                 Unit<input [(ngModel)]="newUnit" type="text" value="" placeholder="unit e.g. lb,cups,oz">                           <!--text input box for Unit-->
-    
                 <button (click)="addToList()"> <!--add button-->
                     Add ingredient
-            </button> 
+                </button>
         </p>
-        
-  
 
-     
-  
     <!--Ingredient added and shown in list-->
     <table>
         <tr>

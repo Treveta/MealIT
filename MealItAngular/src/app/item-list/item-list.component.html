@@ -17,12 +17,12 @@
     <div> 
         <div>
             <!--this is displaying from the database?-->
-            Item<input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
+            <input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
             <p *ngFor="let shoppingList of listItems | async">
                 {{ shoppingList.itemName }}
                 {{ shoppingList.quantity }}
                 {{ shoppingList.unit }}
-                <!-- formatting needed?-->
+                <!-- formatting needed-->
             </p>
         </div> 
     </div>

@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { AuthService } from '../services/auth.service';
 import { recipeList } from '../models/recipeList.model';
+import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 // import { Console } from 'console';
 
 @Component({
@@ -11,7 +12,7 @@ import { recipeList } from '../models/recipeList.model';
   styleUrls: ['./create-recipe.component.css']
 })
 export class CreateRecipeComponent {
-
+       closeResult = '';
 
        public Ingredients = []; 
        public amount = []; 
@@ -30,7 +31,8 @@ export class CreateRecipeComponent {
 
        constructor(
         private afs: AngularFirestore,
-        private authService: AuthService)
+        private authService: AuthService,
+        private modalService: NgbModal)
         {
             this.userInfo = authService.fetchUserData()
             this.recipeListCollection = this.afs.collection<recipeList>('users/'+this.userInfo.uid+'/recipeList');
@@ -59,25 +61,34 @@ export class CreateRecipeComponent {
        } 
 
        async submitRecipe(){
-            const data = {
-                recipeName: this.recipeName,  //get this stuff from auth.service.ts
-                calories: this.calories,
-                servings: this.servings
-            }
-            let documentAdded = await this.recipeListCollection.add(data)
-            let ingredients = this.afs.collection('users/'+this.userInfo.uid+'/recipeList/'+ documentAdded.id + '/ingredients');
+            if(this.Ingredients.length>0 && this.servings != '' && this.calories != '' && this.recipeName != ''){
+                const data = {
+                    recipeName: this.recipeName,  //get this stuff from auth.service.ts
+                    calories: this.calories,      
+                    servings: this.servings
+                }
+                let documentAdded = await this.recipeListCollection.add(data)
+                let ingredients = this.afs.collection('users/'+this.userInfo.uid+'/recipeList/'+ documentAdded.id + '/ingredients');
 
-            for (var i = 0; i < this.Ingredients.length; i++) {
-                ingredients.add(
-                    {
-                        ingredientName: this.Ingredients[i],
-                        amount: this.amount[i],
-                        unit: this.units[i]
-                    }
-                    );
+                for (var i = 0; i < this.Ingredients.length; i++) {
+                    ingredients.add(
+                        {
+                            ingredientName: this.Ingredients[i],
+                            amount: this.amount[i],
+                            unit: this.units[i]
+                        }
+                        );
+                }
+                this.Ingredients = []; 
+                this.amount = []; 
+                this.units = []; 
+                this.servings='';
+                this.calories='';
+                this.recipeName='';
             }
-            
-
+            else{
+                window.alert("Please fill in all fields and have at least one ingredient");
+            }
        }
 
 }

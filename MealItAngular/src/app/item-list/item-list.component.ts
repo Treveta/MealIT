@@ -60,6 +60,8 @@ export class ItemListComponent {
             }
             this.shoppingCollection.add(data)
             this.newItem = ''; 
+            this.newQuantity = '';
+            this.newUnit = '';
         } 
     } 
 
