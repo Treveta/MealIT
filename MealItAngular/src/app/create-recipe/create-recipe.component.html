@@ -1,4 +1,4 @@
-<body>
+<jw-modal id="custom-modal-2">
             Name <input [(ngModel)]="recipeName" type="text" value="" placeholder="enter ingredient name e.g. apple" required> 
             <br>
   
@@ -33,4 +33,7 @@
         <div>
             <input (click)="submitRecipe()" type="submit" value="Submit Recipe"> <!--submit the recipe-->
         </div>
-</body>        
+        <button (click)="closeModal('custom-modal-2');">Close</button>
+</jw-modal>
+
+<button (click)="openModal('custom-modal-2')">Open Modal 1</button>
