@@ -19,7 +19,11 @@ export class ItemListComponent {
 
 
     public Items = []; 
+
     public newItem; 
+    public newQuantity;
+    public newUnit;
+
     public editBool;
     private userInfo;
 
@@ -51,8 +55,8 @@ export class ItemListComponent {
             this.Items.push(this.newItem);
             const data = {
                 itemName: this.newItem,
-                quantity: null,
-                unit: null
+                quantity: this.newQuantity,
+                unit: this.newUnit 
             }
             this.shoppingCollection.add(data)
             this.newItem = ''; 
