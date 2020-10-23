@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { AuthService } from '../services/auth.service';
 import { recipeList } from '../models/recipeList.model';
+import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
 // import { Console } from 'console';
 
 @Component({
@@ -11,7 +12,7 @@ import { recipeList } from '../models/recipeList.model';
   styleUrls: ['./create-recipe.component.css']
 })
 export class CreateRecipeComponent {
-
+       closeResult = '';
 
        public Ingredients = []; 
        public amount = []; 
@@ -30,7 +31,8 @@ export class CreateRecipeComponent {
 
        constructor(
         private afs: AngularFirestore,
-        private authService: AuthService)
+        private authService: AuthService,
+        private modalService: NgbModal)
         {
             this.userInfo = authService.fetchUserData()
             this.recipeListCollection = this.afs.collection<recipeList>('users/'+this.userInfo.uid+'/recipeList');
