@@ -3,11 +3,10 @@
     <div>
         <!--intake input from user-->
         <input [(ngModel)]="newItem" type="text" value="" placeholder="Item Name"/> 
-        <!--
         <input [(ngModel)]="newQuantity" type="text" value="" placeholder="Number"/> 
         <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> 
 
-        -->
+        
         <button (click)="addToItemList()"> 
             Add Item
         </button> 
@@ -21,10 +20,9 @@
             Item<input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
             <p *ngFor="let shoppingList of listItems | async">
                 {{ shoppingList.itemName }}
-                <!--
-                    {{ shoppingList.quantity }}
-                    {{ shoppingList.unit }}
-                -->
+                {{ shoppingList.quantity }}
+                {{ shoppingList.unit }}
+                <!-- formatting needed?-->
             </p>
         </div> 
     </div>
