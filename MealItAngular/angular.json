@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "MealItAngular"
+    }
+  },
+  "defaultProject": "MealItAngular",
+  "cli": {
+    "analytics": "9464d397-b6e8-45e3-a0f1-661fd87fe86b"
+  }
 }
