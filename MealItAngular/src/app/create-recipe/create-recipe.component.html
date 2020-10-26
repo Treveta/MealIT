@@ -1,4 +1,4 @@
-<body>
+<jw-modal id="custom-modal-2">
             Name <input [(ngModel)]="recipeName" type="text" value="" placeholder="enter ingredient name e.g. apple" required> 
             <br>
   
@@ -33,4 +33,40 @@
         <div>
             <input (click)="submitRecipe()" type="submit" value="Submit Recipe"> <!--submit the recipe-->
         </div>
-</body>        
+        <button (click)="closeModal('custom-modal-2');">Close</button>
+</jw-modal>
+
+<button (click)="openModal('custom-modal-2')">Add new recipe</button>
+
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Calories</th>
+        <th>Servings</th>
+        <th> </th>
+    </tr>
+    <tr *ngFor="let recipeList of listRecipes | async"> <!--the loop-->
+        <th>{{ recipeList.recipeName }}</th>                                      <!--display name-->
+        <th>{{ recipeList.calories }}</th>                          <!--display amount-->
+        <th>{{ recipeList.servings }}</th>                           <!--display unit-->
+        <th><input (click)="openRecipe(recipeList)" type="button" value="open recipe"></th><!--delete button-->
+    </tr> 
+</table>
+
+<jw-modal id="custom-modal-3">
+    {{temp.recipeName}}
+    {{temp.calories }}
+    {{temp.servings }}
+    <table>
+        <tr>
+            <th>ingredient</th>
+            <th>amount</th>
+            <th>unit</th>
+        </tr>
+        <tr *ngFor="let x of temp.ingredients | async; let index = index;"> <!--the loop-->
+            <th>{{x}}</th>                                      <!--display name-->
+            <th>{{temp.amount[index]}}</th>                          <!--display amount-->
+            <th>{{temp.units[index]}}</th>                           <!--display unit-->
+        </tr>
+    </table> 
+</jw-modal>

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { AuthService } from '../services/auth.service';
 import { recipeList } from '../models/recipeList.model';
-import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
+import { ModalService } from '../modal-functionality'; 
 // import { Console } from 'console';
 
 @Component({
@@ -12,8 +12,7 @@ import {NgbModal, ModalDismissReasons} from '@ng-bootstrap/ng-bootstrap';
   styleUrls: ['./create-recipe.component.css']
 })
 export class CreateRecipeComponent {
-       closeResult = '';
-
+    
        public Ingredients = []; 
        public amount = []; 
        public units = []; 
@@ -26,13 +25,16 @@ export class CreateRecipeComponent {
        public recipeName;
        private userInfo;
 
+       public temp;
+
         recipeListCollection: AngularFirestoreCollection<recipeList>;
         listRecipes: Observable<recipeList[]>
 
        constructor(
+        private modalService: ModalService,
         private afs: AngularFirestore,
         private authService: AuthService,
-        private modalService: NgbModal)
+        )
         {
             this.userInfo = authService.fetchUserData()
             this.recipeListCollection = this.afs.collection<recipeList>('users/'+this.userInfo.uid+'/recipeList');
@@ -90,5 +92,22 @@ export class CreateRecipeComponent {
                 window.alert("Please fill in all fields and have at least one ingredient");
             }
        }
+
+        openModal(id: string) {
+            this.modalService.open(id);
+        }
+
+        closeModal(id: string) {
+            this.modalService.close(id);
+        }
+
+        public deleteRecipe(index) { 
+            
+        }
+
+        openRecipe(test){
+            this.openModal('custom-modal-3');
+            this.temp=test;
+        }
 
 }

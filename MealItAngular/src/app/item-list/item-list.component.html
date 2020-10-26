@@ -3,8 +3,25 @@
     <div>
         <!--intake input from user-->
         <input [(ngModel)]="newItem" type="text" value="" placeholder="Item Name"/> 
-        <input [(ngModel)]="newQuantity" type="text" value="" placeholder="Number"/> 
-        <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> 
+        <input [(ngModel)]="newQuantity" type="number" value="" placeholder="Number"/> 
+       <!-- <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> -->
+        <select [(ngModel)]="newUnit">
+            <option value="" disabled selected hidden>Unit of Measurement</option>
+            <optgroup label="US Units">
+                <option value="lb">lb(s)</option>
+                <option value="cup">cup(s)</option>
+                <option value="oz">oz</option>
+                <option value="tsp">tsp</option>
+                <option value="tbsp">tbsp</option>
+            </optgroup>
+            <optgroup label="Metric Units">
+                <option value="g">g</option>
+                <option value="mL">mL</option>
+                <option value="L">L</option>
+
+
+            </optgroup>
+        </select>
 
         
         <button (click)="addToItemList()"> 
