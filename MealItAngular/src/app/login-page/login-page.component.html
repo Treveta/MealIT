@@ -33,18 +33,21 @@
 			// Textfield variables
 			var inputUsername = document.getElementById("username").value;
 			var inputPassword = document.getElementById("password").value;
+
+			createEmailUser(inputUsername, inputPassword);
 			
 			// Validity checks
-			var validU = checkUsername(inputUsername);
-			var validP = checkPassword(inputPassword);
+			//var validU = checkUsername(inputUsername);
+			//var validP = checkPassword(inputPassword);
 			//alert("Username: " + inputUsername + "\nPassword: " + inputPassword);
 
 			// If both are valid
-			if (validU == true && validP == true){
-				alert("The username and password were accepeted");
+			/*if (validU == true && validP == true){
+				console.log("The username and password were accepeted");
+
 				// add username and password to the database
 				// take user to homepage
-			}
+			}*/
 		}
 	</script>
 </head>
