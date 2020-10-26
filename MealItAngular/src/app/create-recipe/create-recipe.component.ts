@@ -101,7 +101,7 @@ export class CreateRecipeComponent {
             this.modalService.close(id);
         }
 
-        public deleteRecipe(index) { 
+        public deleteRecipe() { 
             
         }
 
