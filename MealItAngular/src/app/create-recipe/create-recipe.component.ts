@@ -25,6 +25,8 @@ export class CreateRecipeComponent {
        public recipeName;
        private userInfo;
 
+       public temp;
+
         recipeListCollection: AngularFirestoreCollection<recipeList>;
         listRecipes: Observable<recipeList[]>
 
@@ -97,6 +99,15 @@ export class CreateRecipeComponent {
 
         closeModal(id: string) {
             this.modalService.close(id);
+        }
+
+        public deleteRecipe(index) { 
+            
+        }
+
+        openRecipe(test){
+            this.openModal('custom-modal-3');
+            this.temp=test;
         }
 
 }
