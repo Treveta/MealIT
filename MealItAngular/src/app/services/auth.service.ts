@@ -11,6 +11,8 @@ import { AngularFirestore, AngularFirestoreDocument, AngularFirestoreCollection 
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 
+declare var checkPassword: any;
+
 @Injectable({
   providedIn: 'root'
 })
@@ -46,12 +48,18 @@ export class AuthService {
     }
 
     async createEmailUser(email,password){
-      try{
-        const credential = await this.afAuth.createUserWithEmailAndPassword(email,password);
-        return this.updateUserData(credential.user)
-      }catch{
-        //Handle errors here
+      let isValid = checkPassword(password);
+      if(isValid){
+        try{
+          const credential = await this.afAuth.createUserWithEmailAndPassword(email,password);
+          return this.updateUserData(credential.user)
+        }catch{
+          //Handle errors here
+        }
+      }else{
+        //Handle Invalid Password Here
       }
+      
     }
 
     async signInEmailUser(email,password){
