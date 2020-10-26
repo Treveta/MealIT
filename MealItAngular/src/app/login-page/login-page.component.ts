@@ -22,15 +22,15 @@ export class LoginPageComponent implements OnInit {
   }
 
   signUp(): void {
-    var inputUsername = (<HTMLInputElement>document.getElementById("email")).value;
-    var inputPassword = (<HTMLInputElement>document.getElementById("password")).value;
+    var inputUsername = (<HTMLInputElement>document.getElementById("signUpEmail")).value;
+    var inputPassword = (<HTMLInputElement>document.getElementById("signUpPassword")).value;
 
     this.auth.createEmailUser(inputUsername, inputPassword);
   }
 
   login(): void {
-    var inputUsername = (<HTMLInputElement>document.getElementById("email")).value;
-    var inputPassword = (<HTMLInputElement>document.getElementById("password")).value;
+    var inputUsername = (<HTMLInputElement>document.getElementById("loginEmail")).value;
+    var inputPassword = (<HTMLInputElement>document.getElementById("loginPassword")).value;
 
     this.auth.signInEmailUser(inputUsername, inputPassword);
   }
