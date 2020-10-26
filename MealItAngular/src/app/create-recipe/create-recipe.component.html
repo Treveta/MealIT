@@ -44,12 +44,14 @@
         <th>Calories</th>
         <th>Servings</th>
         <th> </th>
+        <th> </th>
     </tr>
     <tr *ngFor="let recipeList of listRecipes | async"> <!--the loop-->
         <th>{{ recipeList.recipeName }}</th>                                      <!--display name-->
         <th>{{ recipeList.calories }}</th>                          <!--display amount-->
         <th>{{ recipeList.servings }}</th>                           <!--display unit-->
-        <th><input (click)="openRecipe(recipeList)" type="button" value="open recipe"></th><!--delete button-->
+        <th><input (click)="openRecipe(recipeList)" type="button" value="open recipe"></th>
+        <th><input (click)="deleteRecipe()" type="button" value="open recipe"></th><!--delete button-->
     </tr> 
 </table>
 
