@@ -84,7 +84,7 @@
 <jw-modal id="custom-modal-signup">
   <input type="email" id=signUpEmail placeholder="Email Address">
   <input type="password" id=signUpPassword placeholder="Password">
-  <button (click) ="signUp()">Sign Up</button>
+  <button (click) ="signUp()" (click) ="closeModal('custom-modal-signup')">Sign Up</button>
 </jw-modal>
 
 <ng-template #authenticated>
