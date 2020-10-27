@@ -1,9 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AuthService } from '../services/auth.service';
 import { recipeList } from '../models/recipeList.model';
+import { ingredientTraits } from '../models/ingredientTraits.model';
 import { ModalService } from '../modal-functionality'; 
+import { map } from 'rxjs/operators';
+
+
+  
 // import { Console } from 'console';
 
 @Component({
@@ -25,7 +30,9 @@ export class CreateRecipeComponent {
        public recipeName;
        private userInfo;
 
-       public temp;
+       ingredientsCollection: AngularFirestoreCollection<ingredientTraits>;;
+       ingredientObserve: Observable<ingredientTraits[]>;
+       public recipe;
 
         recipeListCollection: AngularFirestoreCollection<recipeList>;
         listRecipes: Observable<recipeList[]>
@@ -39,6 +46,11 @@ export class CreateRecipeComponent {
             this.userInfo = authService.fetchUserData()
             this.recipeListCollection = this.afs.collection<recipeList>('users/'+this.userInfo.uid+'/recipeList');
             this.listRecipes = this.recipeListCollection.valueChanges();
+            this.recipe = {
+                recipeName: null,
+                calories: null,
+                servings: null
+            }
         }
      
        public addToList() { 
@@ -65,11 +77,13 @@ export class CreateRecipeComponent {
        async submitRecipe(){
             if(this.Ingredients.length>0 && this.servings != '' && this.calories != '' && this.recipeName != ''){
                 const data = {
+                    uid: "",
                     recipeName: this.recipeName,  //get this stuff from auth.service.ts
                     calories: this.calories,      
                     servings: this.servings
                 }
                 let documentAdded = await this.recipeListCollection.add(data)
+                this.recipeListCollection.doc(documentAdded.id).update({uid: documentAdded.id})
                 let ingredients = this.afs.collection('users/'+this.userInfo.uid+'/recipeList/'+ documentAdded.id + '/ingredients');
 
                 for (var i = 0; i < this.Ingredients.length; i++) {
@@ -101,13 +115,19 @@ export class CreateRecipeComponent {
             this.modalService.close(id);
         }
 
-        public deleteRecipe() { 
+        public deleteRecipe(path) { 
             
         }
 
-        openRecipe(test){
+
+        async openRecipe(recipe){
+            this.recipe.recipeName = recipe.recipeName;
+            this.recipe.calories = recipe.calories;
+            this.recipe.servings = recipe.servings;
+            this.ingredientsCollection = this.afs.collection('users/'+this.userInfo.uid+'/recipeList/'+ recipe.uid + '/ingredients');
+            this.ingredientObserve = this.ingredientsCollection.valueChanges();
+
             this.openModal('custom-modal-3');
-            this.temp=test;
         }
 
 }

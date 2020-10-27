@@ -48,6 +48,7 @@ export class AuthService {
     }
 
     async createEmailUser(email,password){
+      console.log(password)
       let isValid = checkPassword(password);
       if(isValid){
         try{
@@ -59,7 +60,6 @@ export class AuthService {
       }else{
         //Handle Invalid Password Here
       }
-      
     }
 
     async signInEmailUser(email,password){
@@ -74,7 +74,6 @@ export class AuthService {
     private updateUserData(user) {
       // Sets user data to firestore on login
       const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.uid}`);
-      //let shoppingList = this.afs.collection('users/'+user.uid+'/shoppingList')
       let shoppingList = this.afs.collection('users/'+user.uid+'/shoppingList').doc('InitializationItem');
       let recipeList = this.afs.collection('users/'+user.uid+'/recipeList').doc('InitializationItem');
 

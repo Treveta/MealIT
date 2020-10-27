@@ -46,29 +46,29 @@
         <th> </th>
         <th> </th>
     </tr>
-    <tr *ngFor="let recipeList of listRecipes | async"> <!--the loop-->
-        <th>{{ recipeList.recipeName }}</th>                                      <!--display name-->
-        <th>{{ recipeList.calories }}</th>                          <!--display amount-->
-        <th>{{ recipeList.servings }}</th>                           <!--display unit-->
-        <th><input (click)="openRecipe(recipeList)" type="button" value="open recipe"></th>
-        <th><input (click)="deleteRecipe()" type="button" value="open recipe"></th><!--delete button-->
+    <tr *ngFor="let recipe of listRecipes | async"> <!--the loop-->
+        <th>{{ recipe.recipeName }}</th>                                      <!--display name-->
+        <th>{{ recipe.calories }}</th>                          <!--display amount-->
+        <th>{{ recipe.servings }}</th>                           <!--display unit-->
+        <th *ngIf="recipe.recipeName"><input (click)="openRecipe(recipe)" type="button" value="open recipe"></th>
+        <th *ngIf="recipe.recipeName"><input (click)="deleteRecipe(recipe)" type="button" value="delete recipe"></th><!--delete button-->
     </tr> 
 </table>
 
 <jw-modal id="custom-modal-3">
-    {{temp.recipeName}}
-    {{temp.calories }}
-    {{temp.servings }}
+    {{recipe.recipeName}}
+    {{recipe.calories }}
+    {{recipe.servings }}
     <table>
         <tr>
-            <th>ingredient</th>
-            <th>amount</th>
-            <th>unit</th>
+            <th>Ingredient</th>
+            <th>Amount</th>
+            <th>Unit</th>
         </tr>
-        <tr *ngFor="let x of temp.ingredients | async; let index = index;"> <!--the loop-->
-            <th>{{x}}</th>                                      <!--display name-->
-            <th>{{temp.amount[index]}}</th>                          <!--display amount-->
-            <th>{{temp.units[index]}}</th>                           <!--display unit-->
+        <tr *ngFor="let ingredient of ingredientObserve | async;"> 
+            <th>{{ingredient.ingredientName}}</th>                                      
+            <th>{{ingredient.amount}}</th>                          
+            <th>{{ingredient.unit}}</th>                           
         </tr>
-    </table> 
+    </table>
 </jw-modal>
