@@ -2,10 +2,10 @@
     <h3>Item List!</h3>
     <div>
         <!--intake input from user-->
-        <input [(ngModel)]="newItem" type="text" value="" placeholder="Item Name"/> 
-        <input [(ngModel)]="newQuantity" type="number" value="" placeholder="Number"/> 
+        <input [(ngModel)]="newItem" type="text" required value="" placeholder="Item Name"/> 
+        <input [(ngModel)]="newQuantity" type="number" min ="0" max ="1000000" required value="" placeholder="Number"/> 
        <!-- <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> -->
-        <select [(ngModel)]="newUnit">
+        <select [(ngModel)]="newUnit" required>
             <option value="" disabled selected hidden>Unit of Measurement</option>
             <optgroup label="US Units">
                 <option value="lb">lb(s)</option>
