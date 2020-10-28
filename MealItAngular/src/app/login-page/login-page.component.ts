@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
 import { ModalService } from '../modal-functionality';
+import { DatabaseHelperComponent } from '../database-helper/database-helper.component';
 
 export interface Item { name: string, seeds: number;}
 
@@ -16,8 +17,8 @@ export class LoginPageComponent implements OnInit {
   itemCollection: AngularFirestoreCollection<Item>;
   items: Observable<Item[]>
 
-  constructor(private modalService: ModalService, public auth: AuthService, private firestore: AngularFirestore) { 
-    this.itemCollection = this.firestore.collection<Item>('items');
+  constructor(private modalService: ModalService, public auth: AuthService, private firestore: AngularFirestore, private dbHelp: DatabaseHelperComponent) { 
+    this.itemCollection = dbHelp.fetchDataOneWhere('items', 'name:==:Melon');
     this.items = this.itemCollection.valueChanges();
   }
 

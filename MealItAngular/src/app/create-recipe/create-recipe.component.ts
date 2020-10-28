@@ -5,7 +5,6 @@ import { AuthService } from '../services/auth.service';
 import { recipeList } from '../models/recipeList.model';
 import { ingredientTraits } from '../models/ingredientTraits.model';
 import { ModalService } from '../modal-functionality'; 
-import { map } from 'rxjs/operators';
 
 
   
