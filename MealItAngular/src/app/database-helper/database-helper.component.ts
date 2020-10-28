@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AuthService } from '../services/auth.service';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +17,7 @@ import { AuthService } from '../services/auth.service';
 export class DatabaseHelperComponent implements OnInit {
 
   private userInfo;
+  public data;
   queryCollection: AngularFirestoreCollection<any>;
   fetchedList: Observable<any[]>
 
@@ -35,25 +37,73 @@ export class DatabaseHelperComponent implements OnInit {
     return query.split(":");
   }
 
-  public fetchDataOneWhere(path, query1){
+  public fetchCollectionOneWhere(path, query1){
     query1 = this.parseQuery(query1);
     this.queryCollection = this.afs.collection(path, ref => ref.where(query1[0], query1[1], query1[2]));
     return this.queryCollection;
   }
 
-  public fetchDataTwoWhere(path, query1, query2){
+  public fetchCollectionTwoWhere(path, query1, query2){
     query1 = this.parseQuery(query1);
     query2 = this.parseQuery(query2);
     this.queryCollection = this.afs.collection(path, ref => ref.where(query1[0], query1[1], query1[2]).where(query2[0], query2[1], query2[2]));
     return this.queryCollection;
   }
 
-  public fetchDataThreeWhere(path, query1, query2, query3){
+  public fetchCollectionThreeWhere(path, query1, query2, query3){
     query1 = this.parseQuery(query1);
     query2 = this.parseQuery(query2);
     query3 = this.parseQuery(query3);
     this.queryCollection = this.afs.collection(path, ref => ref.where(query1[0], query1[1], query1[2]).where(query2[0], query2[1], query2[2]).where(query3[0], query3[1], query3[2]));
     return this.queryCollection;
+  }
+
+  public fetchDocIdsFromCollection(collection){
+    this.queryCollection = collection;
+    return new Promise((resolve, reject) => {
+      let documentIDs = [];
+      this.queryCollection
+        .snapshotChanges()
+        .subscribe(item => {
+          Array.from(item).forEach(row => {
+            //data = row.payload.doc.data(); //Sets data equal to the fields of queried document
+            documentIDs.push(row.payload.doc.id); //Sets data equal to the id of the queried document
+          });
+          resolve(documentIDs);
+        });
+    });
+  }
+
+  public fetchDocIdOneWhere(path, query1){
+    query1 = this.parseQuery(query1);
+    this.queryCollection = this.afs.collection(path, ref => ref.where(query1[0], query1[1], query1[2]));
+    return new Promise((resolve, reject) => {
+      let data = [];
+      this.queryCollection
+        .snapshotChanges()
+        .subscribe(item => {
+          Array.from(item).forEach(row => {
+            data.push(row.payload.doc.id); //Sets data equal to the id of the queried document
+          });
+          resolve(data);
+        });
+    });
+  }
+
+  public fetchDataOneWhere(path, query1){
+    query1 = this.parseQuery(query1);
+    this.queryCollection = this.afs.collection(path, ref => ref.where(query1[0], query1[1], query1[2]));
+    return new Promise((resolve, reject) => {
+      let data = [];
+      this.queryCollection
+        .snapshotChanges()
+        .subscribe(item => {
+          Array.from(item).forEach(row => {
+            data.push(row.payload.doc.data()); //Sets data equal to the fields of queried document
+          });
+          resolve(data);
+        });
+    });
   }
 
 }

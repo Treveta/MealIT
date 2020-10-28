@@ -5,6 +5,7 @@ import { AuthService } from '../services/auth.service';
 import { recipeList } from '../models/recipeList.model';
 import { ingredientTraits } from '../models/ingredientTraits.model';
 import { ModalService } from '../modal-functionality'; 
+import { DatabaseHelperComponent } from 'app/database-helper/database-helper.component';
 
 
   
@@ -40,6 +41,7 @@ export class CreateRecipeComponent {
         private modalService: ModalService,
         private afs: AngularFirestore,
         private authService: AuthService,
+        private dbHelp: DatabaseHelperComponent
         )
         {
             this.userInfo = authService.fetchUserData()
