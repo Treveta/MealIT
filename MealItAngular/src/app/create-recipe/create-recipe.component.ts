@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
+import { AngularFireAuth } from '@angular/fire/auth';
 import { AuthService } from '../services/auth.service';
 import { recipeList } from '../models/recipeList.model';
 import { ingredientTraits } from '../models/ingredientTraits.model';
@@ -40,18 +41,23 @@ export class CreateRecipeComponent {
        constructor(
         private modalService: ModalService,
         private afs: AngularFirestore,
+        private auth: AngularFireAuth,
         private authService: AuthService,
         private dbHelp: DatabaseHelperComponent
         )
         {
-            this.userInfo = authService.fetchUserData()
-            this.recipeListCollection = this.afs.collection<recipeList>('users/'+this.userInfo.uid+'/recipeList');
-            this.listRecipes = this.recipeListCollection.valueChanges();
-            this.recipe = {
-                recipeName: null,
-                calories: null,
-                servings: null
-            }
+            authService.getUid().then((uid) => {
+                this.userInfo = uid;
+                this.recipeListCollection = this.afs.collection<recipeList>('users/'+uid+'/recipeList');
+                this.listRecipes = this.recipeListCollection.valueChanges();
+                this.recipe = {
+                    recipeName: null,
+                    calories: null,
+                    servings: null
+                } 
+                
+            });
+            
         }
      
        public addToList() { 
@@ -85,7 +91,7 @@ export class CreateRecipeComponent {
                 }
                 let documentAdded = await this.recipeListCollection.add(data)
                 this.recipeListCollection.doc(documentAdded.id).update({uid: documentAdded.id})
-                let ingredients = this.afs.collection('users/'+this.userInfo.uid+'/recipeList/'+ documentAdded.id + '/ingredients');
+                let ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
 
                 for (var i = 0; i < this.Ingredients.length; i++) {
                     ingredients.add(
@@ -122,10 +128,11 @@ export class CreateRecipeComponent {
 
 
         async openRecipe(recipe){
+            
             this.recipe.recipeName = recipe.recipeName;
             this.recipe.calories = recipe.calories;
             this.recipe.servings = recipe.servings;
-            this.ingredientsCollection = this.afs.collection('users/'+this.userInfo.uid+'/recipeList/'+ recipe.uid + '/ingredients');
+            this.ingredientsCollection = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ recipe.uid + '/ingredients');
             this.ingredientObserve = this.ingredientsCollection.valueChanges();
 
             this.openModal('custom-modal-3');

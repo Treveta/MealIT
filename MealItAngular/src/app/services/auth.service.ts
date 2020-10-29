@@ -32,6 +32,7 @@ export class AuthService {
         switchMap(user => {
             // Logged in
           if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
             return this.afs.doc<User>(`users/${user.uid}`).valueChanges();
           } else {
             // Logged out
@@ -109,7 +110,19 @@ export class AuthService {
       this.router.navigate(['/']);
     }
 
-    public fetchUserData() {
-      return this.userInfo
+    async fetchUserData() {
+      //const  user  =  JSON.parse(localStorage.getItem('user'));
+      return await this.afAuth.currentUser; 
     }
+
+    public getUid() {
+      return new Promise((resolve, reject) => {
+        let data;
+        this.user$
+          .subscribe(item => {
+              data = (item.uid); //Sets data equal to the id of the queried document
+            resolve(data);
+          });
+      });
+  }
 }

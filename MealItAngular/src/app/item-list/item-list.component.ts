@@ -41,10 +41,15 @@ export class ItemListComponent {
         this.form = this.fb.group({
             checkArray: this.fb.array([])
         })
+
+        authService.getUid().then((uid) => {
+            this.userInfo = uid;
+            this.shoppingCollection = this.afs.collection<shoppingList>('users/'+this.userInfo+'/shoppingList');
+            this.listItems = this.shoppingCollection.valueChanges();
+        });
         
-        this.userInfo = authService.fetchUserData()
-        this.shoppingCollection = this.afs.collection<shoppingList>('users/'+this.userInfo.uid+'/shoppingList');
-        this.listItems = this.shoppingCollection.valueChanges();
+        
+       
         
     }
   
