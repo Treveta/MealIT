@@ -3,24 +3,33 @@
     <div>
         <!--intake input from user-->
         <input [(ngModel)]="newItem" type="text" required value="" placeholder="Item Name"/> 
-        <input [(ngModel)]="newQuantity" type="number" min ="0" max ="1000000" required value="" placeholder="Number"/> 
+        <input [(ngModel)]="newQuantity" type="number" min ="0" max ="1000000" 
+        oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" 
+        required value="" placeholder="Number"/> 
        <!-- <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> -->
         <select [(ngModel)]="newUnit" required>
             <option value="" disabled selected hidden>Unit of Measurement</option>
             <optgroup label="US Units">
-                <option value="lb">lb(s)</option>
-                <option value="cup">cup(s)</option>
+                <option value="lb(s)">lb(s)</option>
+                <option value="cup(s)">cup(s)</option>
                 <option value="oz">oz</option>
                 <option value="tsp">tsp</option>
                 <option value="tbsp">tbsp</option>
             </optgroup>
+
             <optgroup label="Metric Units">
                 <option value="g">g</option>
                 <option value="mL">mL</option>
                 <option value="L">L</option>
-
-
             </optgroup>
+            
+            <optgroup label= "Other Units">
+                <option value="count">count</option>
+                <option value="pinch">pinch</option>
+            </optgroup>
+
+
+          
         </select>
 
         
