@@ -17,9 +17,6 @@ export interface Item { name: string, seeds: number;}
 export class ItemListComponent {
     form: FormGroup;
 
-
-    public Items = []; 
-
     public newItem; 
     public newQuantity;
     public newUnit;
@@ -28,8 +25,7 @@ export class ItemListComponent {
     private userInfo;
 
     shoppingCollection: AngularFirestoreCollection<shoppingList>;
-    listItems: Observable<shoppingList[]>
-    
+    listItems$: Observable<shoppingList[]>
 
     // sets up the form groups for the checkboxes
     constructor(
@@ -45,25 +41,22 @@ export class ItemListComponent {
         authService.getUid().then((uid) => {
             this.userInfo = uid;
             this.shoppingCollection = this.afs.collection<shoppingList>('users/'+this.userInfo+'/shoppingList');
-            this.listItems = this.shoppingCollection.valueChanges();
+            this.listItems$ = this.shoppingCollection.valueChanges();
         });
-        
-        
-       
-        
     }
   
-    public addToItemList() { 
+    async addToItemList() { 
         if (this.newItem == '') { 
         } 
         else { 
-            this.Items.push(this.newItem);
-            const data = {
+            const addedItem = {
                 itemName: this.newItem,
                 quantity: this.newQuantity,
                 unit: this.newUnit 
             }
-            this.shoppingCollection.add(data)
+            const newItemsName = addedItem.itemName;
+            console.log(newItemsName);
+            this.shoppingCollection.doc(addedItem.itemName).set(addedItem);
             this.newItem = ''; 
             this.newQuantity = '';
             this.newUnit = '';
@@ -71,7 +64,7 @@ export class ItemListComponent {
     } 
 
     public editItemList() {
-        if (this.Items.length === 0) {
+        if (false) {
             this.editBool = false;
         } else {
             this.editBool = true;
@@ -80,14 +73,19 @@ export class ItemListComponent {
     }
 
     public saveEdits() {
-        for (let i = 0; i < this.Items.length; i++) {
-            for (let j = 0; j < this.form.get('checkArray').value.length; j++){
-                if (this.Items[i] == this.form.get('checkArray').value[j]) {
-                    this.Items.splice(i, 1);
+        // use .get to compare data
+        for (let i = 0; i < this.form.get('checkArray').value.length; i++) {
+            this.listItems$.subscribe(item => {
+                for (let j = 0; j < item.length; j++) {
+                    if (item[j].itemName == this.form.get('checkArray').value[i]) {
+                        let itemToDelete = this.shoppingCollection.doc(item[j].itemName).get();
+                        //this item is the selected item in the checkbox form
+                        console.log(item[j].itemName + ", " + this.form.get('checkArray').value[i]);
+                        console.log();
+                    }
                 }
-            }
+            });
         }
-
         this.editBool = false;
     }
 
@@ -106,10 +104,6 @@ export class ItemListComponent {
                 }
             })
         }
-    }
-
-    submitForm() {
-        console.log(this.form.value);
     }
 
     // these functions are all that is needed to show and hide a modal view

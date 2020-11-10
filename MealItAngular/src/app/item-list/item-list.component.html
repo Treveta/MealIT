@@ -2,10 +2,21 @@
     <h3>Item List!</h3>
     <div>
         <!--intake input from user-->
-        <input [(ngModel)]="newItem" type="text" required value="" placeholder="Item Name"/> 
-        <input [(ngModel)]="newQuantity" type="number" min ="0" max ="1000000" 
-        oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" 
-        required value="" placeholder="Number"/> 
+        <input 
+            [(ngModel)]="newItem" 
+            type="text" 
+            required value="" 
+            placeholder="Item Name"
+        /> 
+        <input 
+            [(ngModel)]="newQuantity" 
+            type="number" 
+            min ="0" 
+            max ="1000000" 
+            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" 
+            required value="" 
+            placeholder="Number"
+        /> 
        <!-- <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> -->
         <select [(ngModel)]="newUnit" required>
             <option value="" disabled selected hidden>Unit of Measurement</option>
@@ -27,12 +38,7 @@
                 <option value="count">count</option>
                 <option value="pinch">pinch</option>
             </optgroup>
-
-
-          
-        </select>
-
-        
+        </select>    
         <button (click)="addToItemList()"> 
             Add Item
         </button> 
@@ -41,19 +47,23 @@
         </button>
     </div>
     <div> 
-        <div>
-            <!--this is displaying from the database?-->
-            <input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
+        <!-- <div>
+            this is displaying from the database?
+            Item<input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
             <p *ngFor="let shoppingList of listItems | async">
                 {{ shoppingList.itemName }}
-                {{ shoppingList.quantity }}
-                {{ shoppingList.unit }}
-                <!-- formatting needed-->
-            </p>
+                
+                    {{ shoppingList.quantity }}
+                    {{ shoppingList.unit }}
+                
+            </p> -->
+        <div *ngFor="let shoppingList of listItems$ | async">
+            <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
+            {{ shoppingList.itemName }}
         </div> 
     </div>
     <div>
-        <button *ngIf="editBool" (click)="saveEdits()">
+        <button *ngIf="editBool" (click)="openModal('custom-modal-1')">
             Remove
         </button>
     </div>
@@ -62,6 +72,6 @@
 </div>
 <!-- this is the modal view which is called based on the modal service calls -->
 <jw-modal id="custom-modal-1">
-    <h1>A custom modal man!</h1>
-    <button (click)="closeModal('custom-modal-1');">Close</button>
+    <h1>Are you sure you want to delete these items?</h1>
+    <button (click)="closeModal('custom-modal-1'); saveEdits()">Close</button>
 </jw-modal>
