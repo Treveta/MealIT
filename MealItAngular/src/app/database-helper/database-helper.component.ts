@@ -67,7 +67,7 @@ export class DatabaseHelperComponent implements OnInit {
         .subscribe(item => {
           Array.from(item).forEach(row => {
             //data = row.payload.doc.data(); //Sets data equal to the fields of queried document
-            documentIDs.push(row.payload.doc.id); //Sets data equal to the id of the queried document
+            documentIDs.push(row.payload.doc['id']); //Sets data equal to the id of the queried document
           });
           resolve(documentIDs);
         });
@@ -83,7 +83,7 @@ export class DatabaseHelperComponent implements OnInit {
         .snapshotChanges()
         .subscribe(item => {
           Array.from(item).forEach(row => {
-            data.push(row.payload.doc.id); //Sets data equal to the id of the queried document
+            data.push(row.payload.doc['id']); //Sets data equal to the id of the queried document
           });
           resolve(data);
         });
