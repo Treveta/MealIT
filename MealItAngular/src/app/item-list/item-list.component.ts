@@ -9,11 +9,58 @@ import { AuthService } from '../services/auth.service'; //Needed for Database
 
 export interface Item { name: string, seeds: number;}
 
+
+
+interface Unit{
+    value: string;
+    viewValue: string;
+}
+
+interface UnitGroup {
+    disabled?: boolean;
+    name: string;
+    unit: Unit[];
+}
+/*
+export class SelectUnit{
+    unitControl= new FormControl();
+    unitGroups: UnitGroup[] =[
+{
+    name: 'US Units',
+    unit: [
+        {value:'lb', viewValue: 'lb(s)'},
+        {value:'cup', viewValue: 'cup(s)'},
+        {value:'oz', viewValue: 'ounce(s)'},
+        {value:'tsp', viewValue: 'teaspoon(s)'},
+        {value:'tbsp', viewValue: 'tablespoon(s)'}
+    ]
+},
+{
+    name: 'Metric Units',
+    unit:[
+        {value:'g', viewValue: 'gram(s)'},
+        {value:'mL', viewValue: 'milliliter(s)'},
+        {value:'L', viewValue: 'Liter(s)'}
+    ]
+},
+{
+    name: 'Other Units',
+    unit:[
+        {value:'ct', viewValue: 'count(s)'},
+        {value:'pinch', viewValue: 'pinch(es)'}
+    ]
+}
+
+    ];
+}
+*/
+
 @Component({
     selector: 'item-list',
     templateUrl: './item-list.component.html',
     styleUrls: ['./item-list.component.css']
 })
+
 export class ItemListComponent {
     form: FormGroup;
 
@@ -78,10 +125,7 @@ export class ItemListComponent {
             this.listItems$.subscribe(item => {
                 for (let j = 0; j < item.length; j++) {
                     if (item[j].itemName == this.form.get('checkArray').value[i]) {
-                        let itemToDelete = this.shoppingCollection.doc(item[j].itemName).get();
-                        //this item is the selected item in the checkbox form
-                        console.log(item[j].itemName + ", " + this.form.get('checkArray').value[i]);
-                        console.log();
+                        this.shoppingCollection.doc(item[j].itemName).delete();
                     }
                 }
             });
@@ -106,6 +150,36 @@ export class ItemListComponent {
         }
     }
 
+    unitControl= new FormControl();
+    unitGroups: UnitGroup[] =[
+{
+    name: 'US Units',
+    unit: [
+        {value:'lb', viewValue: 'lb(s)'},
+        {value:'cup', viewValue: 'cup(s)'},
+        {value:'oz', viewValue: 'ounce(s)'},
+        {value:'tsp', viewValue: 'teaspoon(s)'},
+        {value:'tbsp', viewValue: 'tablespoon(s)'}
+    ]
+},
+{
+    name: 'Metric Units',
+    unit:[
+        {value:'g', viewValue: 'gram(s)'},
+        {value:'mL', viewValue: 'milliliter(s)'},
+        {value:'L', viewValue: 'Liter(s)'}
+    ]
+},
+{
+    name: 'Other Units',
+    unit:[
+        {value:'ct', viewValue: 'count(s)'},
+        {value:'pinch', viewValue: 'pinch(es)'}
+    ]
+}
+
+    ];
+
     // these functions are all that is needed to show and hide a modal view
     openModal(id: string) {
         this.modalService.open(id);
@@ -114,4 +188,9 @@ export class ItemListComponent {
     closeModal(id: string) {
         this.modalService.close(id);
     }
+
+
+
 }
+
+

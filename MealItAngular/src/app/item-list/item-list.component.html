@@ -2,22 +2,40 @@
     <h3>Item List!</h3>
     <div>
         <!--intake input from user-->
-        <input 
-            [(ngModel)]="newItem" 
-            type="text" 
-            required value="" 
-            placeholder="Item Name"
-        /> 
-        <input 
+        <mat-form-field>
+            <mat-label>Item Name</mat-label>
+                <input matInput 
+                required
+                [(ngModel)]="newItem" 
+                type="text" 
+                /> 
+                <mat-error *ngIf="newItem==null">Please enter a value</mat-error>
+
+                <button mat-button *ngIf="newItem" matSuffix mat-icon-button aria-label="Clear" (click)="newItem=''">
+                    <mat-icon>close</mat-icon>
+                  </button>
+
+         </mat-form-field>
+
+         <mat-form-field>
+            <mat-label>Number</mat-label>
+        <input matInput
+            required
             [(ngModel)]="newQuantity" 
             type="number" 
             min ="0" 
             max ="1000000" 
             oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" 
-            required value="" 
-            placeholder="Number"
+            
         /> 
+        <mat-error *ngIf="newQuantity==null">Enter a positive number</mat-error>
+        <button mat-button *ngIf="newQuantity" matSuffix mat-icon-button aria-label="Clear" (click)="newQuantity=''">
+            <mat-icon>close</mat-icon>
+          </button>
+          
+        </mat-form-field>   
        <!-- <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> -->
+       <!--
         <select [(ngModel)]="newUnit" required>
             <option value="" disabled selected hidden>Unit of Measurement</option>
             <optgroup label="US Units">
@@ -38,11 +56,34 @@
                 <option value="count">count</option>
                 <option value="pinch">pinch</option>
             </optgroup>
-        </select>    
-        <button (click)="addToItemList()"> 
+        </select>  
+    -->  
+
+        <mat-form-field>
+
+            <mat-label>Unit</mat-label>
+            <mat-select [(ngModel)]="newUnit" [formControl]="unitControl" required>
+              <mat-option>-- None --</mat-option>
+              <mat-optgroup *ngFor="let group of unitGroups" [label]="group.name"
+                            [disabled]="group.disabled" >
+                <mat-option *ngFor="let unit of group.unit" [value]="unit.value">
+                  {{unit.viewValue}}
+                </mat-option>
+              </mat-optgroup>
+            </mat-select>
+            <mat-error *ngIf="newUnit==null">Please select a unit</mat-error>
+            <button mat-button *ngIf="newUnit" matSuffix mat-icon-button aria-label="Clear" (click)="newUnit=''">
+                <mat-icon>close</mat-icon>
+              </button>
+          </mat-form-field>
+
+
+        
+        <button mat-button (click)="addToItemList()"> 
             Add Item
+            <!--TODO: add input validation-->
         </button> 
-        <button (click)="editItemList()">
+        <button mat-button (click)="editItemList()">
             Edit Items
         </button>
     </div>
@@ -58,8 +99,14 @@
                 
             </p> -->
         <div *ngFor="let shoppingList of listItems$ | async">
+            
+          <!-- <li *ngIf="shoppingList.itemName"> -->
             <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
             {{ shoppingList.itemName }}
+            {{ shoppingList.quantity }}
+            {{ shoppingList.unit }}
+           <!-- </li> -->
+        
         </div> 
     </div>
     <div>
@@ -75,3 +122,4 @@
     <h1>Are you sure you want to delete these items?</h1>
     <button (click)="closeModal('custom-modal-1'); saveEdits()">Close</button>
 </jw-modal>
+
