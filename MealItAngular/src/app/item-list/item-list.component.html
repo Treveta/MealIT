@@ -2,22 +2,34 @@
     <h3>Item List!</h3>
     <div>
         <!--intake input from user-->
-        <input 
-            [(ngModel)]="newItem" 
-            type="text" 
-            required value="" 
-            placeholder="Item Name"
-        /> 
-        <input 
+        <mat-form-field>
+            <mat-label>Item Name</mat-label>
+                <input matInput 
+                [(ngModel)]="newItem" 
+                type="text" 
+                required value="" 
+                /> 
+                <button mat-button *ngIf="newItem" matSuffix mat-icon-button aria-label="Clear" (click)="newItem=''">
+                    <mat-icon>close</mat-icon>
+                  </button>
+         </mat-form-field>
+
+         <mat-form-field>
+            <mat-label>Number</mat-label>
+        <input matInput
             [(ngModel)]="newQuantity" 
             type="number" 
             min ="0" 
             max ="1000000" 
             oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" 
             required value="" 
-            placeholder="Number"
         /> 
+        <button mat-button *ngIf="newQuantity" matSuffix mat-icon-button aria-label="Clear" (click)="newQuantity=''">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>   
        <!-- <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> -->
+       <!--
         <select [(ngModel)]="newUnit" required>
             <option value="" disabled selected hidden>Unit of Measurement</option>
             <optgroup label="US Units">
@@ -38,7 +50,24 @@
                 <option value="count">count</option>
                 <option value="pinch">pinch</option>
             </optgroup>
-        </select>    
+        </select>  
+    -->  
+
+        <mat-form-field appearance="fill"  >
+            <mat-label>Unit</mat-label>
+            <mat-select [formControl]="unitControl">
+              <mat-option>-- None --</mat-option>
+              <mat-optgroup *ngFor="let group of unitGroups" [label]="group.name"
+                            [disabled]="group.disabled" >
+                <mat-option *ngFor="let unit of group.unit" [value]="unit.value">
+                  {{unit.viewValue}}
+                </mat-option>
+              </mat-optgroup>
+            </mat-select>
+          </mat-form-field>
+
+
+        
         <button (click)="addToItemList()"> 
             Add Item
         </button> 
@@ -75,3 +104,4 @@
     <h1>Are you sure you want to delete these items?</h1>
     <button (click)="closeModal('custom-modal-1'); saveEdits()">Close</button>
 </jw-modal>
+
