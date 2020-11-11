@@ -48,3 +48,5 @@ Thumbs.db
 # Hidden Files
 .env
 environment.prod.ts
+
+/functions
