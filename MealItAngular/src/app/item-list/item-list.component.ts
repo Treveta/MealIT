@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms'
-import { Observable } from 'rxjs'; //Needed for Database
+import { Observable, Subscription } from 'rxjs'; //Needed for Database
 import { shoppingList } from '../services/shoppingList.model';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'; //Needed for Database
 import { ModalService } from '../modal-functionality'; 
@@ -72,7 +72,8 @@ export class ItemListComponent {
     private userInfo;
 
     shoppingCollection: AngularFirestoreCollection<shoppingList>;
-    listItems$: Observable<shoppingList[]>
+    listItems$: Observable<shoppingList[]>;
+    private subscription: Subscription;
 
     // sets up the form groups for the checkboxes
     constructor(
@@ -97,13 +98,13 @@ export class ItemListComponent {
         } 
         else { 
             const addedItem = {
+                uid: "",
                 itemName: this.newItem,
                 quantity: this.newQuantity,
                 unit: this.newUnit 
             }
-            const newItemsName = addedItem.itemName;
-            console.log(newItemsName);
-            this.shoppingCollection.doc(addedItem.itemName).set(addedItem);
+            const documentAdded = await this.shoppingCollection.add(addedItem);
+            this.shoppingCollection.doc(documentAdded.id).update({ uid: documentAdded.id });
             this.newItem = ''; 
             this.newQuantity = '';
             this.newUnit = '';
@@ -120,17 +121,20 @@ export class ItemListComponent {
     }
 
     public saveEdits() {
-        // use .get to compare data
         for (let i = 0; i < this.form.get('checkArray').value.length; i++) {
-            this.listItems$.subscribe(item => {
+            this.subscription = this.listItems$.subscribe(item => {
                 for (let j = 0; j < item.length; j++) {
                     if (item[j].itemName == this.form.get('checkArray').value[i]) {
-                        this.shoppingCollection.doc(item[j].itemName).delete();
+                        this.shoppingCollection.doc(item[j].uid).delete();
                     }
                 }
             });
         }
         this.editBool = false;
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 
     // checks whether the box has been checked

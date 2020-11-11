@@ -88,25 +88,13 @@
         </button>
     </div>
     <div> 
-        <!-- <div>
-            this is displaying from the database?
-            Item<input *ngIf="editBool" type="checkbox" [value]="x" (change)="onCheckBoxChange($event)" />
-            <p *ngFor="let shoppingList of listItems | async">
-                {{ shoppingList.itemName }}
-                
-                    {{ shoppingList.quantity }}
-                    {{ shoppingList.unit }}
-                
-            </p> -->
         <div *ngFor="let shoppingList of listItems$ | async">
-            
           <!-- <li *ngIf="shoppingList.itemName"> -->
             <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
             {{ shoppingList.itemName }}
             {{ shoppingList.quantity }}
             {{ shoppingList.unit }}
            <!-- </li> -->
-        
         </div> 
     </div>
     <div>
