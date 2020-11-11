@@ -14,6 +14,7 @@ import { ModalModule } from './modal-functionality';
 import { AuthGuard } from './auth.guard';
 import { environment } from './../environments/environment';
 import { DatabaseHelperComponent } from './database-helper/database-helper.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 const config = {
   apiKey: environment.apiKey,
@@ -44,6 +45,7 @@ const config = {
     AngularFirestoreModule,
     AngularFireAuthModule,
     ModalModule,
+    BrowserAnimationsModule,
   ],
   providers: [ AuthGuard ],
   bootstrap: [AppComponent]
