@@ -18,6 +18,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+
 
 
 const config = {
@@ -53,6 +55,7 @@ const config = {
     MatInputModule,
     MatIconModule,
     MatSelectModule,
+    MatButtonModule,
   ],
   providers: [ AuthGuard ],
   bootstrap: [AppComponent]
