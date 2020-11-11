@@ -78,10 +78,7 @@ export class ItemListComponent {
             this.listItems$.subscribe(item => {
                 for (let j = 0; j < item.length; j++) {
                     if (item[j].itemName == this.form.get('checkArray').value[i]) {
-                        let itemToDelete = this.shoppingCollection.doc(item[j].itemName).get();
-                        //this item is the selected item in the checkbox form
-                        console.log(item[j].itemName + ", " + this.form.get('checkArray').value[i]);
-                        console.log();
+                        this.shoppingCollection.doc(item[j].itemName).delete();
                     }
                 }
             });
