@@ -106,4 +106,20 @@ export class DatabaseHelperComponent implements OnInit {
     });
   }
 
+  async deleteDocWhere(path, query1){
+    this.fetchDocIdOneWhere(path, query1).then((docId) => {
+      if(docId[0]){
+        this.afs.collection(path).doc(docId[0]).delete().then(function() {
+          //Deletion Success
+          console.log("Deleted Successfully")
+        }).catch(function(error) {
+          //Deletion Failure
+          console.error("Deletion Failed: " + error)
+        });
+      }else{
+        console.error("Query returned no results while attempting to delete.");
+      }
+    })
+  }
+
 }

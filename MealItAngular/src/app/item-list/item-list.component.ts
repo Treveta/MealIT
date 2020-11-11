@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms'
-import { Observable } from 'rxjs'; //Needed for Database
+import { Observable, Subscription } from 'rxjs'; //Needed for Database
 import { shoppingList } from '../services/shoppingList.model';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'; //Needed for Database
 import { ModalService } from '../modal-functionality'; 
@@ -9,16 +9,60 @@ import { AuthService } from '../services/auth.service'; //Needed for Database
 
 export interface Item { name: string, seeds: number;}
 
+
+
+interface Unit{
+    value: string;
+    viewValue: string;
+}
+
+interface UnitGroup {
+    disabled?: boolean;
+    name: string;
+    unit: Unit[];
+}
+/*
+export class SelectUnit{
+    unitControl= new FormControl();
+    unitGroups: UnitGroup[] =[
+{
+    name: 'US Units',
+    unit: [
+        {value:'lb', viewValue: 'lb(s)'},
+        {value:'cup', viewValue: 'cup(s)'},
+        {value:'oz', viewValue: 'ounce(s)'},
+        {value:'tsp', viewValue: 'teaspoon(s)'},
+        {value:'tbsp', viewValue: 'tablespoon(s)'}
+    ]
+},
+{
+    name: 'Metric Units',
+    unit:[
+        {value:'g', viewValue: 'gram(s)'},
+        {value:'mL', viewValue: 'milliliter(s)'},
+        {value:'L', viewValue: 'Liter(s)'}
+    ]
+},
+{
+    name: 'Other Units',
+    unit:[
+        {value:'ct', viewValue: 'count(s)'},
+        {value:'pinch', viewValue: 'pinch(es)'}
+    ]
+}
+
+    ];
+}
+*/
+
 @Component({
     selector: 'item-list',
     templateUrl: './item-list.component.html',
     styleUrls: ['./item-list.component.css']
 })
+
 export class ItemListComponent {
     form: FormGroup;
-
-
-    public Items = []; 
 
     public newItem; 
     public newQuantity;
@@ -28,8 +72,8 @@ export class ItemListComponent {
     private userInfo;
 
     shoppingCollection: AngularFirestoreCollection<shoppingList>;
-    listItems: Observable<shoppingList[]>
-    
+    listItems$: Observable<shoppingList[]>;
+    private subscription: Subscription;
 
     // sets up the form groups for the checkboxes
     constructor(
@@ -45,25 +89,22 @@ export class ItemListComponent {
         authService.getUid().then((uid) => {
             this.userInfo = uid;
             this.shoppingCollection = this.afs.collection<shoppingList>('users/'+this.userInfo+'/shoppingList');
-            this.listItems = this.shoppingCollection.valueChanges();
+            this.listItems$ = this.shoppingCollection.valueChanges();
         });
-        
-        
-       
-        
     }
   
-    public addToItemList() { 
+    async addToItemList() { 
         if (this.newItem == '') { 
         } 
         else { 
-            this.Items.push(this.newItem);
-            const data = {
+            const addedItem = {
+                uid: "",
                 itemName: this.newItem,
                 quantity: this.newQuantity,
                 unit: this.newUnit 
             }
-            this.shoppingCollection.add(data)
+            const documentAdded = await this.shoppingCollection.add(addedItem);
+            this.shoppingCollection.doc(documentAdded.id).update({ uid: documentAdded.id });
             this.newItem = ''; 
             this.newQuantity = '';
             this.newUnit = '';
@@ -71,7 +112,7 @@ export class ItemListComponent {
     } 
 
     public editItemList() {
-        if (this.Items.length === 0) {
+        if (false) {
             this.editBool = false;
         } else {
             this.editBool = true;
@@ -80,15 +121,21 @@ export class ItemListComponent {
     }
 
     public saveEdits() {
-        for (let i = 0; i < this.Items.length; i++) {
-            for (let j = 0; j < this.form.get('checkArray').value.length; j++){
-                if (this.Items[i] == this.form.get('checkArray').value[j]) {
-                    this.Items.splice(i, 1);
+        for (let i = 0; i < this.form.get('checkArray').value.length; i++) {
+            this.subscription = this.listItems$.subscribe(item => {
+                for (let j = 0; j < item.length; j++) {
+                    if (item[j].itemName == this.form.get('checkArray').value[i]) {
+                        this.shoppingCollection.doc(item[j].uid).delete();
+                    }
                 }
-            }
+            });
         }
-
         this.editBool = false;
+    }
+
+    ngOnDestroy() {
+        if (this.subscription)
+            this.subscription.unsubscribe();
     }
 
     // checks whether the box has been checked
@@ -108,9 +155,35 @@ export class ItemListComponent {
         }
     }
 
-    submitForm() {
-        console.log(this.form.value);
-    }
+    unitControl= new FormControl();
+    unitGroups: UnitGroup[] =[
+{
+    name: 'US Units',
+    unit: [
+        {value:'lb', viewValue: 'lb(s)'},
+        {value:'cup', viewValue: 'cup(s)'},
+        {value:'oz', viewValue: 'ounce(s)'},
+        {value:'tsp', viewValue: 'teaspoon(s)'},
+        {value:'tbsp', viewValue: 'tablespoon(s)'}
+    ]
+},
+{
+    name: 'Metric Units',
+    unit:[
+        {value:'g', viewValue: 'gram(s)'},
+        {value:'mL', viewValue: 'milliliter(s)'},
+        {value:'L', viewValue: 'Liter(s)'}
+    ]
+},
+{
+    name: 'Other Units',
+    unit:[
+        {value:'ct', viewValue: 'count(s)'},
+        {value:'pinch', viewValue: 'pinch(es)'}
+    ]
+}
+
+    ];
 
     // these functions are all that is needed to show and hide a modal view
     openModal(id: string) {
@@ -120,4 +193,9 @@ export class ItemListComponent {
     closeModal(id: string) {
         this.modalService.close(id);
     }
+
+
+
 }
+
+

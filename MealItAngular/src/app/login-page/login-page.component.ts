@@ -39,6 +39,7 @@ export class LoginPageComponent implements OnInit {
 
   async test(){
     var data = (await this.dbHelp.fetchDocIdOneWhere('items', 'name:==:Melon'))[0];
+    this.dbHelp.deleteDocWhere('items', 'name:==:Orange');
     console.log(data);
   }
 

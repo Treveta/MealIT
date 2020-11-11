@@ -1,5 +1,5 @@
 <h1>
-        MealIt!
+        <a [routerLink]="['/']">MealIt!</a>
 </h1>
 
 <div *ngIf="auth.user$ | async; then authenticated else guest">
