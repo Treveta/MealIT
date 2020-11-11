@@ -6,6 +6,7 @@ import { TopBarComponent } from './top-bar/top-bar.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
 import { AuthGuard } from './auth.guard'
+import { SearchRecipesComponent } from './search-recipes/search-recipes.component';
 
 
 const routes: Routes = [
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'createRecipe', component: CreateRecipeComponent,  canActivate: [AuthGuard]},
   { path: 'userLogin', component: UserProfileComponent},
   { path: '', component: LoginPageComponent},
+  { path: 'searchRecipes', component: SearchRecipesComponent}
 ]
 
 @NgModule({

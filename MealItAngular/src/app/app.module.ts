@@ -14,7 +14,12 @@ import { ModalModule } from './modal-functionality';
 import { AuthGuard } from './auth.guard';
 import { environment } from './../environments/environment';
 import { DatabaseHelperComponent } from './database-helper/database-helper.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatExpansionModule } from '@angular/material/expansion'
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { SearchRecipesComponent } from './search-recipes/search-recipes.component';
+import { MatInputModule } from '@angular/material/input'
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
 
 const config = {
   apiKey: environment.apiKey,
@@ -32,7 +37,8 @@ const config = {
     AppComponent,
     routingComponents,
     UserProfileComponent,
-    DatabaseHelperComponent
+    DatabaseHelperComponent,
+    SearchRecipesComponent
   ],
   imports: [
     BrowserModule,
@@ -45,7 +51,11 @@ const config = {
     AngularFirestoreModule,
     AngularFireAuthModule,
     ModalModule,
+    MatExpansionModule,
     BrowserAnimationsModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule
   ],
   providers: [ AuthGuard ],
   bootstrap: [AppComponent]
