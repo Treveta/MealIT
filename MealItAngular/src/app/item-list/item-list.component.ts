@@ -134,7 +134,8 @@ export class ItemListComponent {
     }
 
     ngOnDestroy() {
-        this.subscription.unsubscribe();
+        if (this.subscription)
+            this.subscription.unsubscribe();
     }
 
     // checks whether the box has been checked
