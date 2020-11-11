@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AuthService } from 'app/services/auth.service';
 import { Observable, Subject, combineLatest } from 'rxjs'
@@ -13,7 +13,7 @@ import mocker from 'mocker-data-generator'
   templateUrl: './search-recipes.component.html',
   styleUrls: ['./search-recipes.component.css']
 })
-export class SearchRecipesComponent implements OnInit {
+export class SearchRecipesComponent implements OnInit, OnDestroy {
   
   searchTerm: string;
   userInfo;
@@ -54,6 +54,10 @@ export class SearchRecipesComponent implements OnInit {
         this.userRecipes = list;
       })
     });
+  }
+
+  ngOnDestroy(): void {
+    delete this.userRecipes
   }
 
   searchFuzzy() {
