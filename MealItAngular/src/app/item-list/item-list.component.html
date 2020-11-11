@@ -1,23 +1,113 @@
-<h3>Item List!</h3>
-<form [formGroup]="form" (ngSubmit)="submitForm()" novalidate>
-    <!-- iterates through the itemType json objects -->
-    <div *ngFor="let item of itemType | async">
-        <label>
-            <input type="checkbox" [value]="item.value" (change)="onCheckBoxChange($event)" />
-            {{ item.type }}
-        </label>
-        <span> {{ item.price | currency }} </span>
-        <span> Calories: {{ item.calories }}</span>
+<div>
+    <h3>Item List!</h3>
+    <div>
+        <!--intake input from user-->
+        <mat-form-field>
+            <mat-label>Item Name</mat-label>
+                <input matInput 
+                required
+                [(ngModel)]="newItem" 
+                type="text" 
+                /> 
+                <mat-error *ngIf="newItem==null">Please enter a value</mat-error>
+
+                <button mat-button *ngIf="newItem" matSuffix mat-icon-button aria-label="Clear" (click)="newItem=''">
+                    <mat-icon>close</mat-icon>
+                  </button>
+
+         </mat-form-field>
+
+         <mat-form-field>
+            <mat-label>Number</mat-label>
+        <input matInput
+            required
+            [(ngModel)]="newQuantity" 
+            type="number" 
+            min ="0" 
+            max ="1000000" 
+            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null" 
+            
+        /> 
+        <mat-error *ngIf="newQuantity==null">Enter a positive number</mat-error>
+        <button mat-button *ngIf="newQuantity" matSuffix mat-icon-button aria-label="Clear" (click)="newQuantity=''">
+            <mat-icon>close</mat-icon>
+          </button>
+          
+        </mat-form-field>   
+       <!-- <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> -->
+       <!--
+        <select [(ngModel)]="newUnit" required>
+            <option value="" disabled selected hidden>Unit of Measurement</option>
+            <optgroup label="US Units">
+                <option value="lb(s)">lb(s)</option>
+                <option value="cup(s)">cup(s)</option>
+                <option value="oz">oz</option>
+                <option value="tsp">tsp</option>
+                <option value="tbsp">tbsp</option>
+            </optgroup>
+
+            <optgroup label="Metric Units">
+                <option value="g">g</option>
+                <option value="mL">mL</option>
+                <option value="L">L</option>
+            </optgroup>
+            
+            <optgroup label= "Other Units">
+                <option value="count">count</option>
+                <option value="pinch">pinch</option>
+            </optgroup>
+        </select>  
+    -->  
+
+        <mat-form-field>
+
+            <mat-label>Unit</mat-label>
+            <mat-select [(ngModel)]="newUnit" [formControl]="unitControl" required>
+              <mat-option>-- None --</mat-option>
+              <mat-optgroup *ngFor="let group of unitGroups" [label]="group.name"
+                            [disabled]="group.disabled" >
+                <mat-option *ngFor="let unit of group.unit" [value]="unit.value">
+                  {{unit.viewValue}}
+                </mat-option>
+              </mat-optgroup>
+            </mat-select>
+            <mat-error *ngIf="newUnit==null">Please select a unit</mat-error>
+            <button mat-button *ngIf="newUnit" matSuffix mat-icon-button aria-label="Clear" (click)="newUnit=''">
+                <mat-icon>close</mat-icon>
+              </button>
+          </mat-form-field>
+
+
+        
+        <button mat-button (click)="addToItemList()"> 
+            Add Item
+            <!--TODO: add input validation-->
+        </button> 
+        <button mat-button (click)="editItemList()">
+            Edit Items
+        </button>
     </div>
-    <input type="submit" value="Submit"/>
+    <div> 
+        <div *ngFor="let shoppingList of listItems$ | async">
+          <!-- <li *ngIf="shoppingList.itemName"> -->
+            <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
+            {{ shoppingList.itemName }}
+            {{ shoppingList.quantity }}
+            {{ shoppingList.unit }}
+           <!-- </li> -->
+        </div> 
+    </div>
+    <div>
+        <button *ngIf="editBool" (click)="openModal('custom-modal-1')">
+            Remove
+        </button>
+    </div>
+    <!-- opens the modal -->
+    <button (click)="openModal('custom-modal-1')">Open Modal 1</button>
+</div>
+<!-- this is the modal view which is called based on the modal service calls -->
+<jw-modal id="custom-modal-1">
+    <h1>Are you sure you want to delete these items?</h1>
+    <button (click)="closeModal('custom-modal-1'); saveEdits()">Close</button>
+</jw-modal>
 
-
-</form>
-<!--
-<form [formGroup]="addItemForm" (ngSubmit)="submitForm()" novalidate>
-                trying to consolidate some ideas
-                <input type="text"/>
-                <input type="submit" value="Add Item"/>
-
-</form>
--->

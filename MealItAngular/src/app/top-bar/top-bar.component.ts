@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../services/auth.service';
 
 // This component could be where we set up tabs, but it might be more of a process than we think
 @Component({
@@ -8,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TopBarComponent implements OnInit {
     
-    constructor() { }
+    constructor(public auth: AuthService) { }
 
     ngOnInit() { }
 }
