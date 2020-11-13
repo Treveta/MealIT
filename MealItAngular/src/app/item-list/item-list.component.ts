@@ -10,7 +10,7 @@ import { AuthService } from '../services/auth.service'; //Needed for Database
 export interface Item { name: string, seeds: number;}
 
 
-
+//declaring two interfaces to be used in unitGroups in ItemList Component
 interface Unit{
     value: string;
     viewValue: string;
@@ -21,39 +21,6 @@ interface UnitGroup {
     name: string;
     unit: Unit[];
 }
-/*
-export class SelectUnit{
-    unitControl= new FormControl();
-    unitGroups: UnitGroup[] =[
-{
-    name: 'US Units',
-    unit: [
-        {value:'lb', viewValue: 'lb(s)'},
-        {value:'cup', viewValue: 'cup(s)'},
-        {value:'oz', viewValue: 'ounce(s)'},
-        {value:'tsp', viewValue: 'teaspoon(s)'},
-        {value:'tbsp', viewValue: 'tablespoon(s)'}
-    ]
-},
-{
-    name: 'Metric Units',
-    unit:[
-        {value:'g', viewValue: 'gram(s)'},
-        {value:'mL', viewValue: 'milliliter(s)'},
-        {value:'L', viewValue: 'Liter(s)'}
-    ]
-},
-{
-    name: 'Other Units',
-    unit:[
-        {value:'ct', viewValue: 'count(s)'},
-        {value:'pinch', viewValue: 'pinch(es)'}
-    ]
-}
-
-    ];
-}
-*/
 
 @Component({
     selector: 'item-list',
@@ -166,6 +133,7 @@ export class ItemListComponent {
 
     unitControl= new FormControl();
     unitGroups: UnitGroup[] =[
+        //using interfaces to create unitDropdown
 {
     name: 'US Units',
     unit: [
