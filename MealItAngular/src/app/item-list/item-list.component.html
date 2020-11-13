@@ -1,4 +1,4 @@
-<div>
+<div class="itemList-body">
     <h3>Item List!</h3>
     <div>
         <!--intake input from user-->
@@ -89,21 +89,22 @@
     </div>
     <div> 
         <div *ngFor="let shoppingList of listItems$ | async">
-          <!-- <li *ngIf="shoppingList.itemName"> -->
-            <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
-            {{ shoppingList.itemName }}
-            {{ shoppingList.quantity }}
-            {{ shoppingList.unit }}
-           <!-- </li> -->
+            <li *ngIf="shoppingList.itemName">
+                <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
+                {{ shoppingList.itemName }}
+                {{ shoppingList.quantity }}
+                {{ shoppingList.unit }}
+            </li>
         </div> 
     </div>
     <div>
         <button *ngIf="editBool" (click)="openModal('custom-modal-1')">
             Remove
         </button>
+        <button *ngIf="editBool" (click)="cancelEdits()">
+            Cancel
+        </button>
     </div>
-    <!-- opens the modal -->
-    <button (click)="openModal('custom-modal-1')">Open Modal 1</button>
 </div>
 <!-- this is the modal view which is called based on the modal service calls -->
 <jw-modal id="custom-modal-1">

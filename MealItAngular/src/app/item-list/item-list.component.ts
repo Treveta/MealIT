@@ -121,15 +121,24 @@ export class ItemListComponent {
     }
 
     public saveEdits() {
-        for (let i = 0; i < this.form.get('checkArray').value.length; i++) {
-            this.subscription = this.listItems$.subscribe(item => {
-                for (let j = 0; j < item.length; j++) {
-                    if (item[j].itemName == this.form.get('checkArray').value[i]) {
-                        this.shoppingCollection.doc(item[j].uid).delete();
+        if (this.form.get('checkArray').value.length !== 0) {
+            for (let i = 0; i < this.form.get('checkArray').value.length; i++) {
+                this.subscription = this.listItems$.subscribe(item => {
+                    for (let j = 0; j < item.length; j++) {
+                        if (item[j].itemName == this.form.get('checkArray').value[i]) {
+                            this.shoppingCollection.doc(item[j].uid).delete();
+                        }
                     }
-                }
-            });
+                });
+            }
+            this.editBool = false;
         }
+        else {
+            this.editBool = false;
+        }
+    }
+
+    public cancelEdits() {
         this.editBool = false;
     }
 
