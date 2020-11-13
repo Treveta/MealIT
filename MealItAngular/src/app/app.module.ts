@@ -25,6 +25,7 @@ import { MatCardModule } from '@angular/material/card';
 
 
 
+
 const config = {
   apiKey: environment.apiKey,
   authDomain: "mealit-cfde0.firebaseapp.com",
@@ -42,7 +43,7 @@ const config = {
     routingComponents,
     UserProfileComponent,
     DatabaseHelperComponent,
-    SearchRecipesComponent
+    SearchRecipesComponent,
   ],
   imports: [
     BrowserModule,
