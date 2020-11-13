@@ -1,21 +1,21 @@
-<title>Item List</title>
-<div class="itemList-body">
+<title> Item List </title>
+<div class = "itemList-body">
 <div>
     <h3>Item List!</h3>
     <mat-card>
     <div>
         <!--intake input from user-->
-        <div class="center">
+        <div class = "center">
         <mat-form-field>
             <mat-label>Item Name</mat-label>
             <input matInput 
                 required
-                [(ngModel)]="newItem" 
-                type="text" 
+                [(ngModel)] = "newItem" 
+                type = "text" 
             /> 
-            <mat-error *ngIf="newItem==null">Please enter a value</mat-error>
-            <button mat-button *ngIf="newItem" matSuffix mat-icon-button aria-label="Clear" (click)="newItem=''">
-                <mat-icon>close</mat-icon>
+            <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
+            <button mat-button *ngIf = "newItem" matSuffix mat-icon-button aria-label = "Clear" (click) = "newItem=''">
+                <mat-icon> close </mat-icon>
             </button>
          </mat-form-field>
 
@@ -24,21 +24,21 @@
             <!--oninput line is input validation, does not allow the entry of any number below 0-->
             <input matInput
                 required
-                [(ngModel)]="newQuantity" 
-                type="number" 
-                min ="0" 
-                max ="1000000" 
+                [(ngModel)] = "newQuantity" 
+                type = "number" 
+                min = "0" 
+                max = "1000000" 
                 oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
             /> 
-            <mat-error *ngIf="newQuantity==null">Enter a positive number</mat-error>
-            <button mat-button *ngIf="newQuantity" matSuffix mat-icon-button aria-label="Clear" (click)="newQuantity=''">
+            <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
+            <button mat-button *ngIf = "newQuantity" matSuffix mat-icon-button aria-label = "Clear" (click) = "newQuantity=''">
                 <mat-icon>close</mat-icon>
             </button>
         </mat-form-field>   
     
         <mat-form-field>
             <mat-label>Unit</mat-label>
-            <mat-select [(ngModel)]="newUnit" [formControl]="unitControl" required>
+            <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
                 <mat-option>-- None --</mat-option>
                 <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
                     <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
@@ -55,12 +55,12 @@
 
             <br>
 
-        <div class="center">
-            <button mat-button (click)="addToItemList()"> 
+        <div class = "center">
+            <button mat-button (click) = "addToItemList()"> 
                 Add Item
                 <!--TODO: add input validation(see login-page example)-->
             </button> 
-        <button mat-button (click)="editItemList()">
+        <button mat-button (click) = "editItemList()">
             Edit Items
         </button>
         </div>
@@ -68,9 +68,9 @@
     </mat-card>
 
     <div> 
-        <div *ngFor="let shoppingList of listItems$ | async">
-           <li *ngIf="shoppingList.itemName">
-            <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
+        <div *ngFor = "let shoppingList of listItems$ | async">
+           <li *ngIf = "shoppingList.itemName">
+            <input *ngIf = "editBool" type = "checkbox" [value] = "shoppingList.itemName" (change) = "onCheckBoxChange($event)"/>
             {{ shoppingList.itemName }}
             {{ shoppingList.quantity }}
             {{ shoppingList.unit }}
@@ -79,17 +79,17 @@
     </div>
 
     <div>
-        <button *ngIf="editBool" (click)="openModal('custom-modal-1')">
+        <button *ngIf = "editBool" (click) = "openModal('custom-modal-1')">
             Remove
         </button>
-        <button *ngIf="editBool" (click)="cancelEdits()">
+        <button *ngIf = "editBool" (click) = "cancelEdits()">
             Cancel
         </button>
     </div>
 </div>
 <!-- this is the modal view which is called based on the modal service calls -->
-<jw-modal id="custom-modal-1">
+<jw-modal id = "custom-modal-1">
     <h1>Are you sure you want to delete these items?</h1>
-    <button (click)="closeModal('custom-modal-1'); saveEdits()">Close</button>
+    <button (click) = "closeModal('custom-modal-1'); saveEdits()">Close</button>
 </jw-modal>
 
