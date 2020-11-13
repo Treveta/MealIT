@@ -29,6 +29,8 @@ export class CreateRecipeComponent {
        public servings;
        public calories;
        public recipeName;
+       public directions;
+       public tags;
        private userInfo;
 
        ingredientsCollection: AngularFirestoreCollection<ingredientTraits>;;
