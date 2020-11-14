@@ -21,6 +21,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+
 
 
 
@@ -41,7 +43,7 @@ const config = {
     routingComponents,
     UserProfileComponent,
     DatabaseHelperComponent,
-    SearchRecipesComponent
+    SearchRecipesComponent,
   ],
   imports: [
     BrowserModule,
@@ -60,6 +62,7 @@ const config = {
     MatIconModule,
     MatSelectModule,
     MatButtonModule,
+    MatCardModule,
   ],
   providers: [ AuthGuard ],
   bootstrap: [AppComponent]
