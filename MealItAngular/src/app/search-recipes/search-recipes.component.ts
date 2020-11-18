@@ -1,9 +1,10 @@
 /* eslint-disable max-len */
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
-import { AuthService } from 'app/services/auth.service';
 import FuzzySearch from 'fuzzy-search';
 import mocker from 'mocker-data-generator';
+// eslint-disable-next-line import/no-unresolved
+import AuthService from '../services/auth.service';
 
 @Component({
   selector: 'app-search-recipes',
