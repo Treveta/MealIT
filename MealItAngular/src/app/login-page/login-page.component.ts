@@ -4,9 +4,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AngularFirestoreCollection } from '@angular/fire/firestore';
-import { AuthService } from '../services/auth.service';
+import AuthService from '../services/auth.service';
 import { ModalService } from '../modal-functionality';
-import { DatabaseHelperComponent } from '../database-helper/database-helper.component';
+import DatabaseHelperComponent from '../database-helper/database-helper.component';
 
 export interface Item { name: string, seeds: number;}
 
