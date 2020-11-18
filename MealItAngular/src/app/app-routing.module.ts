@@ -5,23 +5,22 @@ import { CreateRecipeComponent } from './create-recipe/create-recipe.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { LoginPageComponent } from './login-page/login-page.component';
 import { UserProfileComponent } from './user-profile/user-profile.component';
-import { AuthGuard } from './auth.guard'
+import { AuthGuard } from './auth.guard';
 import { SearchRecipesComponent } from './search-recipes/search-recipes.component';
 import { CalenderComponent } from './calender/calender.component';
 
-
 const routes: Routes = [
-  { path: 'itemList', component: ItemListComponent,  canActivate: [AuthGuard] },
-  { path: 'createRecipe', component: CreateRecipeComponent,  canActivate: [AuthGuard]},
-  { path: 'userLogin', component: UserProfileComponent},
-  { path: '', component: LoginPageComponent},
-  { path: 'searchRecipes', component: SearchRecipesComponent},
-  { path: 'calender', component: CalenderComponent}
-]
+  { path: 'itemList', component: ItemListComponent, canActivate: [AuthGuard] },
+  { path: 'createRecipe', component: CreateRecipeComponent, canActivate: [AuthGuard] },
+  { path: 'userLogin', component: UserProfileComponent },
+  { path: '', component: LoginPageComponent },
+  { path: 'searchRecipes', component: SearchRecipesComponent },
+  { path: 'calender', component: CalenderComponent },
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule { }
-export const routingComponents = [CreateRecipeComponent, ItemListComponent, TopBarComponent, LoginPageComponent, CalenderComponent]
+export const routingComponents = [CreateRecipeComponent, ItemListComponent, TopBarComponent, LoginPageComponent, CalenderComponent];
