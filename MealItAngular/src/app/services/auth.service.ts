@@ -17,7 +17,6 @@ declare let checkPassword: any; // Allows the use of the password check script
 @Injectable({
   providedIn: 'root',
 })
-
 export default class AuthService {
   user$: Observable<User>; // An observable to be used to watch the User state
 

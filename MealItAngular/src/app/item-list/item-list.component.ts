@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, FormControl } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs'; // Needed for Database
 import { shoppingList } from '../services/shoppingList.model';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore'; // Needed for Database
 import { ModalService } from '../modal-functionality';
 
-import { AuthService } from '../services/auth.service'; // Needed for Database
+import AuthService from '../services/auth.service';
 
 export interface Item { name: string; seeds: number; }
 
@@ -28,8 +28,40 @@ interface UnitGroup {
     styleUrls: ['./item-list.component.css']
 })
 
-export class ItemListComponent {
+export class ItemListComponent implements OnDestroy {
     form: FormGroup;
+
+    unitControl = new FormControl();
+
+    // using interfaces to create unitDropdown
+    unitGroups: UnitGroup[] = [
+        {
+            name: 'US Units',
+            unit: [
+                {value: 'lb', viewValue: 'lb(s)'},
+                {value: 'cup', viewValue: 'cup(s)'},
+                {value: 'oz', viewValue: 'ounce(s)'},
+                {value: 'tsp', viewValue: 'teaspoon(s)'},
+                {value: 'tbsp', viewValue: 'tablespoon(s)'}
+            ]
+        },
+        {
+            name: 'Metric Units',
+            unit: [
+                {value: 'g', viewValue: 'gram(s)'},
+                {value: 'mL', viewValue: 'milliliter(s)'},
+                {value: 'L', viewValue: 'Liter(s)'}
+            ]
+        },
+        {
+            name: 'Other Units',
+            unit: [
+                {value: 'ct', viewValue: 'count(s)'},
+                {value: 'pinch', viewValue: 'pinch(es)'}
+            ]
+        }
+    ];
+
 
     public newItem;
     public newQuantity;
@@ -78,22 +110,21 @@ export class ItemListComponent {
         }
     }
 
-    public editItemList() {
+    public editItemList(): void{
         if (false) {
-            this.editBool = false;
         } else {
             this.editBool = true;
         }
-
     }
 
-    public saveEdits() {
+    public saveEdits(): void {
         if (this.form.get('checkArray').value.length !== 0) {
-            for (let i = 0; i < this.form.get('checkArray').value.length; i++) {
+            for (const checkArrayIndex of this.form.get('checkArray').value) {
                 this.subscription = this.listItems$.subscribe(item => {
-                    for (let j = 0; j < item.length; j++) {
-                        if (item[j].itemName == this.form.get('checkArray').value[i]) {
-                            this.shoppingCollection.doc(item[j].uid).delete();
+                    for (const itemIndex of item) {
+                        if (itemIndex.itemName === checkArrayIndex) {
+                            console.log(itemIndex.itemName);
+                            // this.shoppingCollection.doc(itemIndex.uid).delete();
                         }
                     }
                 });
@@ -105,17 +136,18 @@ export class ItemListComponent {
         }
     }
 
-    public cancelEdits() {
+    public cancelEdits(): void {
         this.editBool = false;
     }
 
-    ngOnDestroy() {
+    ngOnDestroy(): void {
         if (this.subscription){
             this.subscription.unsubscribe();
+        }
     }
 
     // checks whether the box has been checked
-        onCheckBoxChange(event); {
+    onCheckBoxChange(event: any): void {
         const checkArray: FormArray = this.form.get('checkArray') as FormArray;
 
         if (event.target.checked) {
@@ -130,48 +162,13 @@ export class ItemListComponent {
             });
         }
     }
-        declare var unitControl;
-        unitControl = new FormControl();
-
-        const unitGroups: UnitGroup[] = [
-        // using interfaces to create unitDropdown
-{
-    name: 'US Units',
-    unit: [
-        {value: 'lb', viewValue: 'lb(s)'},
-        {value: 'cup', viewValue: 'cup(s)'},
-        {value: 'oz', viewValue: 'ounce(s)'},
-        {value: 'tsp', viewValue: 'teaspoon(s)'},
-        {value: 'tbsp', viewValue: 'tablespoon(s)'}
-    ]
-},
-{
-    name: 'Metric Units',
-    unit: [
-        {value: 'g', viewValue: 'gram(s)'},
-        {value: 'mL', viewValue: 'milliliter(s)'},
-        {value: 'L', viewValue: 'Liter(s)'}
-    ]
-},
-{
-    name: 'Other Units',
-    unit: [
-        {value: 'ct', viewValue: 'count(s)'},
-        {value: 'pinch', viewValue: 'pinch(es)'}
-    ]
-}
-    ];
 
     // these functions are all that is needed to show and hide a modal view
-        openModal(id: string); {
+    openModal(id: string): void {
         this.modalService.open(id);
     }
 
-        closeModal(id: string); {
+    closeModal(id: string): void {
         this.modalService.close(id);
     }
-
-
-
-}
 }
