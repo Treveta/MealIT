@@ -34,48 +34,24 @@
           </button>
           
         </mat-form-field>   
-       <!-- <input [(ngModel)]="newUnit" type="text" value="" placeholder="Unit of Measurement"/> -->
-       <!--
-        <select [(ngModel)]="newUnit" required>
-            <option value="" disabled selected hidden>Unit of Measurement</option>
-            <optgroup label="US Units">
-                <option value="lb(s)">lb(s)</option>
-                <option value="cup(s)">cup(s)</option>
-                <option value="oz">oz</option>
-                <option value="tsp">tsp</option>
-                <option value="tbsp">tbsp</option>
-            </optgroup>
-
-            <optgroup label="Metric Units">
-                <option value="g">g</option>
-                <option value="mL">mL</option>
-                <option value="L">L</option>
-            </optgroup>
-            
-            <optgroup label= "Other Units">
-                <option value="count">count</option>
-                <option value="pinch">pinch</option>
-            </optgroup>
-        </select>  
-    -->  
 
         <mat-form-field>
 
             <mat-label>Unit</mat-label>
             <mat-select [(ngModel)]="newUnit" [formControl]="unitControl" required>
               <mat-option>-- None --</mat-option>
+              <!--declaring a group of options, using defined array from item-list.component.ts-->
               <mat-optgroup *ngFor="let group of unitGroups" [label]="group.name"
                             [disabled]="group.disabled" >
+                            <!--lists options under the option groups-->
                 <mat-option *ngFor="let unit of group.unit" [value]="unit.value">
                   {{unit.viewValue}}
                 </mat-option>
               </mat-optgroup>
             </mat-select>
+            <!--custom error that prompts user for input when there is none-->
             <mat-error *ngIf="newUnit==null">Please select a unit</mat-error>
-            <button mat-button *ngIf="newUnit" matSuffix mat-icon-button aria-label="Clear" (click)="newUnit=''">
-                <mat-icon>close</mat-icon>
-              </button>
-          </mat-form-field>
+        </mat-form-field>
 
 
         
