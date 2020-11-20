@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DatabaseHelperComponent } from './database-helper.component';
+import {DatabaseHelperComponent} from './database-helper.component';
 
 describe('DatabaseHelperComponent', () => {
   let component: DatabaseHelperComponent;
@@ -8,9 +8,9 @@ describe('DatabaseHelperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DatabaseHelperComponent ]
+      declarations: [DatabaseHelperComponent],
     })
-    .compileComponents();
+        .compileComponents();
   });
 
   beforeEach(() => {
