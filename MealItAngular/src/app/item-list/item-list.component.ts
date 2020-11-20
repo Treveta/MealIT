@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, FormControl} from '@angular/forms';
 import {Observable, Subscription} from 'rxjs'; // Needed for Database
