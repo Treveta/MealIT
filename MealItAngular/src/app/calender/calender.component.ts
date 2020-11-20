@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import {Component} from '@angular/core';
 import {Observable} from 'rxjs';
 import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/firestore';
