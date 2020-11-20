@@ -1,3 +1,6 @@
+/* eslint-disable import/no-unresolved */
+/* global describe, beforeEach, it, expect */
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CreateRecipeComponent } from './create-recipe.component';
@@ -8,9 +11,9 @@ describe('CreateRecipeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CreateRecipeComponent ]
+      declarations: [CreateRecipeComponent],
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

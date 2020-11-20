@@ -1,26 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+/* eslint-disable no-unused-vars */
+import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AuthService } from '../services/auth.service';
-import { ModalService } from '../modal-functionality'; 
-import { DatabaseHelperComponent } from 'app/database-helper/database-helper.component';
+import { ModalService } from '../modal-functionality';
+/* import { DatabaseHelperComponent } from 'app/database-helper/database-helper.component'; */
 
 @Component({
   selector: 'app-calender',
   templateUrl: './calender.component.html',
-  styleUrls: ['./calender.component.css']
+  styleUrls: ['./calender.component.css'],
 })
-export class CalenderComponent implements OnInit {
-  public Mealtimes =[];
+export class CalenderComponent {
+  private Mealtimes =[];
 
-  public newDate; 
-  public newMealtype;
-  public newRecipe;
+  private newDate;
+
+  private newMealtype;
+
+  private newRecipe;
 
   constructor() { }
-
-  ngOnInit(): void {
-  }
-
 }
