@@ -1,18 +1,17 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable require-jsdoc */
 import {Component} from '@angular/core';
 import {Observable} from 'rxjs';
-import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/firestore';
+import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AuthService} from '../services/auth.service';
 import {recipeList} from '../models/recipeList.model';
 import {ingredientTraits} from '../models/ingredientTraits.model';
 import {ModalService} from '../modal-functionality';
 import {DatabaseHelperComponent} from 'app/database-helper/database-helper.component';
+import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
 
 
 // import { Console } from 'console';
-
 @Component({
   selector: 'app-create-recipe',
   templateUrl: './create-recipe.component.html',
@@ -31,6 +30,17 @@ export class CreateRecipeComponent {
        public recipeName;
        private userInfo;
 
+       /**
+        * Search term fetched from input on HTML
+        * @type {string}
+        */
+       public searchTerm;
+       /**
+        * List of results based on current search term
+        * @type {Array}
+        */
+       private fuzzyResults;
+
        ingredientsCollection: AngularFirestoreCollection<ingredientTraits>;;
        ingredientObserve: Observable<ingredientTraits[]>;
        public recipe;
@@ -44,6 +54,7 @@ export class CreateRecipeComponent {
         private auth: AngularFireAuth,
         private authService: AuthService,
         private dbHelp: DatabaseHelperComponent,
+        private search: SearchRecipesComponent,
         ) {
           authService.getUid().then((uid) => {
             this.userInfo = uid;
@@ -121,6 +132,19 @@ export class CreateRecipeComponent {
 
         }
 
+        /**
+         * Sends search term to search service and sets fuzzyResults to the resulting list of search results
+         */
+        public searchFuzzy() {
+          this.fuzzyResults = this.search.searchService(this.searchTerm);
+        }
+
+        /**
+         * Test function that prints fuzzyResults to console
+         */
+        public logResults() {
+          console.log(this.fuzzyResults);
+        }
 
         async openRecipe(recipe) {
           this.recipe.recipeName = recipe.recipeName;
