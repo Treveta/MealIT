@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-import {Component, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, FormControl} from '@angular/forms';
 import {Observable, Subscription} from 'rxjs'; // Needed for Database
 import {shoppingList} from '../services/shoppingList.model';
@@ -29,13 +29,13 @@ interface UnitGroup {
   styleUrls: ['./item-list.component.css'],
 })
 
-export class ItemListComponent implements OnDestroy {
+export class ItemListComponent implements OnDestroy, OnInit {
   // sets up the form groups for the checkboxes
   constructor(
         private modalService: ModalService,
         private fb: FormBuilder,
         private afs: AngularFirestore,
-        public authService: AuthService,
+        private authService: AuthService,
   ) {
     this.form = this.fb.group({
       checkArray: this.fb.array([]),
@@ -47,6 +47,9 @@ export class ItemListComponent implements OnDestroy {
       this.listItems$ = this.shoppingCollection.valueChanges();
     });
   }
+  public isLarge: boolean = true;
+  public screenWidth: any;
+
     form: FormGroup;
 
     public newItem;
@@ -90,6 +93,7 @@ export class ItemListComponent implements OnDestroy {
 
     ];
 
+
     async addToItemList() {
       if (this.newItem === '') {
       } else {
@@ -127,7 +131,12 @@ export class ItemListComponent implements OnDestroy {
       }
       this.editBool = false;
     }
-
+    ngOnInit() {
+      this.screenWidth = window.innerWidth;
+      if (this.screenWidth <= 600) {
+        this.isLarge = false;
+      }
+    }
     ngOnDestroy(): void {
       if (this.subscription) {
         this.subscription.unsubscribe();
