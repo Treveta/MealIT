@@ -29,6 +29,9 @@ export class CalenderComponent {
 
 
   }
+  submitMeal() {
+
+  }
   openModal(id: string) {
     this.modalService.open(id);
   }
