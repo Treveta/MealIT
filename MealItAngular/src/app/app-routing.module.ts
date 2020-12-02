@@ -9,6 +9,7 @@ import {UserProfileComponent} from './user-profile/user-profile.component';
 import {AuthGuard} from './auth.guard';
 import {SearchRecipesComponent} from './search-recipes/search-recipes.component';
 import {CalenderComponent} from './calender/calender.component';
+import {FoodStorageComponent} from './food-storage/food-storage.component';
 
 
 const routes: Routes = [
@@ -18,6 +19,7 @@ const routes: Routes = [
   {path: '', component: LoginPageComponent},
   {path: 'searchRecipes', component: SearchRecipesComponent},
   {path: 'calender', component: CalenderComponent},
+  {path: 'foodStorage', component: FoodStorageComponent},
 ];
 
 @NgModule({
@@ -25,4 +27,4 @@ const routes: Routes = [
   exports: [RouterModule],
 })
 export class AppRoutingModule { }
-export const routingComponents = [CreateRecipeComponent, ItemListComponent, TopBarComponent, LoginPageComponent, CalenderComponent];
+export const routingComponents = [CreateRecipeComponent, ItemListComponent, TopBarComponent, LoginPageComponent, CalenderComponent, FoodStorageComponent];
