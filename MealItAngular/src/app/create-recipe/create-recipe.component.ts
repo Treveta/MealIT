@@ -128,8 +128,9 @@ export class CreateRecipeComponent {
           this.modalService.close(id);
         }
 
-        public deleteRecipe(path) {
-
+        public deleteRecipe(recipe) {
+          const query = 'recipeName:==:'+ recipe.recipeName+'';
+          this.dbHelp.deleteDocWhere('users/'+this.userInfo+'/recipeList/', query);
         }
 
         /**
