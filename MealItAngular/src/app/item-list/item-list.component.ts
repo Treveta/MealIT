@@ -8,9 +8,9 @@ import {ModalService} from '../modal-functionality';
 
 import {AuthService} from '../services/auth.service'; // Needed for Database
 
-export interface Item { 
-  name: string; 
-  seeds: number; 
+export interface Item {
+  name: string;
+  seeds: number;
 }
 
 interface Unit{
@@ -49,7 +49,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
     });
   }
   public isLarge: boolean = true;
-  public screenWidth: any;
+  public screenWidth: any = window.innerWidth;
 
   form: FormGroup;
 
@@ -130,14 +130,14 @@ export class ItemListComponent implements OnDestroy, OnInit {
     }
     this.editBool = false;
   }
-    
+
+  // Okay, this is for initialization, now add listensers and debouncing
   ngOnInit() {
-    this.screenWidth = window.innerWidth;
     if (this.screenWidth <= 600) {
       this.isLarge = false;
     }
   }
-    
+
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
