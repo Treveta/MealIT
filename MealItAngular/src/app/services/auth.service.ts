@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {User} from './user.model';
 
-import {auth} from 'firebase/app';
+import {auth, storage} from 'firebase/app';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AngularFirestore, AngularFirestoreDocument} from '@angular/fire/firestore';
 
@@ -74,6 +74,7 @@ export class AuthService {
     const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.uid}`);
     const shoppingList = this.afs.collection('users/'+user.uid+'/shoppingList').doc('InitializationItem');
     const recipeList = this.afs.collection('users/'+user.uid+'/recipeList').doc('InitializationItem');
+    const storageList = this.afs.collection('users/'+user.uid+'/storageList').doc('InitializationItem');
 
     const data = {
       uid: user.uid,
@@ -93,8 +94,15 @@ export class AuthService {
       servings: null,
     };
 
+    const storageData = {
+      itemName: null,
+      quantity: null,
+      unit: null,
+    };
+
     shoppingList.set(shoppingData, {merge: true});
     recipeList.set(recipeData, {merge: true});
+    storageList.set(storageData, {merge: true});
 
     this.userInfo = user;
 

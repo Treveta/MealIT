@@ -50,6 +50,9 @@ export class CalenderComponent {
       this.userInfo = uid;
     });
   }
+  submitMeal() {
+
+  }
   openModal(id: string) {
     this.modalService.open(id);
   }

@@ -22,6 +22,7 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
+import {LayoutModule} from '@angular/cdk/layout';
 
 const config = {
   apiKey: environment.apiKey,
@@ -60,6 +61,7 @@ const config = {
     MatSelectModule,
     MatButtonModule,
     MatCardModule,
+    LayoutModule,
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent],

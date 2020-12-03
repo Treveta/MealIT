@@ -1,4 +1,5 @@
 <body>
+    <button (click)="openModal('addRecipeToDay')">Add new recipe</button>
     <table>
         <tr>
             <th>Sunday</th>
@@ -10,7 +11,7 @@
             <th>Saturday</th>
         </tr>
         <tr>
-            <td class="bg"><a role="button" (click)="openModal('addRecipeToDay')"></a></td>
+            <td class="bg"><a role="button" (click)="openModal('viewDay')"></a></td>
             <td ></td>
             <td></td>
         </tr>
@@ -26,6 +27,10 @@
         </tr>
     </table>
 </body>
+
+<jw-modal id="viewDay">
+  tester
+</jw-modal>
 
 <jw-modal id="addRecipeToDay">
     <mat-form-field>
@@ -48,4 +53,9 @@
             </div>
         </mat-expansion-panel>
     </mat-accordion>
+  <input [(ngModel)]="date" type="date"  required>
+  <!--search and select recipe goes here-->
+  <div>
+    <input (click)="submitMeal()" type="submit" value="Submit Meal"> 
+  </div>
 </jw-modal>
