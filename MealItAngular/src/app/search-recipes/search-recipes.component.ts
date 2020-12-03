@@ -154,7 +154,6 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
         data.id = doc.id;
         list.push(data);
       });
-      console.log(list);
       return list;
     } catch (err) {
       console.log('Error getting documents', err);

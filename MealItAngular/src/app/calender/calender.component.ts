@@ -44,14 +44,16 @@ export class CalenderComponent {
   public ingredientList;
   public ingredientListLoading
 
+  public date: Date;
+
   constructor(private modalService: ModalService, private search: SearchRecipesComponent, private authService: AuthService) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
     });
   }
-  submitMeal() {
-
+  submitMeal(uid: string | number) {
+    console.log('Adding ' + uid + ' on ' + this.date);
   }
   openModal(id: string) {
     this.modalService.open(id);

@@ -40,12 +40,19 @@
           <mat-icon>close</mat-icon>
         </button>
     </mat-form-field>
-    <mat-accordion>
+    <input [(ngModel)]="date" type="date"  required>
+    <!--search and select recipe goes here-->
+    <mat-accordion class="example-headers-align">
         <mat-expansion-panel *ngFor="let recipe of fuzzyResults" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
             <mat-expansion-panel-header (click)="fetchRecipe(recipe.uid)">
                 <mat-panel-title>
                     {{recipe.recipeName}}
                 </mat-panel-title>
+                <mat-panel-description>
+                  <button mat-raised-button (click)="submitMeal(recipe.uid)">
+                    Select As Meal
+                  </button>
+                </mat-panel-description>
             </mat-expansion-panel-header>
             <div *ngFor="let ingredient of ingredientList">
                 <p *ngIf="ingredientList.Loading == true">LOADING...</p>
@@ -53,9 +60,4 @@
             </div>
         </mat-expansion-panel>
     </mat-accordion>
-  <input [(ngModel)]="date" type="date"  required>
-  <!--search and select recipe goes here-->
-  <div>
-    <input (click)="submitMeal()" type="submit" value="Submit Meal"> 
-  </div>
 </jw-modal>
