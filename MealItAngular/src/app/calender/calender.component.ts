@@ -45,6 +45,8 @@ export class CalenderComponent {
   public ingredientListLoading
 
   public date: Date;
+  public errorDate: boolean;
+  public errorMessage: string;
 
   constructor(private modalService: ModalService, private search: SearchRecipesComponent, private authService: AuthService) {
     this.previousUID = 0;
@@ -52,8 +54,16 @@ export class CalenderComponent {
       this.userInfo = uid;
     });
   }
-  submitMeal(uid: string | number) {
-    console.log('Adding ' + uid + ' on ' + this.date);
+  submitMeal(uid: string | number, modalID: string) {
+    if (this.date != null) {
+      console.log('Adding ' + uid + ' on ' + this.date);
+      this.errorDate = false;
+      this.date = null;
+      this.closeModal(modalID);
+    } else {
+      this.errorDate = true;
+      this.errorMessage = 'You must enter a valid date';
+    }
   }
   openModal(id: string) {
     this.modalService.open(id);

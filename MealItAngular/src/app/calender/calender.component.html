@@ -41,6 +41,7 @@
         </button>
     </mat-form-field>
     <input [(ngModel)]="date" type="date"  required>
+    <h3 class="error" *ngIf="errorDate">{{errorMessage}}</h3>
     <!--search and select recipe goes here-->
     <mat-accordion class="example-headers-align">
         <mat-expansion-panel *ngFor="let recipe of fuzzyResults" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
@@ -49,7 +50,7 @@
                     {{recipe.recipeName}}
                 </mat-panel-title>
                 <mat-panel-description>
-                  <button mat-raised-button (click)="submitMeal(recipe.uid)">
+                  <button mat-raised-button (click)="submitMeal(recipe.uid, 'addRecipeToDay')">
                     Select As Meal
                   </button>
                 </mat-panel-description>
