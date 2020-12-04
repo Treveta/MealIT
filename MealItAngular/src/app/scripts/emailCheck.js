@@ -10,7 +10,7 @@ function checkEmail(email) {
   let AtCheck = false;
   let DomainCheck = false;
 
-  for (i = 1; i < AltEmail.length - 4; i++) {
+  for (i = 1; i < AltEmail.length - 3; i++) {
     // Check for @
     if (AltEmail[i] == '@') {
       AtCheck = true;
