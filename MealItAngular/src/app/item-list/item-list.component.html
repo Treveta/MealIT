@@ -1,146 +1,129 @@
 <div>
-    <h3>Item List!</h3>
-
-
-    <h3>Item List!</h3>
-
-    <mat-card>
+  <h3>Item List!</h3>
+  <mat-card>
     <div>
-
-
-        <div *ngIf="this.isLarge; then widescreen else thinscreen">
-            <!-- template will replace this div -->
-        </div>
-
-            <br>
-
-        <div class = "center">
-            <button mat-button (click) = "addToItemList()"> 
-                Add Item
-                <!--TODO: add input validation(see login-page example)-->
-            </button> 
+      <div *ngIf="this.isLarge; then widescreen else thinscreen">
+        <!-- template will replace this div -->
+      </div>
+      <br>
+      <div class = "center">
+        <button mat-button (click) = "addToItemList()"> 
+          Add Item
+          <!--TODO: add input validation(see login-page example)-->
+        </button> 
         <button mat-button (click) = "editItemList()">
-            Edit Items
+          Edit Items
         </button>
-        </div>
+      </div>
     </div>
-    </mat-card>
-
-    <div>
-        <ng-template #widescreen>
-            <div class = "center">
-            <mat-form-field>
-                <mat-label>Item Name</mat-label>
-                <input matInput 
-                    required
-                    [(ngModel)] = "newItem" 
-                    type = "text" 
-                /> 
-                <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
-                <button mat-button *ngIf = "newItem" matSuffix mat-icon-button aria-label = "Clear" (click) = "newItem=''">
-                    <mat-icon> close </mat-icon>
-                </button>
-             </mat-form-field>
-        
-             <mat-form-field>
-                <mat-label>Number</mat-label>
-                <!--oninput line is input validation, does not allow the entry of any number below 0-->
-                <input matInput
-                    required
-                    [(ngModel)] = "newQuantity" 
-                    type = "number" 
-                    min = "0" 
-                    max = "1000000" 
-                    oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
-                /> 
-                <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
-                <button mat-button *ngIf = "newQuantity" matSuffix mat-icon-button aria-label = "Clear" (click) = "newQuantity=''">
-                    <mat-icon>close</mat-icon>
-                </button>
-            </mat-form-field>   
-        
-            <mat-form-field>
-                <mat-label>Unit</mat-label>
-                <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
-                    <mat-option>-- None --</mat-option>
-                    <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
-                        <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
-                            {{unit.viewValue}}
-                        </mat-option>
-                    </mat-optgroup>
-                </mat-select>
-                <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
-            </mat-form-field>
-            </div>
-            </ng-template>
-        
-            <ng-template #thinscreen>
-                    <mat-form-field class = "center">
-                        <mat-label>Item Name</mat-label>
-                        <input matInput 
-                            required
-                            [(ngModel)] = "newItem" 
-                            type = "text" 
-                        /> 
-                        <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
-                        <button mat-button *ngIf = "newItem" matSuffix mat-icon-button aria-label = "Clear" (click) = "newItem=''">
-                            <mat-icon> close </mat-icon>
-                        </button>
-                     </mat-form-field>
-
-                     <br>
-                
-                     <mat-form-field class = "center">
-                        <mat-label>Number</mat-label>
-                        <!--oninput line is input validation, does not allow the entry of any number below 0-->
-                        <input matInput
-                            required
-                            [(ngModel)] = "newQuantity" 
-                            type = "number" 
-                            min = "0" 
-                            max = "1000000" 
-                            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
-                        /> 
-                        <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
-                        <button mat-button *ngIf = "newQuantity" matSuffix mat-icon-button aria-label = "Clear" (click) = "newQuantity=''">
-                            <mat-icon>close</mat-icon>
-                        </button>
-                    </mat-form-field>   
-
-                    <br>
-                
-                    <mat-form-field class = "center">
-                        <mat-label>Unit</mat-label>
-                        <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
-                            <mat-option>-- None --</mat-option>
-                            <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
-                                <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
-                                    {{unit.viewValue}}
-                                </mat-option>
-                            </mat-optgroup>
-                        </mat-select>
-                        <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
-                    </mat-form-field>
-            </ng-template>
-
-    </div>
-    <div> 
-        <div *ngFor="let shoppingList of listItems$ | async">
-          <!-- <li *ngIf="shoppingList.itemName"> -->
-            <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
-            {{ shoppingList.itemName }}
-            {{ shoppingList.quantity }}
-            {{ shoppingList.unit }}
-           <!-- </li> -->
-        </div> 
-    </div>
-    <div>
-        <button *ngIf="editBool" (click)="openModal('custom-modal-1')">
-            Remove
+  </mat-card>
+  <div>
+    <ng-template #widescreen>
+      <div class = "center">
+        <mat-form-field>
+          <mat-label>Item Name</mat-label>
+          <input matInput 
+            required
+            [(ngModel)] = "newItem" 
+            type = "text" 
+          /> 
+          <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
+          <button mat-button *ngIf = "newItem" matSuffix mat-icon-button aria-label = "Clear" (click) = "newItem=''">
+            <mat-icon> close </mat-icon>
+          </button>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Number</mat-label>
+          <!--oninput line is input validation, does not allow the entry of any number below 0-->
+          <input matInput
+            required
+            [(ngModel)] = "newQuantity" 
+            type = "number" 
+            min = "0" 
+            max = "1000000" 
+            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+          /> 
+          <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
+          <button mat-button *ngIf = "newQuantity" matSuffix mat-icon-button aria-label = "Clear" (click) = "newQuantity=''">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>   
+        <mat-form-field>
+          <mat-label>Unit</mat-label>
+          <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
+            <mat-option>-- None --</mat-option>
+            <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
+              <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
+                {{unit.viewValue}}
+              </mat-option>
+            </mat-optgroup>
+          </mat-select>
+          <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
+        </mat-form-field>
+      </div>
+    </ng-template>
+    <ng-template #thinscreen>
+      <mat-form-field class = "center">
+        <mat-label>Item Name</mat-label>
+        <input matInput 
+          required
+          [(ngModel)] = "newItem" 
+          type = "text" 
+        /> 
+        <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
+        <button mat-button *ngIf = "newItem" matSuffix mat-icon-button aria-label = "Clear" (click) = "newItem=''">
+          <mat-icon> close </mat-icon>
         </button>
-    </div>
-    <!-- opens the modal -->
-    <button (click)="openModal('custom-modal-1')">Open Modal 1</button>
+      </mat-form-field>
+      <br>
+      <mat-form-field class = "center">
+        <mat-label>Number</mat-label>
+        <!--oninput line is input validation, does not allow the entry of any number below 0-->
+        <input matInput
+          required
+          [(ngModel)] = "newQuantity" 
+          type = "number" 
+          min = "0" 
+          max = "1000000" 
+          oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+        /> 
+        <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
+        <button mat-button *ngIf = "newQuantity" matSuffix mat-icon-button aria-label = "Clear" (click) = "newQuantity=''">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>   
+      <br>
+      <mat-form-field class = "center">
+        <mat-label>Unit</mat-label>
+        <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
+          <mat-option>-- None --</mat-option>
+          <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
+            <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
+              {{unit.viewValue}}
+            </mat-option>
+          </mat-optgroup>
+        </mat-select>
+        <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
+      </mat-form-field>
+    </ng-template>
+  </div>
+  <div> 
+    <div *ngFor="let shoppingList of listItems$ | async">
+      <!-- <li *ngIf="shoppingList.itemName"> -->
+      <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
+      {{ shoppingList.itemName }}
+      {{ shoppingList.quantity }}
+      {{ shoppingList.unit }}
+      <!-- </li> -->
+    </div> 
+  </div>
+  <div>
+    <button *ngIf="editBool" (click)="openModal('custom-modal-1')">
+      Remove
+    </button>
+  </div>
+  <!-- opens the modal -->
+  <button (click)="openModal('custom-modal-1')">Open Modal 1</button>
 </div>
 <!-- this is the modal view which is called based on the modal service calls -->
 <jw-modal id="custom-modal-1">
