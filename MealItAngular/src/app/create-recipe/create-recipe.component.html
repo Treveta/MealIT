@@ -36,6 +36,15 @@
         <button (click)="closeModal('custom-modal-2');">Close</button>
 </jw-modal>
 
+<mat-form-field>
+    <mat-label>Clearable input</mat-label>
+    <input matInput type="text" [(ngModel)]="searchTerm" (keyup)="searchFuzzy()">
+    <button mat-button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''" (click)="searchFuzzy()">
+      <mat-icon>close</mat-icon>
+    </button>
+</mat-form-field>
+<button (click)="logResults()">Log Results</button>
+
 <button (click)="openModal('custom-modal-2')">Add new recipe</button>
 
 <table>

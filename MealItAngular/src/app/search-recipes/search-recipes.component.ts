@@ -1,11 +1,11 @@
 /* eslint-disable require-jsdoc */
-import {Component, OnInit, OnDestroy} from '@angular/core';
+import {Component, OnInit, OnDestroy, Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {AuthService} from 'app/services/auth.service';
 import FuzzySearch from 'fuzzy-search';
 import mocker from 'mocker-data-generator';
 
-
+@Injectable({providedIn: 'root'})
 @Component({
   selector: 'app-search-recipes',
   templateUrl: './search-recipes.component.html',
@@ -33,9 +33,6 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
 
   constructor(private afs: AngularFirestore, private authService: AuthService) {
     this.previousUID = 0;
-  }
-
-  ngOnInit(): void {
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
       this.collectionPath = 'users/' + uid + '/recipeList';
@@ -43,6 +40,9 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
         this.userRecipes = list;
       });
     });
+  }
+
+  ngOnInit(): void {
   }
 
   ngOnDestroy(): void {
@@ -54,10 +54,20 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     this.fuseResults = this.recipeFuse.search(this.searchTerm);
   }
 
+  searchService(searchterm) {
+    this.recipeFuse = new FuzzySearch(this.userRecipes, ['recipeName'], {keys: ['recipeName']});
+    return this.recipeFuse.search(searchterm);
+  }
+
   selectRecipe(recipe: { uid: any; }) {
     console.log(recipe.uid);
   }
 
+  /**
+   * Fetches the ingredient information for a specific recipe based on its uid
+   * Returns the fetched data to this.ingredients to be displayed by Material UI in HTML
+   * @param {string | number} uid
+   */
   fetchRecipe(uid: string | number) {
     if (uid == this.previousUID && this.panelOpenState == false) {
       this.ingredientList = this.ingredientListLoading;
@@ -82,6 +92,10 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     console.log(this.userRecipes.length);
   }
 
+  /**
+   * Function adds a NUMBER of new randomly generated recipes to the users database
+   * Used for testing, to be removed in production build
+   */
   async addData() {
     const recipeScheme = {
       recipeName: {faker: 'random.words'},
@@ -140,7 +154,6 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
         data.id = doc.id;
         list.push(data);
       });
-      console.log(list);
       return list;
     } catch (err) {
       console.log('Error getting documents', err);

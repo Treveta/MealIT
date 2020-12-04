@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, FormControl} from '@angular/forms';
 import {Observable, Subscription} from 'rxjs'; // Needed for Database
 import {shoppingList} from '../services/shoppingList.model';
@@ -7,6 +7,7 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firest
 import {ModalService} from '../modal-functionality';
 
 import {AuthService} from '../services/auth.service'; // Needed for Database
+
 
 export interface Item { name: string; seeds: number; }
 
@@ -28,7 +29,7 @@ interface UnitGroup {
   styleUrls: ['./item-list.component.css'],
 })
 
-export class ItemListComponent {
+export class ItemListComponent implements OnDestroy, OnInit {
   // sets up the form groups for the checkboxes
   constructor(
         private modalService: ModalService,
@@ -46,6 +47,19 @@ export class ItemListComponent {
       this.listItems$ = this.shoppingCollection.valueChanges();
     });
   }
+  public isLarge: boolean = true;
+  public screenWidth: any = window.innerWidth;
+
+@HostListener('window:resize') checkWidth() {
+  //  alert('it works!');
+    this.screenWidth = window.innerWidth;
+    if (this.screenWidth <= 600) {
+      this.isLarge = false;
+    } else {
+      this.isLarge = true;
+    }
+  }
+
     form: FormGroup;
 
     public newItem;
@@ -89,8 +103,9 @@ export class ItemListComponent {
 
     ];
 
+
     async addToItemList() {
-      if (this.newItem == '') {
+      if (this.newItem === '') {
       } else {
         const addedItem = {
           uid: '',
@@ -106,7 +121,7 @@ export class ItemListComponent {
       }
     }
 
-    public editItemList() {
+    public editItemList(): void {
       if (false) {
         this.editBool = false;
       } else {
@@ -114,11 +129,11 @@ export class ItemListComponent {
       }
     }
 
-    public saveEdits() {
+    public saveEdits(): void {
       for (let i = 0; i < this.form.get('checkArray').value.length; i++) {
         this.subscription = this.listItems$.subscribe((item) => {
           for (let j = 0; j < item.length; j++) {
-            if (item[j].itemName == this.form.get('checkArray').value[i]) {
+            if (item[j].itemName === this.form.get('checkArray').value[i]) {
               this.shoppingCollection.doc(item[j].uid).delete();
             }
           }
@@ -126,15 +141,21 @@ export class ItemListComponent {
       }
       this.editBool = false;
     }
-
-    ngOnDestroy() {
+    ngOnInit() {
+      if (this.screenWidth <= 600) {
+        this.isLarge = false;
+      } else {
+        this.isLarge = true;
+      }
+    }
+    ngOnDestroy(): void {
       if (this.subscription) {
         this.subscription.unsubscribe();
       }
     }
 
     // checks whether the box has been checked
-    onCheckBoxChange(event) {
+    onCheckBoxChange(event): void {
       const checkArray: FormArray = this.form.get('checkArray') as FormArray;
 
       if (event.target.checked) {
@@ -142,7 +163,7 @@ export class ItemListComponent {
       } else {
         const i = 0;
         checkArray.controls.forEach((uncheckedItem: FormControl) => {
-          if (uncheckedItem.value == event.target.value) {
+          if (uncheckedItem.value === event.target.value) {
             checkArray.removeAt(i);
             return;
           }
@@ -151,11 +172,11 @@ export class ItemListComponent {
     }
 
     // these functions are all that is needed to show and hide a modal view
-    openModal(id: string) {
+    openModal(id: string): void {
       this.modalService.open(id);
     }
 
-    closeModal(id: string) {
+    closeModal(id: string): void {
       this.modalService.close(id);
     }
 }
