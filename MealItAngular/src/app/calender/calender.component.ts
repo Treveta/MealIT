@@ -8,6 +8,7 @@ import {AuthService} from '../services/auth.service';
 import {ModalService} from '../modal-functionality';
 import {DatabaseHelperComponent} from 'app/database-helper/database-helper.component';
 import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
+import {MatCardModule} from '@angular/material/card';
 
 
 @Component({
