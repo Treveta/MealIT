@@ -88,6 +88,41 @@ export class CalenderComponent {
   }
 
   /**
+   * Takes in a date an returns the week of that day. Sunday to Saturday.
+   * @param {Date} uid
+   */
+  getWeek(uid: Date) {
+    let i;
+
+    // Set dateData to uid
+    const dateData = new Date(2020, 11, 16);
+
+    // Variable for the input day
+    const day = dateData.getDay();
+
+    // Variables for weekdays
+    const weekDay = [];
+    const weekDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    let newDate;
+    let dt;
+
+    // Compiling the information for the days
+    dateData.setDate(dateData.getDate() - day);
+    for (i = 0; i <= 6; i++) {
+      dt = dateData.getDate();
+      newDate = weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dt + '/' + dateData.getFullYear();
+      dateData.setDate(dateData.getDate() + 1);
+      weekDay.push(newDate);
+    }
+
+    // Print out weekDay as a test
+    console.log(weekDay);
+    for (i = 0; i <= 6; i++) {
+      console.log(weekDay[i]);
+    }
+  }
+
+  /**
    * Fetches the ingredient information for a specific recipe based on its uid
    * Returns the fetched data to this.ingredients to be displayed by Material UI in HTML
    * @param {string | number} uid
