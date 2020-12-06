@@ -47,8 +47,15 @@ export class ItemListComponent implements OnDestroy, OnInit {
       this.listItems$ = this.shoppingCollection.valueChanges();
     });
   }
+
+  displayedColumns: string[] = ['name', 'quantity', 'unit'];
+  public editToggle: boolean = false;
   public isLarge: boolean = true;
   public screenWidth: any = window.innerWidth;
+
+  toggleEdit():void {
+    this.editToggle= !this.editToggle;
+  }
 
 @HostListener('window:resize') checkWidth() {
   //  alert('it works!');
@@ -122,7 +129,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
     }
 
     public editItemList(): void {
-      if (false) {
+      if (false || this.editToggle=== true) {
         this.editBool = false;
       } else {
         this.editBool = true;
@@ -140,6 +147,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
         });
       }
       this.editBool = false;
+      this.editToggle = false;
     }
     ngOnInit() {
       if (this.screenWidth <= 600) {
@@ -178,6 +186,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     closeModal(id: string): void {
       this.modalService.close(id);
+      this.editBool = false;
+      this.editToggle = false;
     }
 }
 

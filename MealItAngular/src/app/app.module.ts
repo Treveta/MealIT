@@ -24,6 +24,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {LayoutModule} from '@angular/cdk/layout';
 import {MatChipsModule} from '@angular/material/chips';
+import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 const config = {
   apiKey: environment.apiKey,
@@ -64,6 +67,9 @@ const config = {
     MatCardModule,
     LayoutModule,
     MatChipsModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatCheckboxModule,
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent],

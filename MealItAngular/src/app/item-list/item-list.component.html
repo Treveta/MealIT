@@ -1,4 +1,4 @@
-<div>
+<div class = "itemList-body">
   <h3>Item List!</h3>
   <mat-card class = "center">
     <div>
@@ -11,8 +11,8 @@
           Add Item
           <!--TODO: add input validation(see login-page example)-->
         </button> 
-        <button mat-button (click) = "editItemList()">
-          Edit Items
+        <button mat-button (click) = "editItemList(); toggleEdit()">
+         {{editToggle ? 'Cancel Edit': 'Edit Item'}}
         </button>
       </div>
     </div>
@@ -28,10 +28,8 @@
             type = "text" 
           /> 
           <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
-          <button mat-button *ngIf = "newItem" matSuffix mat-icon-button aria-label = "Clear" (click) = "newItem=''">
-            <mat-icon> close </mat-icon>
-          </button>
         </mat-form-field>
+
         <mat-form-field>
           <mat-label>Number</mat-label>
           <!--oninput line is input validation, does not allow the entry of any number below 0-->
@@ -44,10 +42,8 @@
             oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
           /> 
           <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
-          <button mat-button *ngIf = "newQuantity" matSuffix mat-icon-button aria-label = "Clear" (click) = "newQuantity=''">
-            <mat-icon>close</mat-icon>
-          </button>
         </mat-form-field>   
+
         <mat-form-field>
           <mat-label>Unit</mat-label>
           <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
@@ -62,6 +58,7 @@
         </mat-form-field>
       </div>
     </ng-template>
+
     <ng-template #thinscreen>
       <mat-form-field class = "center">
         <mat-label>Item Name</mat-label>
@@ -71,9 +68,6 @@
           type = "text" 
         /> 
         <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
-        <button mat-button *ngIf = "newItem" matSuffix mat-icon-button aria-label = "Clear" (click) = "newItem=''">
-          <mat-icon> close </mat-icon>
-        </button>
       </mat-form-field>
       <br>
       <mat-form-field class = "center">
@@ -88,9 +82,6 @@
           oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
         /> 
         <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
-        <button mat-button *ngIf = "newQuantity" matSuffix mat-icon-button aria-label = "Clear" (click) = "newQuantity=''">
-          <mat-icon>close</mat-icon>
-        </button>
       </mat-form-field>   
       <br>
       <mat-form-field class = "center">
@@ -108,26 +99,64 @@
     </ng-template>
   </div>
   <div> 
+
+<!-- TODO: make list look nice -->
     <div *ngFor="let shoppingList of listItems$ | async">
-      <!-- <li *ngIf="shoppingList.itemName"> -->
-      <input *ngIf="editBool" type="checkbox" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)" />
+      <li *ngIf="shoppingList.itemName">
+      <input *ngIf="editBool" type=checkbox [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)"/>
+
       {{ shoppingList.itemName }}
       {{ shoppingList.quantity }}
       {{ shoppingList.unit }}
-      <!-- </li> -->
+      </li>
     </div> 
+
+    <div>
+
+      <table mat-table [dataSource]="listItems$">
+    
+        <!-- Item Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let shoppingList"> 
+            <mat-checkbox color = primary *ngIf="editBool" [value]="shoppingList.itemName" (change)="onCheckBoxChange($event)"></mat-checkbox>
+            {{shoppingList.itemName}} </td>
+        </ng-container>
+
+        <!-- Quantity Column -->
+        <ng-container matColumnDef="quantity">
+          <th mat-header-cell *matHeaderCellDef> Quantity </th>
+          <td mat-cell *matCellDef="let shoppingList"> {{ shoppingList.quantity }} </td>
+        </ng-container>
+    
+        <!-- Unit Column -->
+        <ng-container matColumnDef="unit">
+          <th mat-header-cell *matHeaderCellDef> Unit </th>
+          <td mat-cell *matCellDef="let shoppingList"> {{ shoppingList.unit }} </td>
+        </ng-container>
+    
+       <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      </table>
+
+
+    </div>
+
+
   </div>
   <div>
-    <button *ngIf="editBool" (click)="openModal('custom-modal-1')">
+    <button *ngIf="editBool" mat-raised-button color="warn" (click)="openModal('custom-modal-1')">
       Remove
     </button>
   </div>
   <!-- opens the modal -->
-  <button (click)="openModal('custom-modal-1')">Open Modal 1</button>
+  <button mat-raised-button (click)="openModal('custom-modal-1')">Open Modal 1</button>
 </div>
 <!-- this is the modal view which is called based on the modal service calls -->
 <jw-modal id="custom-modal-1">
-    <h1>Are you sure you want to delete these items?</h1>
-    <button (click)="closeModal('custom-modal-1'); saveEdits()">Close</button>
+    <h1>Remove selected items?</h1>
+    <button mat-raised-button color = primary (click)="saveEdits(); closeModal('custom-modal-1')">Confirm</button>
+    <button mat-button (click)="closeModal('custom-modal-1')">Cancel</button>
 </jw-modal>
 
