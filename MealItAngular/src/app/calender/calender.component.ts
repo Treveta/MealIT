@@ -9,7 +9,6 @@ import {ModalService} from '../modal-functionality';
 import {DatabaseHelperComponent} from 'app/database-helper/database-helper.component';
 import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
 
-
 @Component({
   selector: 'app-calender',
   templateUrl: './calender.component.html',
