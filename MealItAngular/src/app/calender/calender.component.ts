@@ -47,6 +47,8 @@ export class CalenderComponent {
   public errorDate: boolean;
   public errorMessage: string;
 
+  public weekDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
   constructor(private modalService: ModalService, private search: SearchRecipesComponent, private authService: AuthService) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
@@ -91,8 +93,6 @@ export class CalenderComponent {
    * @param {Date} uid
    */
   getWeek(uid: Date) {
-    let i;
-
     // Set dateData to uid
     const dateData = new Date(2020, 11, 16);
 
@@ -101,22 +101,21 @@ export class CalenderComponent {
 
     // Variables for weekdays
     const weekDay = [];
-    const weekDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     let newDate;
     let dt;
 
     // Compiling the information for the days
     dateData.setDate(dateData.getDate() - day);
-    for (i = 0; i <= 6; i++) {
+    for (let i = 0; i <= 6; i++) {
       dt = dateData.getDate();
-      newDate = weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dt + '/' + dateData.getFullYear();
+      newDate = this.weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dt + '/' + dateData.getFullYear();
       dateData.setDate(dateData.getDate() + 1);
       weekDay.push(newDate);
     }
 
     // Print out weekDay as a test
     console.log(weekDay);
-    for (i = 0; i <= 6; i++) {
+    for (let i = 0; i <= 6; i++) {
       console.log(weekDay[i]);
     }
   }
