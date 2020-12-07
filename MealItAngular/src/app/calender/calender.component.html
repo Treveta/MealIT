@@ -3,13 +3,7 @@
     <button (click)="getWeek(date)">Week Button</button>
     <table>
         <tr>
-            <th>Sunday</th>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
+          <th *ngFor="let day of weekDayName">{{day}}</th>
         </tr>
         <tr>
             <td>
@@ -101,6 +95,40 @@
             <td></td>
             <td></td>
         </tr>
+    </table>
+    <table class="fixWeek">
+          <th *ngFor="let day of weekDayName">
+            {{day}}
+                <mat-card (click)="openModal('viewDay')">
+                  <mat-card-header>
+                    <mat-card-title>fish</mat-card-title>
+                    <mat-card-subtitle>breakfast</mat-card-subtitle>
+                  </mat-card-header>
+                  <img mat-card-image src="https://pixabay.com/get/53e1dd434950b10ff3d8992cc621337e1c38dbe54e507749722d7bdd924dc0_640.jpg">
+                  <mat-card-content>
+                    <p>
+                      calories:250 <br>
+  
+                      servings:1
+                    </p>
+                  </mat-card-content>
+                </mat-card>
+                <mat-card (click)="openModal('viewDay')">
+                  <mat-card-header>
+                    <mat-card-title>fish</mat-card-title>
+                    <mat-card-subtitle>breakfast</mat-card-subtitle>
+                  </mat-card-header>
+                  <img mat-card-image src="https://pixabay.com/get/53e1dd434950b10ff3d8992cc621337e1c38dbe54e507749722d7bdd924dc0_640.jpg">
+                  <mat-card-content>
+                    <p>
+                      calories:250 <br>
+  
+                      servings:1
+                    </p>
+                  </mat-card-content>
+                </mat-card>
+            Row 3
+          </th>
     </table>
 </body>
 

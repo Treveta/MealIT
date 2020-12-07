@@ -18,9 +18,20 @@ table{
 }
 
 td a {
-    display:block;
-    width:100%;
-    height:100%;
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+th mat-card {
+  font-weight: normal;
+  text-align: left;
+  margin-top: 12px;
+  
+}
+
+th mat-card-subtitle {
+  font-weight: lighter;
 }
 
 .example-headers-align .mat-expansion-panel-header-title,
@@ -39,4 +50,15 @@ td a {
 
 .error {
   color: red;
+}
+
+.fixWeek {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.divideSeven {
+  border: 1px solid red;
+  height:20vh;
+  width:14.28%;
 }
