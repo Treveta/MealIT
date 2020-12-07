@@ -7,6 +7,7 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firest
 import {ModalService} from '../modal-functionality';
 
 import {AuthService} from '../services/auth.service'; // Needed for Database
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 
 export interface Item { name: string; seeds: number; }
@@ -44,7 +45,10 @@ export class ItemListComponent implements OnDestroy, OnInit {
     authService.getUid().then((uid) => {
       this.userInfo = uid;
       this.shoppingCollection = this.afs.collection<shoppingList>('users/' + this.userInfo + '/shoppingList');
-      this.listItems$ = this.shoppingCollection.valueChanges();
+      this.listItems$ = this.shoppingCollection.valueChanges(); // Change to local pull similar to search-recipes, relies on listRecipes style function
+      this.listItems().then((list) => {
+        this.testSortedList = list.Items;
+      });
     });
   }
 
@@ -75,6 +79,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     public editBool;
     private userInfo;
+
+    public testSortedList: Array<any>;
 
     shoppingCollection: AngularFirestoreCollection<shoppingList>;
     listItems$: Observable<shoppingList[]>;
@@ -188,6 +194,22 @@ export class ItemListComponent implements OnDestroy, OnInit {
       this.modalService.close(id);
       this.editBool = false;
       this.editToggle = false;
+    }
+
+    async listItems() {
+      try {
+        const snapshot = await this.afs
+            .collection('items').doc('Test')
+            .get().toPromise();
+        return snapshot.data();
+      } catch (err) {
+        console.log('Error getting documents', err);
+      }
+    }
+
+    drop(event: CdkDragDrop<string[]>) {
+      moveItemInArray(this.testSortedList, event.previousIndex, event.currentIndex);
+      this.afs.collection('items').doc('Test').update({Items: this.testSortedList});
     }
 }
 

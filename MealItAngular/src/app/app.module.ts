@@ -27,6 +27,7 @@ import {MatChipsModule} from '@angular/material/chips';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 const config = {
   apiKey: environment.apiKey,
@@ -70,6 +71,7 @@ const config = {
     MatTableModule,
     MatPaginatorModule,
     MatCheckboxModule,
+    DragDropModule,
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent],

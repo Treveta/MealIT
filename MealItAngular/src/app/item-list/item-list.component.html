@@ -1,3 +1,9 @@
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+  <div class="example-box" *ngFor="let item of testSortedList" [cdkDragStartDelay]="25" cdkDrag>
+    <mat-checkbox></mat-checkbox>
+    {{item.name}}{{item.quantity}}{{item.unit}}
+  </div>
+</div>
 <div class = "itemList-body">
   <h3>Item List!</h3>
   <mat-card class = "center">
