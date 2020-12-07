@@ -92,8 +92,6 @@ export class CalenderComponent {
    * @param {Date} uid
    */
   getWeek(uid: Date) {
-    let i;
-
     // Set dateData to uid
     const dateData = new Date(2020, 11, 16);
 
@@ -108,7 +106,7 @@ export class CalenderComponent {
 
     // Compiling the information for the days
     dateData.setDate(dateData.getDate() - day);
-    for (i = 0; i <= 6; i++) {
+    for (let i = 0; i <= 6; i++) {
       dt = dateData.getDate();
       newDate = weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dt + '/' + dateData.getFullYear();
       dateData.setDate(dateData.getDate() + 1);
@@ -117,7 +115,7 @@ export class CalenderComponent {
 
     // Print out weekDay as a test
     console.log(weekDay);
-    for (i = 0; i <= 6; i++) {
+    for (let i = 0; i <= 6; i++) {
       console.log(weekDay[i]);
     }
   }
