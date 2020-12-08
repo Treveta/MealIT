@@ -2,6 +2,7 @@
 import {Component, OnInit, OnDestroy, Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {AuthService} from 'app/services/auth.service';
+import {AngularFireAnalytics} from '@angular/fire/analytics';
 import FuzzySearch from 'fuzzy-search';
 import mocker from 'mocker-data-generator';
 
@@ -31,14 +32,22 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
   previousUID: string | number;
   ingredientListLoading = [{Loading: true}]
 
-  constructor(private afs: AngularFirestore, private authService: AuthService) {
+  constructor(private afs: AngularFirestore, private authService: AuthService, private analytics: AngularFireAnalytics) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
       this.collectionPath = 'users/' + uid + '/recipeList';
-      this.listRecipes(this.collectionPath).then((list) => {
-        this.userRecipes = list;
-      });
+      if (localStorage.getItem('cachedRecipes') === null || localStorage.getItem('updatePending') === 'true') {
+        this.listRecipes(this.collectionPath).then((list) => {
+          this.userRecipes = list;
+          localStorage.setItem('cachedRecipes', JSON.stringify(list));
+          localStorage.setItem('updatePending', 'false');
+          analytics.logEvent('Cache Update');
+        });
+      } else {
+        this.userRecipes = JSON.parse(localStorage.getItem('cachedRecipes'));
+        console.log('cache fetched');
+      }
     });
   }
 
@@ -159,4 +168,20 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
       console.log('Error getting documents', err);
     }
   }
+
+  localStorageSpace() {
+    let data = '';
+
+    console.log('Current local storage: ');
+
+    for (const key in window.localStorage) {
+      if (window.localStorage.hasOwnProperty(key)) {
+        data += window.localStorage[key];
+        console.log( key + ' = ' + ((window.localStorage[key].length * 16)/(8 * 1024)).toFixed(2) + ' KB' );
+      }
+    }
+
+    console.log(data ? '\n' + 'Total space used: ' + ((data.length * 16)/(8 * 1024)).toFixed(2) + ' KB' : 'Empty (0 KB)');
+    console.log(data ? 'Approx. space remaining: ' + (5120 - ((data.length * 16)/(8 * 1024)) + ' KB') : '5 MB');
+  };
 }

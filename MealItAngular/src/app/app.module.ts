@@ -28,6 +28,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {AngularFireAnalyticsModule} from '@angular/fire/analytics';
 
 const config = {
   apiKey: environment.apiKey,
@@ -72,6 +73,7 @@ const config = {
     MatPaginatorModule,
     MatCheckboxModule,
     DragDropModule,
+    AngularFireAnalyticsModule,
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent],

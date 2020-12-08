@@ -121,12 +121,11 @@
     <table class="fixWeek">
           <th *ngFor="let day of weekDayName">
             {{day}}
-                <mat-card (click)="openModal('viewDay')">
+                <mat-card (click)="openModal('viewDay')" (click)="setMealDate()">
                   <mat-card-header>
                     <mat-card-title>fish</mat-card-title>
                     <mat-card-subtitle>breakfast</mat-card-subtitle>
                   </mat-card-header>
-                  <img mat-card-image src="https://pixabay.com/get/53e1dd434950b10ff3d8992cc621337e1c38dbe54e507749722d7bdd924dc0_640.jpg">
                   <mat-card-content>
                     <p>
                       calories:250 <br>
@@ -140,7 +139,6 @@
                     <mat-card-title>fish</mat-card-title>
                     <mat-card-subtitle>breakfast</mat-card-subtitle>
                   </mat-card-header>
-                  <img mat-card-image src="https://pixabay.com/get/53e1dd434950b10ff3d8992cc621337e1c38dbe54e507749722d7bdd924dc0_640.jpg">
                   <mat-card-content>
                     <p>
                       calories:250 <br>

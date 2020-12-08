@@ -98,6 +98,7 @@ export class CreateRecipeComponent {
             };
             const documentAdded = await this.recipeListCollection.add(data);
             this.recipeListCollection.doc(documentAdded.id).update({uid: documentAdded.id});
+            localStorage.setItem('updatePending', 'true');
             const ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
 
             for (let i = 0; i < this.Ingredients.length; i++) {
