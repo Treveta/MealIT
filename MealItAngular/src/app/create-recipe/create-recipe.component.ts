@@ -103,6 +103,7 @@ export class CreateRecipeComponent {
             temp.push(data);
             localStorage.setItem('cachedRecipes', JSON.stringify(temp));
             this.search.updateCache();
+            this.searchFuzzy();
             const ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
 
             for (let i = 0; i < this.Ingredients.length; i++) {
