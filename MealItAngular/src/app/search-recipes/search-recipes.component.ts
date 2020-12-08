@@ -72,6 +72,11 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     console.log(recipe.uid);
   }
 
+  updateCache() {
+    this.userRecipes = JSON.parse(localStorage.getItem('cachedRecipes'));
+    console.log('Updated Cache');
+  }
+
   /**
    * Fetches the ingredient information for a specific recipe based on its uid
    * Returns the fetched data to this.ingredients to be displayed by Material UI in HTML

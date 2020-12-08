@@ -39,7 +39,7 @@ export class CreateRecipeComponent {
         * List of results based on current search term
         * @type {Array}
         */
-       private fuzzyResults;
+       public fuzzyResults;
 
        ingredientsCollection: AngularFirestoreCollection<ingredientTraits>;;
        ingredientObserve: Observable<ingredientTraits[]>;
@@ -59,7 +59,7 @@ export class CreateRecipeComponent {
           authService.getUid().then((uid) => {
             this.userInfo = uid;
             this.recipeListCollection = this.afs.collection<recipeList>('users/'+uid+'/recipeList');
-            this.listRecipes = this.recipeListCollection.valueChanges();
+            // this.listRecipes = this.recipeListCollection.valueChanges();
             this.recipe = {
               recipeName: null,
               calories: null,
@@ -99,6 +99,10 @@ export class CreateRecipeComponent {
             const documentAdded = await this.recipeListCollection.add(data);
             this.recipeListCollection.doc(documentAdded.id).update({uid: documentAdded.id});
             localStorage.setItem('updatePending', 'true');
+            const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
+            temp.push(data);
+            localStorage.setItem('cachedRecipes', JSON.stringify(temp));
+            this.search.updateCache();
             const ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
 
             for (let i = 0; i < this.Ingredients.length; i++) {
@@ -130,8 +134,16 @@ export class CreateRecipeComponent {
         }
 
         public deleteRecipe(recipe) {
+          console.log(recipe);
           const query = 'recipeName:==:'+ recipe.recipeName+'';
           this.dbHelp.deleteDocWhere('users/'+this.userInfo+'/recipeList/', query);
+          localStorage.setItem('updatePending', 'true');
+          const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
+          const index = temp.findIndex((index) => index.recipeName === recipe.recipeName);
+          temp.splice(index, 1);
+          localStorage.setItem('cachedRecipes', JSON.stringify(temp));
+          this.search.updateCache();
+          this.searchFuzzy();
         }
 
         /**

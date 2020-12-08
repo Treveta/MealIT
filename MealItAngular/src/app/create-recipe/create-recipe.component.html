@@ -55,7 +55,7 @@
         <th> </th>
         <th> </th>
     </tr>
-    <tr *ngFor="let recipe of listRecipes | async"> <!--the loop-->
+    <tr *ngFor="let recipe of fuzzyResults"> <!--the loop-->
         <th *ngIf="recipe.recipeName">{{ recipe.recipeName }}</th>                                      <!--display name-->
         <th *ngIf="recipe.recipeName">{{ recipe.calories }}</th>                          <!--display amount-->
         <th *ngIf="recipe.recipeName">{{ recipe.servings }}</th>                           <!--display unit-->
