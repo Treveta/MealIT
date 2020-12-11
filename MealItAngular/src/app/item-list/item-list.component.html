@@ -1,9 +1,18 @@
+<br>
+<br>
+<div class="center">
 <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-  <div class="example-box" *ngFor="let item of testSortedList" [cdkDragStartDelay]="25" cdkDrag>
-    <mat-checkbox></mat-checkbox>
-    {{item.name}}{{item.quantity}}{{item.unit}}
+  <div class = "example-box" *ngFor="let item of testSortedList" [cdkDragStartDelay]="25" cdkDrag>
+    <mat-checkbox color = primary> {{item.name}}</mat-checkbox>
+    <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
+<p>
+{{item.quantity}}
+{{item.unit}}
+</p>
   </div>
 </div>
+</div>
+
 <div class = "itemList-body">
   <h3>Item List!</h3>
   <mat-card class = "center">
