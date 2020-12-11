@@ -1,6 +1,6 @@
 /* eslint-disable require-jsdoc */
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, FormArray, FormControl} from '@angular/forms';
+import {FormBuilder, FormGroup, FormControl} from '@angular/forms';
 import {Observable, Subscription} from 'rxjs'; // Needed for Database
 import {shoppingList} from '../services/shoppingList.model';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore'; // Needed for Database
@@ -47,7 +47,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
       this.shoppingCollection = this.afs.collection<shoppingList>('users/' + this.userInfo + '/shoppingList');
       this.listItems$ = this.shoppingCollection.valueChanges(); // Change to local pull similar to search-recipes, relies on listRecipes style function
       this.listItems().then((list) => {
-        this.testSortedList = list.Items;
+        this.sortedList = list.Items;
       });
     });
   }
@@ -81,6 +81,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
     private userInfo;
 
     public testSortedList: Array<any>;
+    public sortedList: Array<any>;
 
     shoppingCollection: AngularFirestoreCollection<shoppingList>;
     listItems$: Observable<shoppingList[]>;
@@ -121,40 +122,18 @@ export class ItemListComponent implements OnDestroy, OnInit {
       if (this.newItem === '') {
       } else {
         const addedItem = {
-          uid: '',
           itemName: this.newItem,
           quantity: this.newQuantity,
           unit: this.newUnit,
         };
-        const documentAdded = await this.shoppingCollection.add(addedItem);
-        this.shoppingCollection.doc(documentAdded.id).update({uid: documentAdded.id});
+        this.sortedList.push(addedItem);
+        this.shoppingCollection.doc('List').update({Items: this.sortedList});
         this.newItem = '';
         this.newQuantity = '';
         this.newUnit = '';
       }
     }
 
-    public editItemList(): void {
-      if (false || this.editToggle=== true) {
-        this.editBool = false;
-      } else {
-        this.editBool = true;
-      }
-    }
-
-    public saveEdits(): void {
-      for (let i = 0; i < this.form.get('checkArray').value.length; i++) {
-        this.subscription = this.listItems$.subscribe((item) => {
-          for (let j = 0; j < item.length; j++) {
-            if (item[j].itemName === this.form.get('checkArray').value[i]) {
-              this.shoppingCollection.doc(item[j].uid).delete();
-            }
-          }
-        });
-      }
-      this.editBool = false;
-      this.editToggle = false;
-    }
     ngOnInit() {
       if (this.screenWidth <= 600) {
         this.isLarge = false;
@@ -169,20 +148,10 @@ export class ItemListComponent implements OnDestroy, OnInit {
     }
 
     // checks whether the box has been checked
-    onCheckBoxChange(event): void {
-      const checkArray: FormArray = this.form.get('checkArray') as FormArray;
-
-      if (event.target.checked) {
-        checkArray.push(new FormControl(event.target.value));
-      } else {
-        const i = 0;
-        checkArray.controls.forEach((uncheckedItem: FormControl) => {
-          if (uncheckedItem.value === event.target.value) {
-            checkArray.removeAt(i);
-            return;
-          }
-        });
-      }
+    onCheckBoxChange(item): void {
+      const index = this.sortedList.indexOf(item);
+      this.sortedList.splice(index, 1);
+      this.shoppingCollection.doc('List').update({Items: this.sortedList});
     }
 
     // these functions are all that is needed to show and hide a modal view
@@ -198,8 +167,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     async listItems() {
       try {
-        const snapshot = await this.afs
-            .collection('items').doc('Test')
+        const snapshot = await this.shoppingCollection.doc('List')
             .get().toPromise();
         return snapshot.data();
       } catch (err) {
@@ -208,8 +176,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
     }
 
     drop(event: CdkDragDrop<string[]>) {
-      moveItemInArray(this.testSortedList, event.previousIndex, event.currentIndex);
-      this.afs.collection('items').doc('Test').update({Items: this.testSortedList});
+      moveItemInArray(this.sortedList, event.previousIndex, event.currentIndex);
+      this.shoppingCollection.doc('List').update({Items: this.sortedList});
     }
 }
 
