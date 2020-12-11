@@ -5,38 +5,16 @@
     <!--Fontawesome CDN-->
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
-	<script>
-		function checkUsername(username){
-			// Start valid, if invalid, turn false
-			validUsername = true;
-
-			// Inform the user the username is taken
-			usernameMessage = "This username is taken.\nPlease enter a new one."
-
-			// TODO
-			// Send Username to Firebase
-
-			// Inform the user if invalid
-			if (validUsername == false){
-				alert(usernameMessage);
-			}
-
-			// Return valid or invalid
-			return validUsername;
-		}
-	</script>
-
 	<script src="../scripts/passwordCheck.js"></script>
 
 </head>
 <body>
-
 <div *ngIf="auth.user$ | async; then authenticated else guest">
 	<!-- template will replace this div -->
 </div>
-
+</body>
 <ng-template #guest>
-	<div class="container">
+	<div class="loginContainer">
 		<div class="d-flex justify-content-center h-100">
 			<div class="card">
 				<div class="card-header">
@@ -60,9 +38,7 @@
 						<div class="row align-items-center remember">
 							<input type="checkbox">Remember Me
 						</div>
-						<button (click)="auth.googleSignin()">
-							<i class="fa fa-google"></i> Connect Google
-						</button>
+							<input type="submit" value="Google login" class="btn float-left login_btn" (click)= "auth.googleSignin()">
 						<div class="form-group">
 							<input type="submit" value="Login" class="btn float-right login_btn" (click)="login()">
 						</div>
@@ -70,10 +46,7 @@
 				</div>
 				<div class="card-footer">
 					<div class="d-flex justify-content-center links">
-						Don't have an account? &nbsp; <button (click)="openModal('custom-modal-signup')">Sign Up</button>
-					</div>
-					<div class="d-flex justify-content-center">
-						<a href="#">Forgot your password?</a>
+						Don't have an account? &nbsp; <input type="submit" value="Sign Up" class="btn float-right login_btn" (click)="openModal('custom-modal-signup')">
 					</div>
 				</div>
       </div>
@@ -98,4 +71,3 @@
 	</div>
 </ng-template>
 	
-</body>
