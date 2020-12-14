@@ -8,6 +8,12 @@ import {ModalService} from '../modal-functionality';
 
 import {AuthService} from '../services/auth.service'; // Needed for Database
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import {
+  getSupportedInputTypes,
+  Platform,
+  supportsPassiveEventListeners,
+  supportsScrollBehavior,
+} from '@angular/cdk/platform';
 
 
 export interface Item { name: string; seeds: number; }
@@ -31,12 +37,16 @@ interface UnitGroup {
 })
 
 export class ItemListComponent implements OnDestroy, OnInit {
+  supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
+  supportsPassiveEventListeners = supportsPassiveEventListeners();
+  supportsScrollBehavior = supportsScrollBehavior();
   // sets up the form groups for the checkboxes
   constructor(
         private modalService: ModalService,
         private fb: FormBuilder,
         private afs: AngularFirestore,
         private authService: AuthService,
+        public platform: Platform,
   ) {
     this.form = this.fb.group({
       checkArray: this.fb.array([]),
@@ -51,6 +61,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
       });
     });
   }
+
 
   displayedColumns: string[] = ['name', 'quantity', 'unit'];
   public editToggle: boolean = false;
