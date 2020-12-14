@@ -100,16 +100,28 @@
     <div class="center">
       <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
 
-        <div *ngIf="platform.ANDROID || platform.IOS; then mobileDrag else pcDrag">
-          <!-- template will replace this div -->
+        <!-- <div *ngIf="platform.ANDROID || platform.IOS; then mobileDrag else pcDrag">  -->
+          <!-- template will replace this div 
+       
+        </div>-->
+        <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
+          <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
+          <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
+      <p>
+      {{item.quantity}}
+      {{item.unit}}
+      </p>
+
+
         </div>
+
       </div>
       </div>
 
       <!-- shorter drag time for more responsive reordering-->
       <ng-template #pcDrag>
         <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
-          <mat-checkbox color = primary> {{item.itemName}}</mat-checkbox>
+          <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
           <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
       <p>
       {{item.quantity}}
@@ -122,7 +134,7 @@
       <!--longer drag time for mobile, to allow for scrolling-->
       <ng-template #mobileDrag>
         <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="1000" cdkDrag>
-          <mat-checkbox color = primary> {{item.itemName}}</mat-checkbox>
+          <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
           <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
       <p>
       {{item.quantity}}

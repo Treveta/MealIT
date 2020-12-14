@@ -191,5 +191,3 @@ export class ItemListComponent implements OnDestroy, OnInit {
       this.shoppingCollection.doc('List').update({Items: this.sortedList});
     }
 }
-
-
