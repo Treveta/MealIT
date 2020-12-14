@@ -57,7 +57,7 @@ export class CalenderComponent {
   }
   submitMeal(uid: string | number, modalID: string) {
     if (this.date != null) {
-      console.log('Adding ' + uid + ' on ' + this.date);
+      alert('Adding ' + uid + ' on ' + this.date);
       this.errorDate = false;
       this.date = null;
       this.closeModal(modalID);
