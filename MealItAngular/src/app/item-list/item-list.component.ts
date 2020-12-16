@@ -146,6 +146,11 @@ export class ItemListComponent implements OnDestroy, OnInit {
     }
 
     ngOnInit() {
+      // console logs to output platforms
+      console.log('android: ', this.platform.ANDROID);
+      console.log('iOS: ', this.platform.IOS);
+
+      // testing for screenwidth
       if (this.screenWidth <= 600) {
         this.isLarge = false;
       } else {
