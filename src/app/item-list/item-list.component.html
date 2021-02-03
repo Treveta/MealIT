@@ -1,0 +1,151 @@
+<div class = "itemList-body">
+  <h3>Item List!</h3>
+  <mat-card class = "center">
+    <div>
+      <div *ngIf="this.isLarge; then widescreen else thinscreen">
+        <!-- template will replace this div -->
+      </div>
+      <br>
+      <div class = "center">
+        <button mat-button (click) = "addToItemList()"> 
+          Add Item
+          <!--TODO: add input validation(see login-page example)-->
+        </button> 
+      </div>
+    </div>
+  </mat-card>
+  <div>
+    <ng-template #widescreen>
+      <div class = "center">
+        <mat-form-field>
+          <mat-label>Item Name</mat-label>
+          <input matInput 
+            required
+            [(ngModel)] = "newItem" 
+            type = "text" 
+          /> 
+          <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Number</mat-label>
+          <!--oninput line is input validation, does not allow the entry of any number below 0-->
+          <input matInput
+            required
+            [(ngModel)] = "newQuantity" 
+            type = "number" 
+            min = "0" 
+            max = "1000000" 
+            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+          /> 
+          <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
+        </mat-form-field>   
+
+        <mat-form-field>
+          <mat-label>Unit</mat-label>
+          <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
+            <mat-option>-- None --</mat-option>
+            <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
+              <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
+                {{unit.viewValue}}
+              </mat-option>
+            </mat-optgroup>
+          </mat-select>
+          <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
+        </mat-form-field>
+      </div>
+    </ng-template>
+
+    <ng-template #thinscreen>
+      <mat-form-field class = "center">
+        <mat-label>Item Name</mat-label>
+        <input matInput 
+          required
+          [(ngModel)] = "newItem" 
+          type = "text" 
+        /> 
+        <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
+      </mat-form-field>
+      <br>
+      <mat-form-field class = "center">
+        <mat-label>Number</mat-label>
+        <!--oninput line is input validation, does not allow the entry of any number below 0-->
+        <input matInput
+          required
+          [(ngModel)] = "newQuantity" 
+          type = "number" 
+          min = "0" 
+          max = "1000000" 
+          oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+        /> 
+        <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
+      </mat-form-field>   
+      <br>
+      <mat-form-field class = "center">
+        <mat-label>Unit</mat-label>
+        <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
+          <mat-option>-- None --</mat-option>
+          <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
+            <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
+              {{unit.viewValue}}
+            </mat-option>
+          </mat-optgroup>
+        </mat-select>
+        <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
+      </mat-form-field>
+    </ng-template>
+
+    <div *ngIf="platform.ANDROID || platform.IOS; then mobileDrag else pcDrag">
+      <!-- template will replace this div -->
+   
+    </div>
+
+      <!-- shorter drag time for more responsive reordering-->
+      <ng-template #pcDrag>
+        <div class="center">
+          <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+    
+    
+             <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
+              <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
+              <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
+          <p>
+          {{item.quantity}}
+          {{item.unit}}
+          </p>
+            </div> 
+    
+          </div>
+          </div>
+      </ng-template>
+
+      <!--longer drag time for mobile, to allow for scrolling-->
+      <ng-template #mobileDrag>
+        <div class="center">
+          <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+    
+    
+             <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="700" cdkDrag>
+              <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
+              <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
+          <p>
+          {{item.quantity}}
+          {{item.unit}}
+          </p>
+            </div> 
+    
+          </div>
+          </div>
+      </ng-template>
+
+
+
+  <!-- opens the modal -->
+  <button mat-raised-button (click)="openModal('custom-modal-1')">Open Modal 1</button>
+</div>
+<!-- this is the modal view which is called based on the modal service calls -->
+<jw-modal id="custom-modal-1">
+    <h1>Remove selected items?</h1>
+    <button mat-button (click)="closeModal('custom-modal-1')">Cancel</button>
+</jw-modal>
+

@@ -1,0 +1,23 @@
+<button (click)="addData()">Add Data</button>
+<button (click)="localStorageSpace()">Get Cached Space</button>
+<mat-form-field>
+    <mat-label>Clearable input</mat-label>
+    <input matInput type="text" [(ngModel)]="searchTerm" (keyup)="searchFuzzy()">
+    <button mat-button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''" (click)="searchFuzzy()">
+      <mat-icon>close</mat-icon>
+    </button>
+    <button>Search</button>
+</mat-form-field>
+<mat-accordion>
+    <mat-expansion-panel *ngFor="let recipe of fuseResults" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header (click)="fetchRecipe(recipe.uid)">
+            <mat-panel-title>
+                {{recipe.recipeName}}
+            </mat-panel-title>
+        </mat-expansion-panel-header>
+        <div *ngFor="let ingredient of ingredientList">
+            <p *ngIf="ingredientList.Loading == true">LOADING...</p>
+            {{ingredient.ingredientName}}
+        </div>
+    </mat-expansion-panel>
+</mat-accordion>

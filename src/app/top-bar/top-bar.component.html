@@ -1,0 +1,20 @@
+<h1>
+        <a [routerLink]="['/']">MealIt!</a>
+</h1>
+
+<div *ngIf="auth.user$ | async; then authenticated else guest">
+    <!-- template will replace this div -->
+</div>
+
+<ng-template #guest>
+    
+</ng-template>
+
+<ng-template #authenticated>
+    <button [routerLink]="['/itemList']">Item List</button>
+    <button [routerLink]="['/createRecipe']">Recipe List</button>
+    <button [routerLink]="['/calender']">Calender</button>
+    <button [routerLink]="['/foodStorage']">Food Storage</button>
+</ng-template>
+
+<img src="assets/borger.jpg" />
