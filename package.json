@@ -31,6 +31,7 @@
     "firebase": "^7.24.0",
     "fuse.js": "^6.4.6",
     "fuzzy-search": "^3.2.1",
+    "grpc": "^1.24.4",
     "mocker-data-generator": "^2.10.0",
     "mysql": "^2.18.1",
     "rxjs": "^6.6.3",
