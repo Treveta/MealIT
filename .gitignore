@@ -49,4 +49,4 @@ Thumbs.db
 .env
 environment.prod.ts
 
-functions/*
+functions/node_modules
