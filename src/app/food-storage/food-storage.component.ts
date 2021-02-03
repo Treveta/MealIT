@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, FormArray, FormControl} from '@angular/forms';
 import {AuthService} from '../services/auth.service';
@@ -8,7 +9,6 @@ import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 import {storageList} from '../models/foodStorage.model';
 import {shoppingList} from '../services/shoppingList.model';
-import { ObserversModule } from '@angular/cdk/observers';
 
 @Component({
   selector: 'food-storage',
@@ -31,7 +31,7 @@ export class FoodStorageComponent {
     private afs: AngularFirestore,
     private modalService: ModalService,
     private fb: FormBuilder,
-  ){
+  ) {
     this.form = this.fb.group({
       checkArray: this.fb.array([]),
     });
@@ -62,7 +62,7 @@ export class FoodStorageComponent {
         if (uncheckedItem.value === event.target.value) {
           checkArray.removeAt(i);
           return;
-         }
+        }
       });
     }
   }
