@@ -1,5 +1,8 @@
+/* eslint-disable require-jsdoc */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {AngularFireAnalytics} from '@angular/fire/analytics';
+import {AngularFirestore} from '@angular/fire/firestore';
+import {AuthService} from 'app/services/auth.service';
 import {SearchRecipesComponent} from './search-recipes.component';
 
 describe('SearchRecipesComponent', () => {
@@ -9,6 +12,15 @@ describe('SearchRecipesComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SearchRecipesComponent],
+      providers: [{provide: AngularFirestore, useValue: {}},
+        {provide: AuthService, useClass: class {
+          getUid = () => {
+            return new Promise(function(resolve) {
+              resolve('');
+            });
+          }
+        }},
+        {provide: AngularFireAnalytics, useValue: {}}],
     })
         .compileComponents();
   });

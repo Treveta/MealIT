@@ -18,9 +18,6 @@ export class LoginPageComponent implements OnInit {
   items: Observable<Item[]>
 
   constructor(private modalService: ModalService, public auth: AuthService, private firestore: AngularFirestore, private dbHelp: DatabaseHelperComponent) {
-    this.itemCollection = dbHelp.fetchCollectionOneWhere('items', 'name:==:Melon');
-    this.items = this.itemCollection.valueChanges();
-    this.test();
   }
 
   signUp(): void {
@@ -35,12 +32,6 @@ export class LoginPageComponent implements OnInit {
     const inputPassword = (<HTMLInputElement>document.getElementById('loginPassword')).value;
 
     this.auth.signInEmailUser(inputUsername, inputPassword);
-  }
-
-  async test() {
-    const data = (await this.dbHelp.fetchDocIdOneWhere('items', 'name:==:Melon'))[0];
-    this.dbHelp.deleteDocWhere('items', 'name:==:Orange');
-    console.log(data);
   }
 
   openModal(id: string) {
