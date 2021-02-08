@@ -17,4 +17,6 @@
     <button [routerLink]="['/foodStorage']">Food Storage</button>
 </ng-template>
 
+<mat-slide-toggle (click)="toggleDarkMode()" [(ngModel)]="isDarkMode">Dark Mode</mat-slide-toggle>
+
 <img src="assets/borger.jpg" />

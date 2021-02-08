@@ -26,6 +26,7 @@ import {LayoutModule} from '@angular/cdk/layout';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {AngularFireAnalyticsModule} from '@angular/fire/analytics';
@@ -72,6 +73,7 @@ const config = {
     MatChipsModule,
     MatTableModule,
     MatPaginatorModule,
+    MatSlideToggleModule,
     MatCheckboxModule,
     DragDropModule,
     AngularFireAnalyticsModule,

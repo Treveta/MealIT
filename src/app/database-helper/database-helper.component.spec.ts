@@ -1,4 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {AngularFirestore} from '@angular/fire/firestore';
+import {AuthService} from 'app/services/auth.service';
 
 import {DatabaseHelperComponent} from './database-helper.component';
 
@@ -9,6 +11,9 @@ describe('DatabaseHelperComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DatabaseHelperComponent],
+      providers: [{provide: AngularFirestore, useValue: {}}, {provide: AuthService, useClass: class {
+        fetchUserData = jasmine.createSpy('fetchUserData')
+      }}],
     })
         .compileComponents();
   });
