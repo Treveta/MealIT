@@ -37,7 +37,7 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
       this.collectionPath = 'users/' + uid + '/recipeList';
-      if (localStorage.getItem('cachedRecipes') === null || localStorage.getItem('updatePending') === 'true') {
+      if (localStorage.getItem('cachedRecipes') === null || localStorage.getItem('updatePending') === 'true' || localStorage.getItem('cachedRecipes') === undefined) {
         this.listRecipes(this.collectionPath).then((list) => {
           this.userRecipes = list;
           localStorage.setItem('cachedRecipes', JSON.stringify(list));
@@ -45,8 +45,7 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
           analytics.logEvent('Cache Update');
         });
       } else {
-        this.userRecipes = JSON.parse(localStorage.getItem('cachedRecipes'));
-        console.log('cache fetched');
+        this.fetchCache();
       }
     });
   }
@@ -72,9 +71,13 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     console.log(recipe.uid);
   }
 
-  updateCache() {
+  fetchCache() {
     this.userRecipes = JSON.parse(localStorage.getItem('cachedRecipes'));
-    console.log('Updated Cache');
+    console.log('Cache Fetched');
+  }
+
+  setCache(data) {
+    localStorage.setItem('cachedRecipes', JSON.stringify(data));
   }
 
   /**
@@ -127,8 +130,6 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
           .schema('recipe', recipeScheme, 1)
           .schema('ingredients', ingredientScheme, 5)
           .buildSync();
-      console.log(data.recipe);
-      console.log(data.ingredients);
       const documentAdded = await this.afs.collection(this.collectionPath).add(data.recipe[0]);
       this.afs.collection(this.collectionPath).doc(documentAdded.id).update({uid: documentAdded.id});
       this.ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');

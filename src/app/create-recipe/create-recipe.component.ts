@@ -100,7 +100,7 @@ export class CreateRecipeComponent {
             const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
             temp.push(data);
             localStorage.setItem('cachedRecipes', JSON.stringify(temp));
-            this.search.updateCache();
+            this.search.fetchCache();
             this.searchFuzzy();
             const ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
 
@@ -141,7 +141,7 @@ export class CreateRecipeComponent {
           const index = temp.findIndex((index) => index.recipeName === recipe.recipeName);
           temp.splice(index, 1);
           localStorage.setItem('cachedRecipes', JSON.stringify(temp));
-          this.search.updateCache();
+          this.search.fetchCache();
           this.searchFuzzy();
         }
 
