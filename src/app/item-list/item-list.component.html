@@ -108,10 +108,13 @@
     
              <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
               <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
+              <mat-checkbox (change)="completionToggle(item)" color = primary> </mat-checkbox>
               <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
           <p>
           {{item.quantity}}
           {{item.unit}}
+          {{item.isComplete}}
+          <!--isComplete will be removed from showing here once a more elegant visual represntation happens-->
           </p>
             </div> 
     
@@ -127,10 +130,13 @@
     
              <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="700" cdkDrag>
               <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
+              <mat-checkbox (change)="completionToggle(item)" color = primary> </mat-checkbox>
               <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
           <p>
           {{item.quantity}}
           {{item.unit}}
+          {{item.isComplete}}
+          <!--isComplete will be removed from showing here once a more elegant visual represntation happens-->
           </p>
             </div> 
     
