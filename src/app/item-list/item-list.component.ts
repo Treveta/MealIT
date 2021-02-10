@@ -133,6 +133,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
       if (this.newItem === '') {
       } else {
         const addedItem = {
+          isComplete: false,
           itemName: this.newItem,
           quantity: this.newQuantity,
           unit: this.newUnit,
@@ -168,6 +169,12 @@ export class ItemListComponent implements OnDestroy, OnInit {
       const index = this.sortedList.indexOf(item);
       this.sortedList.splice(index, 1);
       this.shoppingCollection.doc('List').update({Items: this.sortedList});
+    }
+    // checks whether the item completion checkbox is checked and sets the boolean value accordingly
+    completionToggle(item): void {
+      if (item.isComplete===false) {
+        item.isComplete=true;
+      } else item.isComplete=false;
     }
 
     // these functions are all that is needed to show and hide a modal view
