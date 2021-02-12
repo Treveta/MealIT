@@ -175,6 +175,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
       if (item.isComplete===false) {
         item.isComplete=true;
       } else item.isComplete=false;
+      this.shoppingCollection.doc('List').update({Items: this.sortedList});
     }
 
     // these functions are all that is needed to show and hide a modal view
