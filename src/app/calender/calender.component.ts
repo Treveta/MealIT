@@ -19,7 +19,7 @@ import {SearchRecipesComponent} from '../search-recipes/search-recipes.component
  *
 */
 export class CalenderComponent {
-  public Mealtimes =[];
+  public Mealtimes = [];
 
   public newDate;
   public newMealtype;
