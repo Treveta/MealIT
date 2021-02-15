@@ -105,11 +105,11 @@ export class ItemListComponent implements OnDestroy, OnInit {
   }
 
   /** @function
- * @name checkWidth
- * @listens window:resize
- * @hostListener
- * @description checkWidth listens to window resize and adjusts the isLarge Boolean.
- */
+   * @name checkWidth
+   * @listens window:resize
+   * @hostListener
+   * @description checkWidth listens to window resize and adjusts the isLarge Boolean.
+   */
 @HostListener('window:resize') checkWidth() {
   //  alert('it works!');
     this.screenWidth = window.innerWidth;
@@ -137,6 +137,12 @@ export class ItemListComponent implements OnDestroy, OnInit {
     private subscription: Subscription;
 
     unitControl = new FormControl();
+    /** @type Array[{Map}]
+   * @name unitGroups
+   * @implements {UnitGroup}
+   * @description unitGroups is an array of type UnitGroup that is used for
+   * the unit dropdown on item-list-component.html
+   */
     unitGroups: UnitGroup[] = [
       {
         name: 'US Units',
@@ -227,7 +233,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     /** @function
      * @name onCheckBoxChange
-     * @param {Map} item the item to be deleted
+     * @param {any} item the item to be deleted
      * @const index the index of the item in the sorted list
      * @description onCheckBoxChange will first get the index of the item then splice it with 1-removing it from the list
      * Then, it updates the shoppingCollection, pushing the change to the database
@@ -240,7 +246,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     /** @function
      * @name completionToggle
-     * @param {Map} item the item whose isComplete value is to be edited
+     * @param {any} item the item whose isComplete value is to be edited
      * @description completionToggle sets isComplete opposite to what it was, similar to togggleEdit
      * Then, it updates the shoppingCollection, pushing the change to the database
      */
@@ -274,8 +280,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
     /** @function
      * @async
      * @name listItems
-     * @constant snapshot a constant that will contain the list doc from shoppingCollection
-     * @return {?} data the data from the snapshot-pulled from 'List'
+     * @constant {Promise} snapshot a constant that will contain a promise for list doc from shoppingCollection
+     * @return {Object} data inside the document promised in snapshot
      * @description listItems tries to pull the list from shoppingcollection and return that data if it suceeds
      * if it fails, it will send an error message to the console
      */
