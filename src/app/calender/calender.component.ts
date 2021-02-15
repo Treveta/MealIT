@@ -13,10 +13,19 @@ import {SearchRecipesComponent} from '../search-recipes/search-recipes.component
  *
 */
 export class CalenderComponent {
+<<<<<<< HEAD
   /**
    * Holds the uid for a user
    * @type {string}
    */
+=======
+  public Mealtimes = [];
+
+  public newDate;
+  public newMealtype;
+  public newRecipe;
+
+>>>>>>> 1053b73b1114cddbee29aa0189ab38a51d35cb61
   private userInfo;
 
   /**

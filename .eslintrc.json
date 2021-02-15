@@ -15,6 +15,7 @@
     ],
     "rules": {
         "new-cap": 0,
-        "max-len": "off"
+        "max-len": "off",
+        "linebreak-style": ["error", "windows"]
     }
 }

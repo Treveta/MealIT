@@ -13,8 +13,10 @@
 <ng-template #authenticated>
     <button [routerLink]="['/itemList']">Item List</button>
     <button [routerLink]="['/createRecipe']">Recipe List</button>
-    <button [routerLink]="['/calender']">Calender</button>
+    <button [routerLink]="['/calender']">Calendar</button>
     <button [routerLink]="['/foodStorage']">Food Storage</button>
 </ng-template>
+
+<mat-slide-toggle (click)="toggleDarkMode()" [(ngModel)]="isDarkMode">Dark Mode</mat-slide-toggle>
 
 <img src="assets/borger.jpg" />
