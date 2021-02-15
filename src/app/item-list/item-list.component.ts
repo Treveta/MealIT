@@ -15,15 +15,29 @@ import {
   supportsScrollBehavior,
 } from '@angular/cdk/platform';
 
+/** @interface
+ * @name Item
+ * @description Interface for an individual item.
+ */
+export interface Item {
+  name: string;
+  seeds: number;
+}
 
-export interface Item { name: string; seeds: number; }
-
-
+/** @interface
+ * @name Unit
+ * @description Interface for an individual unit.
+ */
 interface Unit{
     value: string;
     viewValue: string;
 }
 
+/** @interface
+ * @name UnitGroup
+ * @implements {Unit}
+ * @description Interface for a group of units.
+ */
 interface UnitGroup {
     disabled?: boolean;
     name: string;
@@ -36,11 +50,24 @@ interface UnitGroup {
   styleUrls: ['./item-list.component.css'],
 })
 
+/** @class
+ * @name ItemListComponent
+ * @implements {UnitGroup}
+ * @implements {Item}
+ * @implements {OnDestroy}
+ * @implements {OnInit}
+ * @description Primary class for item-list.component.ts.
+ */
 export class ItemListComponent implements OnDestroy, OnInit {
   supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
   supportsPassiveEventListeners = supportsPassiveEventListeners();
   supportsScrollBehavior = supportsScrollBehavior();
   // sets up the form groups for the checkboxes
+
+  /** @constructor
+   * @name constructor
+   * @description Constructor for class ItemListComponent.
+   */
   constructor(
         private modalService: ModalService,
         private fb: FormBuilder,
@@ -68,10 +95,21 @@ export class ItemListComponent implements OnDestroy, OnInit {
   public isLarge: boolean = true;
   public screenWidth: any = window.innerWidth;
 
+  /** @function
+   * @name toggleEdit
+   * @description toggleEdit changes the boolean editToggle opposite to what it was
+   */
+
   toggleEdit():void {
     this.editToggle= !this.editToggle;
   }
 
+  /** @function
+ * @name checkWidth
+ * @listens window:resize
+ * @hostListener
+ * @description checkWidth listens to window resize and adjusts the isLarge Boolean.
+ */
 @HostListener('window:resize') checkWidth() {
   //  alert('it works!');
     this.screenWidth = window.innerWidth;
@@ -128,7 +166,19 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     ];
 
-
+    /** @function
+     * @async
+     * @name addToItemList
+     * @constant addedItem a constant that contains the boolean isComplete as well as fields to accept the class variables
+     * itemName to store newItem, quantity to store newQuantity, and unit to store newUnit
+     * @description addToItemList is a void function that first tests if new item is empty.
+     * If it is not empty, it creates the constant addedItem that has 4 elements.
+     * isComplete is set to false, while itemName, quantity, and unit are all set to previously declared variables.
+     * Then, addedItem gets pushed to the sortedList and update is called on the shoppingCollection.
+     * Finally, the class variables are reset to empty
+     * @summary addToItemList pulls information from class variables and packages it into a constant
+     * it then puishes that constant to the list and updates the collection
+     */
     async addToItemList() {
       if (this.newItem === '') {
       } else {
@@ -146,6 +196,11 @@ export class ItemListComponent implements OnDestroy, OnInit {
       }
     }
 
+    /** @function
+     * @name ngOnInit
+     * @description ngOnInit runs at page initialization. it currently does the initial check for screensize to inititialize
+     * the page properly
+     */
     ngOnInit() {
       // console logs to output platforms
       console.log('android: ', this.platform.ANDROID);
@@ -158,37 +213,72 @@ export class ItemListComponent implements OnDestroy, OnInit {
         this.isLarge = true;
       }
     }
+
+    /** @function
+     * @name ngOnDestroy
+     * @description ngOnDestory runs on page close. it currently unsubsribes from the private variable subscription
+     * the page properly
+     */
     ngOnDestroy(): void {
       if (this.subscription) {
         this.subscription.unsubscribe();
       }
     }
 
-    // checks whether the box has been checked
+    /** @function
+     * @name onCheckBoxChange
+     * @param {Map} item the item to be deleted
+     * @const index the index of the item in the sorted list
+     * @description onCheckBoxChange will first get the index of the item then splice it with 1-removing it from the list
+     * Then, it updates the shoppingCollection, pushing the change to the database
+     */
     onCheckBoxChange(item): void {
       const index = this.sortedList.indexOf(item);
       this.sortedList.splice(index, 1);
       this.shoppingCollection.doc('List').update({Items: this.sortedList});
     }
-    // checks whether the item completion checkbox is checked and sets the boolean value accordingly
+
+    /** @function
+     * @name completionToggle
+     * @param {Map} item the item whose isComplete value is to be edited
+     * @description completionToggle sets isComplete opposite to what it was, similar to togggleEdit
+     * Then, it updates the shoppingCollection, pushing the change to the database
+     */
     completionToggle(item): void {
-      if (item.isComplete===false) {
-        item.isComplete=true;
-      } else item.isComplete=false;
+      item.isComplete=!item.isComplete;
       this.shoppingCollection.doc('List').update({Items: this.sortedList});
     }
 
     // these functions are all that is needed to show and hide a modal view
+
+    /** @function
+     * @name openModal
+     * @param {string} id id to open with modalService
+     * @description openModal uses modalService to open a modal with id
+     */
     openModal(id: string): void {
       this.modalService.open(id);
     }
 
+    /** @function
+     * @name closeModal
+     * @param {string} id id to close with modalService
+     * @description closeModal will use modalService to close modal with id.
+     * Additionally, it will set  class variables editBool and editToggle both to false
+     */
     closeModal(id: string): void {
       this.modalService.close(id);
       this.editBool = false;
       this.editToggle = false;
     }
-
+    /** @function
+     * @async
+     * @name listItems
+     * @constant snapshot a constant that will contain the list doc from shoppingCollection
+     * @return {?} data the data from the snapshot-pulled from 'List'
+     * @description listItems tries to pull the list from shoppingcollection and return that data if it suceeds
+     * if it fails, it will send an error message to the console
+     */
     async listItems() {
       try {
         const snapshot = await this.shoppingCollection.doc('List')
@@ -198,7 +288,12 @@ export class ItemListComponent implements OnDestroy, OnInit {
         console.log('Error getting documents', err);
       }
     }
-
+    /** @function
+     * @name drop
+     * @param {CdkDragDrop<string[]>} event a special type of string array for use in the drag and drop functionality
+     * @description drop uses the imported function moveItemInArray and takes event's current and previous index to reorder sortedList
+     * Then, it updates the shoppingCollection, pushing the changes to the database
+     */
     drop(event: CdkDragDrop<string[]>) {
       moveItemInArray(this.sortedList, event.previousIndex, event.currentIndex);
       this.shoppingCollection.doc('List').update({Items: this.sortedList});
