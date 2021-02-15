@@ -1,5 +1,4 @@
-/* eslint-disable require-jsdoc */
-import {Component, OnInit, OnDestroy, Injectable} from '@angular/core';
+import {Component, OnDestroy, Injectable} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {AuthService} from 'app/services/auth.service';
 import {AngularFireAnalytics} from '@angular/fire/analytics';
@@ -12,7 +11,10 @@ import mocker from 'mocker-data-generator';
   templateUrl: './search-recipes.component.html',
   styleUrls: ['./search-recipes.component.css'],
 })
-export class SearchRecipesComponent implements OnInit, OnDestroy {
+/**
+ * Componenent that handles the searching of recipes. Uses a fuzzy search algorithm.
+ */
+export class SearchRecipesComponent implements OnDestroy {
   searchTerm: string;
   userInfo: unknown;
   collectionPath: string;
@@ -31,7 +33,12 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
   panelOpenState = false;
   previousUID: string | number;
   ingredientListLoading = [{Loading: true}]
-
+  /**
+   * Creates a search component
+   * @param {AngularFirestore} afs
+   * @param {AuthService} authService
+   * @param {AngularFireAnalytics} analytics
+   */
   constructor(private afs: AngularFirestore, private authService: AuthService, private analytics: AngularFireAnalytics) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
@@ -50,32 +57,51 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit(): void {
-  }
-
+  /**
+   * Destroys the component
+   */
   ngOnDestroy(): void {
     delete this.userRecipes;
   }
 
+  /**
+   * Search function to be used without a parameter
+   */
   searchFuzzy() {
     this.recipeFuse = new FuzzySearch(this.userRecipes, ['recipeName'], {keys: ['recipeName']});
     this.fuseResults = this.recipeFuse.search(this.searchTerm);
   }
 
+  /**
+   * Search function to be used with a parameter. Designed to be used when imported in another component
+   * @param {string} searchterm - the user defined string that drives the search
+   * @return {Array} Returns the search results based on searchterm
+   */
   searchService(searchterm) {
     this.recipeFuse = new FuzzySearch(this.userRecipes, ['recipeName'], {keys: ['recipeName']});
     return this.recipeFuse.search(searchterm);
   }
 
+  /**
+   * Debug function that logs the uid from a recipe object
+   * @param {Object} recipe - The recipe object that you want to log the uid of
+   */
   selectRecipe(recipe: { uid: any; }) {
     console.log(recipe.uid);
   }
 
+  /**
+   * Retrieves the cache from localStorage and sets it to userRecipes
+   */
   fetchCache() {
     this.userRecipes = JSON.parse(localStorage.getItem('cachedRecipes'));
     console.log('Cache Fetched');
   }
 
+  /**
+   * Sets the cachedRecipes variable in localStorage
+   * @param {Object} data - The value to set cachedRecipes to
+   */
   setCache(data) {
     localStorage.setItem('cachedRecipes', JSON.stringify(data));
   }
@@ -105,6 +131,9 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Debug Function that logs the number of recipes in the userRecipes variable
+   */
   getNumberOfRecipes() {
     console.log(this.userRecipes.length);
   }
@@ -139,6 +168,10 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Retrieves the recipes from the path specified as a list
+   * @param {string} path - The Firestore path to retrieve recipes from
+   */
   async listRecipes(path: string) {
     try {
       const snapshot = await this.afs
@@ -157,6 +190,10 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Retrieves the ingredients from the path specified as a list
+   * @param {string} path - The Firestore path to retrieve ingredients from
+   */
   async listIngredients(path: string) {
     try {
       const snapshot = await this.afs
@@ -175,6 +212,9 @@ export class SearchRecipesComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Debug function that logs the space taken up by a users local storage
+   */
   localStorageSpace() {
     let data = '';
 
