@@ -1,12 +1,6 @@
-/* eslint-disable require-jsdoc */
-/* eslint-disable no-unused-vars */
 import {Component} from '@angular/core';
-import {Observable} from 'rxjs';
-import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/firestore';
-import {AngularFireAuth} from '@angular/fire/auth';
 import {AuthService} from '../services/auth.service';
 import {ModalService} from '../modal-functionality';
-import {DatabaseHelperComponent} from 'app/database-helper/database-helper.component';
 import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
 
 @Component({
@@ -19,12 +13,10 @@ import {SearchRecipesComponent} from '../search-recipes/search-recipes.component
  *
 */
 export class CalenderComponent {
-  public Mealtimes = [];
-
-  public newDate;
-  public newMealtype;
-  public newRecipe;
-
+  /**
+   * Holds the uid for a user
+   * @type {string}
+   */
   private userInfo;
 
   /**
@@ -38,23 +30,66 @@ export class CalenderComponent {
    */
   public fuzzyResults;
 
+  /**
+   * Boolean if the panel is open
+   * @type {boolean}
+   */
   public panelOpenState;
+  /**
+   * Float that holds the previous id for a recipe
+   * @type {float}
+   */
   private previousUID;
+  /**
+   * Array that holds a list of ingredients
+   * @type {any[]}
+   */
   public ingredientList;
+  /**
+   * Varaible for loading ingredient list
+   * @type {any[]}
+   */
   public ingredientListLoading
 
+  /**
+   * The date
+   * @type {Date}
+   */
   public date: Date;
+  /**
+   * Boolean to tell if an error occurs with the date
+   * @type {boolean}
+   */
   public errorDate: boolean;
+  /**
+   * A string to inform the user of an error
+   * @type {string}
+   */
   public errorMessage: string;
 
+  /**
+   * An array that holds the names of the week
+   * @type {string[]}
+   */
   public weekDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+  /**
+   * The constructor for the modal service
+   * @param {Modal} modalService
+   * @param {SearchRecipesComponent} search
+   * @param {AuthService} authService
+   */
   constructor(private modalService: ModalService, private search: SearchRecipesComponent, private authService: AuthService) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
     });
   }
+  /**
+   * A function for submitting a meal to a meal plan
+   * @param {string} uid
+   * @param {string} modalID
+   */
   submitMeal(uid: string | number, modalID: string) {
     if (this.date != null) {
       alert('Adding ' + uid + ' on ' + this.date);
@@ -66,10 +101,18 @@ export class CalenderComponent {
       this.errorMessage = 'You must enter a valid date';
     }
   }
+  /**
+   * A function to open a modal
+   * @param {string} id
+   */
   openModal(id: string) {
     this.modalService.open(id);
   }
 
+  /**
+   * A function to close a modal
+   * @param {string} id
+   */
   closeModal(id: string) {
     this.modalService.close(id);
   }
@@ -91,6 +134,7 @@ export class CalenderComponent {
   /**
    * Takes in a date an returns the week of that day. Sunday to Saturday.
    * @param {Date} uid
+   * @return {Array}
    */
   getWeek(uid: Date) {
     // Set dateData to uid
@@ -111,6 +155,7 @@ export class CalenderComponent {
       newDate = this.weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dt + '/' + dateData.getFullYear();
       dateData.setDate(dateData.getDate() + 1);
       weekDay.push(newDate);
+      return weekDay;
     }
 
     // Print out weekDay as a test
