@@ -296,7 +296,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
     }
     /** @function
      * @name drop
-     * @param {CdkDragDrop<string[]>} event a special type of string array for use in the drag and drop functionality
+     * @param {CdkDragDrop<string[]>} event an interface defined in @angular\cdk\drag-drop\drag-events.d.ts for use in the drag and drop functionality
      * @description drop uses the imported function moveItemInArray and takes event's current and previous index to reorder sortedList
      * Then, it updates the shoppingCollection, pushing the changes to the database
      */
