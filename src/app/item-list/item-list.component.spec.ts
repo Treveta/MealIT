@@ -4,7 +4,7 @@ import {FormBuilder} from '@angular/forms';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {ModalService} from '../modal-functionality';
 import {AuthService} from '../services/auth.service';
-import {CdkDragDrop} from '@angular/cdk/drag-drop';
+// import {CdkDragDrop} from '@angular/cdk/drag-drop'; //not testing this
 import {Platform} from '@angular/cdk/platform';
 import {ItemListComponent} from './item-list.component';
 
@@ -83,5 +83,15 @@ describe('ItemListComponent', () => {
       ],
     }]);
     // create a mock array
+  });
+  it('completionToggle successfully edits an items boolean', () => {
+    const item = {
+      isComplete: false,
+      itemName: 'Apples',
+      quantity: 3,
+      unit: 'oz',
+    };
+    component.completionToggle(item);
+    expect(item.isComplete).toEqual(true);
   });
 });
