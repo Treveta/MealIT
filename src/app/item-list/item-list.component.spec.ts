@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {FormBuilder} from '@angular/forms';
@@ -7,6 +8,7 @@ import {AuthService} from '../services/auth.service';
 // import {CdkDragDrop} from '@angular/cdk/drag-drop'; //not testing this
 import {Platform} from '@angular/cdk/platform';
 import {ItemListComponent} from './item-list.component';
+
 
 describe('ItemListComponent', () => {
   let component: ItemListComponent;
@@ -21,6 +23,7 @@ describe('ItemListComponent', () => {
     const modalServiceStub = () => ({open: (id) => ({}), close: (id) => ({})});
     const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
     const platformStub = () => ({ANDROID: {}, IOS: {}});
+
     TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
       declarations: [ItemListComponent],
@@ -91,7 +94,25 @@ describe('ItemListComponent', () => {
       quantity: 3,
       unit: 'oz',
     };
-    component.completionToggle(item);
+    const itemt = {
+      isComplete: true,
+      itemName: 'Apples',
+      quantity: 3,
+      unit: 'oz',
+    };
+    class MockItemListComponent extends ItemListComponent {
+      static completionToggle(item: any):void {
+        item.isComplete=!item.isComplete;
+      }
+    }
+    MockItemListComponent.completionToggle(item);
     expect(item.isComplete).toEqual(true);
+    MockItemListComponent.completionToggle(item);
+    expect(item.isComplete).toEqual(false);
+    // what if it starts as true?
+    MockItemListComponent.completionToggle(itemt);
+    expect(itemt.isComplete).toEqual(false);
+    MockItemListComponent.completionToggle(itemt);
+    expect(itemt.isComplete).toEqual(true);
   });
 });
