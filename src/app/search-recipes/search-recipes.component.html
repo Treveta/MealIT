@@ -10,7 +10,7 @@
 </mat-form-field>
 <mat-accordion>
     <mat-expansion-panel *ngFor="let recipe of fuseResults" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-        <mat-expansion-panel-header (click)="fetchRecipe(recipe.uid)">
+        <mat-expansion-panel-header (click)="fetchRecipe(recipe.uid, this.listIngredients)">
             <mat-panel-title>
                 {{recipe.recipeName}}
             </mat-panel-title>
