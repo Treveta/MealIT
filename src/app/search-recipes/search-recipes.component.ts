@@ -33,6 +33,7 @@ export class SearchRecipesComponent implements OnDestroy {
   panelOpenState = false;
   previousUID: string | number;
   ingredientListLoading = [{Loading: true}]
+  tested: boolean = true;
   /**
    * Creates a search component
    * @param {AngularFirestore} afs
@@ -83,19 +84,12 @@ export class SearchRecipesComponent implements OnDestroy {
   }
 
   /**
-   * Debug function that logs the uid from a recipe object
-   * @param {Object} recipe - The recipe object that you want to log the uid of
-   */
-  selectRecipe(recipe: { uid: any; }) {
-    console.log(recipe.uid);
-  }
-
-  /**
    * Retrieves the cache from localStorage and sets it to userRecipes
+   * @return {string}
    */
   fetchCache() {
     this.userRecipes = JSON.parse(localStorage.getItem('cachedRecipes'));
-    console.log('Cache Fetched');
+    return 'Cache Fetched';
   }
 
   /**
@@ -110,8 +104,9 @@ export class SearchRecipesComponent implements OnDestroy {
    * Fetches the ingredient information for a specific recipe based on its uid
    * Returns the fetched data to this.ingredients to be displayed by Material UI in HTML
    * @param {string | number} uid
+   * @param {function} ingredientFunction
    */
-  fetchRecipe(uid: string | number) {
+  fetchRecipe(uid: string | number, ingredientFunction) {
     if (uid == this.previousUID && this.panelOpenState == false) {
       this.ingredientList = this.ingredientListLoading;
       this.previousUID = 0;
@@ -119,23 +114,38 @@ export class SearchRecipesComponent implements OnDestroy {
       this.ingredientList = this.ingredientListLoading;
       this.previousUID = uid;
       const ingredientPath = 'users/' + this.userInfo + '/recipeList/' + uid + '/ingredients';
-      this.listIngredients(ingredientPath).then((list) => {
+      ingredientFunction(ingredientPath).then((list) => {
         this.ingredientList = list;
       });
     } else {
       this.previousUID = uid;
       const ingredientPath = 'users/' + this.userInfo + '/recipeList/' + uid + '/ingredients';
-      this.listIngredients(ingredientPath).then((list) => {
+      ingredientFunction(ingredientPath).then((list) => {
         this.ingredientList = list;
       });
     }
   }
 
   /**
-   * Debug Function that logs the number of recipes in the userRecipes variable
+   * Stub Function for use in testing to bypass need for Firestore API in fetchRecipe
+   * @param {string} path
+   * @return {Promise}
    */
-  getNumberOfRecipes() {
-    console.log(this.userRecipes.length);
+  listIngredientsStub(path) {
+    const ingredientPromise = new Promise((resolve) => {
+      resolve([
+        {
+          'ingredientName': 'rice',
+        },
+        {
+          'ingredientName': 'ketchup',
+        },
+        {
+          'ingredientName': 'bbq',
+        },
+      ]);
+    });
+    return ingredientPromise;
   }
 
   /**
@@ -200,7 +210,6 @@ export class SearchRecipesComponent implements OnDestroy {
           .collection(path)
           .get().toPromise();
       const list = [];
-
       snapshot.forEach((doc) => {
         const data = doc.data();
         data.id = doc.id;
