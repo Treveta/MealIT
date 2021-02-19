@@ -5,17 +5,6 @@ import {AuthService} from 'app/services/auth.service';
 
 import {CalenderComponent} from './calender.component';
 
-describe('Get a week', function() {
-  let a: CalenderComponent;
-  let b: string[] = [];
-  const c = 'Sunday 2/14/2021';
-  const d = new Date(2021, 2, 14);
-
-  b = a.getWeek(d);
-
-  expect(c).toBe(b[0]);
-});
-
 describe('CalenderComponent', () => {
   let component: CalenderComponent;
   let fixture: ComponentFixture<CalenderComponent>;
@@ -43,5 +32,30 @@ describe('CalenderComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('Get a week', () => {
+    let week: string[] = [];
+    const longDate = 'Sunday 2/14/2021';
+    const shortDate = new Date(2021, 1, 16);
+
+    week = component.getWeek(shortDate);
+
+    expect(longDate).toBe(week[0]);
+  });
+
+  it('Submit meal: null date', () => {
+    let error: string = '';
+    error = component.submitMeal('uid', 'modalid');
+
+    expect(error).toBe('trueYou must enter a valid date');
+  });
+
+  it('Submit meal: not null date', () => {
+    let error: string = '';
+    component.date = new Date(2021, 1, 19);
+    error = component.submitMeal('uid', 'modalid');
+
+    expect(error).toBe('Adding uid on 2/19/2021 falsenull');
   });
 });

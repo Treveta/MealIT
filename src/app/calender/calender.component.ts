@@ -74,6 +74,16 @@ export class CalenderComponent {
   public weekDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   /**
+   * Convert the date to simplified form
+   * @param {Date} date
+   * @return {string}
+   */
+  simplifyDate(date) {
+    const simpleDate: string = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+    return simpleDate;
+  }
+
+  /**
    * The constructor for the modal service
    * @param {Modal} modalService
    * @param {SearchRecipesComponent} search
@@ -87,18 +97,24 @@ export class CalenderComponent {
   }
   /**
    * A function for submitting a meal to a meal plan
-   * @param {string} uid
+   * @param {string | number} uid
    * @param {string} modalID
+   * @return {string}
    */
   submitMeal(uid: string | number, modalID: string) {
     if (this.date != null) {
-      alert('Adding ' + uid + ' on ' + this.date);
+      alert('Adding ' + uid + ' on ' + this.simplifyDate(this.date));
+      let returnMessage = 'Adding ' + uid + ' on ' + this.simplifyDate(this.date);
       this.errorDate = false;
       this.date = null;
-      this.closeModal(modalID);
+      returnMessage += ' ' + this.errorDate + this.date;
+      // this.closeModal(modalID);
+      return returnMessage;
     } else {
       this.errorDate = true;
       this.errorMessage = 'You must enter a valid date';
+      const returnMessage = this.errorDate + this.errorMessage;
+      return returnMessage;
     }
   }
   /**
@@ -125,20 +141,13 @@ export class CalenderComponent {
   }
 
   /**
-   * Test function that prints fuzzyResults to console
-   */
-  public logResults() {
-    console.log(this.fuzzyResults);
-  }
-
-  /**
    * Takes in a date an returns the week of that day. Sunday to Saturday.
    * @param {Date} uid
    * @return {Array}
    */
   getWeek(uid: Date) {
     // Set dateData to uid
-    const dateData = new Date(2020, 11, 16);
+    const dateData = uid;
 
     // Variable for the input day
     const day = dateData.getDay();
