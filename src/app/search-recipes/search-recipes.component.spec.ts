@@ -45,6 +45,9 @@ describe('SearchRecipesComponent', () => {
     },
   ];
 
+  /**
+   * Sets up stubs and providors that will be defined before each test is run
+   */
   beforeEach(() => {
     const angularFirestoreStub = () => ({
       collection: (collectionPath) => ({
@@ -68,6 +71,9 @@ describe('SearchRecipesComponent', () => {
     service = TestBed.inject(SearchRecipesComponent);
   });
 
+  /**
+   * Initializes Test Bed and test component
+   */
   beforeEach(() => {
     fixture = TestBed.createComponent(SearchRecipesComponent);
     component = fixture.componentInstance;
@@ -75,18 +81,30 @@ describe('SearchRecipesComponent', () => {
     component.setCache(mockRecipes);
   });
 
+  /**
+   * Tests that the component instance loads
+   */
   it('can load instance', () => {
     expect(service).toBeTruthy();
   });
 
+  /**
+   * Tests to determine if panelOpenState has a default value on initialization
+   */
   it(`panelOpenState has default value`, () => {
     expect(service.panelOpenState).toEqual(false);
   });
 
+  /**
+   * Tests to determine if ingredientListLoading has a default value on initialization
+   */
   it(`ingredientListLoading has default value`, () => {
     expect(service.ingredientListLoading).toEqual([{Loading: true}]);
   });
 
+  /**
+   * Tests the SearchFuzzy function and determines if fuseResults is set with the expected result
+   */
   it('should search for search term', () => {
     component.searchTerm = 'Hot';
     component.userRecipes = mockRecipes;
@@ -95,12 +113,18 @@ describe('SearchRecipesComponent', () => {
     expect(component.fuseResults).not.toContain({recipeName: 'sausage with beans'});
   });
 
+  /**
+   * Tests the searchService function and determines if it returns the expected result based on parameter search term
+   */
   it('should search for parameter', () => {
     component.userRecipes = mockRecipes;
     expect(component.searchService('Hot')).toContain({recipeName: 'hotdog with salad'});
     expect(component.searchService('Hot')).not.toContain({recipeName: 'sausage with beans'});
   });
 
+  /**
+   * Tests the set cache function and determines if the cache is properly set in LocalStorage
+   */
   it('should set cache', () => {
     component.userRecipes = [];
     expect(component.userRecipes).toEqual([]);
@@ -111,6 +135,9 @@ describe('SearchRecipesComponent', () => {
     expect(component.userRecipes).toEqual([{data: 'Cache Set'}]);
   });
 
+  /**
+   * Tests the fetchCache function and determines if the cache can be properly retrieved from LocalStorage
+   */
   it('should fetch cache', () => {
     component.userRecipes = [];
     expect(component.userRecipes).toEqual([]); // Checks to make sure user recipes have been emptied
@@ -118,6 +145,9 @@ describe('SearchRecipesComponent', () => {
     expect(component.userRecipes).toEqual(mockRecipes); // Checks to see if the recipes have been properly fetched from local storage
   });
 
+  /**
+   * Tests the first if clause of fetchRecipe function and determines if previous uid and ingredient list are set properly
+   */
   it('should load temp ingredients', () => {
     component.previousUID = 1;
     component.panelOpenState = false;
@@ -126,6 +156,9 @@ describe('SearchRecipesComponent', () => {
     expect(component.previousUID).toEqual(0);
   });
 
+  /**
+   * Tests the first if clause of fetchRecipe function and determines if previous uid and ingredient list are set properly
+   */
   it('should set previous uid open', async () => {
     component.previousUID = 1;
     component.panelOpenState = true;
@@ -134,6 +167,9 @@ describe('SearchRecipesComponent', () => {
     expect(component.ingredientList).toEqual(mockIngredients);
   });
 
+  /**
+   * Tests the first if clause of fetchRecipe function and determines if previous uid and ingredient list are set properly
+   */
   it('should set previous uid closed', async () => {
     component.previousUID = 1;
     component.panelOpenState = false;

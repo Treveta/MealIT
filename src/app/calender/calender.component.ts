@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {ModalService} from '../modal-functionality';
 import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
+import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from './mealPlan.model';
 
 @Component({
   selector: 'app-calender',
@@ -72,6 +73,24 @@ export class CalenderComponent {
    * @type {string[]}
    */
   public weekDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+  /**
+   * A week of meals for the user
+   * @type {mealPlanWeek}
+   */
+  public mealPlanWeek: mealPlanWeek;
+
+  /**
+   * One day in a meal plan week
+   * @type {mealPlanDay}
+   */
+  public mealPlanDay: mealPlanDay;
+
+  /**
+   * One recipe in a meal plan day
+   * @type {mealPlanRecipe}
+   */
+  public mealPlanRecipe: mealPlanRecipe;
 
   /**
    * Convert the date to simplified form
