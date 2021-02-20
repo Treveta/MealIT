@@ -107,9 +107,11 @@ export class SearchRecipesComponent implements OnDestroy {
    * @param {function} ingredientFunction
    */
   fetchRecipe(uid: string | number, ingredientFunction) {
+    // If the previously viewed recipe and the recipe being fetched match there is no need to fetch new data
     if (uid == this.previousUID && this.panelOpenState == false) {
       this.ingredientList = this.ingredientListLoading;
       this.previousUID = 0;
+    // If the previously viewed recipe and the recipe being fetched do no match and the panel is open, sub data with temp data while new data is fetched
     } else if (uid != this.previousUID && this.panelOpenState == true) {
       this.ingredientList = this.ingredientListLoading;
       this.previousUID = uid;
@@ -117,6 +119,7 @@ export class SearchRecipesComponent implements OnDestroy {
       ingredientFunction(ingredientPath).then((list) => {
         this.ingredientList = list;
       });
+    // If none of the other cases are true fetch new data
     } else {
       this.previousUID = uid;
       const ingredientPath = 'users/' + this.userInfo + '/recipeList/' + uid + '/ingredients';
@@ -150,28 +153,38 @@ export class SearchRecipesComponent implements OnDestroy {
 
   /**
    * Function adds a NUMBER of new randomly generated recipes to the users database
+   * Creates random data based on defined schemas and adds them to a list before systematically adding each list element to the database
    * Used for testing, to be removed in production build
    */
   async addData() {
+    // Defines a schema to be used by mocker to create random recipes
     const recipeScheme = {
       recipeName: {faker: 'random.words'},
       calories: {faker: 'random.number'},
       servings: {faker: 'random.number'},
     };
+    // Defines a schema to be used by mocker to create random Ingredients
     const ingredientScheme = {
       ingredientName: {faker: 'random.word'},
       calories: {faker: 'random.number'},
       unit: {faker: 'random.word'},
     };
+    // Number of recipes to add when function runs
     const numAdded = 100;
+    // Systematically generates random data based on schemas and adds them to the database
     for (let i = 0; i < numAdded; i++) {
+      // Creates a random recipe and random list of ingredients based on schema
       const data = mocker()
           .schema('recipe', recipeScheme, 1)
           .schema('ingredients', ingredientScheme, 5)
           .buildSync();
+      // Adds random recipe to database
       const documentAdded = await this.afs.collection(this.collectionPath).add(data.recipe[0]);
+      // Fetches new recipes uid
       this.afs.collection(this.collectionPath).doc(documentAdded.id).update({uid: documentAdded.id});
+      // Uses new recipes uid to create a collection path to the recipe
       this.ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
+      // Adds the random ingredients to a subcollection of the newly created recipe
       for (let i = 0; i < data.ingredients.length; i++) {
         this.ingredients.add(data.ingredients[i]);
       }
@@ -184,16 +197,19 @@ export class SearchRecipesComponent implements OnDestroy {
    */
   async listRecipes(path: string) {
     try {
+      // collects a snapshot of a Firestore collection base on parameter path
       const snapshot = await this.afs
           .collection(path)
           .get().toPromise();
+      // Creates an empty list to populate collection data into
       const list = [];
-
+      // Loops through snapshot and pushes document data to list
       snapshot.forEach((doc) => {
         const data = doc.data();
         data.id = doc.id;
         list.push(data);
       });
+      // Returns the now populated list
       return list;
     } catch (err) {
       console.log('Error getting documents', err);
@@ -206,15 +222,19 @@ export class SearchRecipesComponent implements OnDestroy {
    */
   async listIngredients(path: string) {
     try {
+      // collects a snapshot of a Firestore collection base on parameter path
       const snapshot = await this.afs
           .collection(path)
           .get().toPromise();
+      // Creates an empty list to populate collection data into
       const list = [];
+      // Loops through snapshot and pushes document data to list
       snapshot.forEach((doc) => {
         const data = doc.data();
         data.id = doc.id;
         list.push(data);
       });
+      // Returns the now populated list
       return list;
     } catch (err) {
       console.log('Error getting documents', err);
@@ -229,13 +249,16 @@ export class SearchRecipesComponent implements OnDestroy {
 
     console.log('Current local storage: ');
 
+    // Determines current size of local storage objects
     for (const key in window.localStorage) {
       if (window.localStorage.hasOwnProperty(key)) {
         data += window.localStorage[key];
+        // Logs how much space is used by a specific key
         console.log( key + ' = ' + ((window.localStorage[key].length * 16)/(8 * 1024)).toFixed(2) + ' KB' );
       }
     }
 
+    // Logs total space used in local storage
     console.log(data ? '\n' + 'Total space used: ' + ((data.length * 16)/(8 * 1024)).toFixed(2) + ' KB' : 'Empty (0 KB)');
     console.log(data ? 'Approx. space remaining: ' + (5120 - ((data.length * 16)/(8 * 1024)) + ' KB') : '5 MB');
   };
