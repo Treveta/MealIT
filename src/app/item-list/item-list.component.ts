@@ -222,8 +222,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     /** @function
      * @name ngOnDestroy
-     * @description ngOnDestory runs on page close. it currently unsubsribes from the private variable subscription
-     * the page properly
+     * @description ngOnDestory runs on page close. It currently unsubscribes from the private variable subscription.
      */
     ngOnDestroy(): void {
       if (this.subscription) {
@@ -235,8 +234,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * @name onCheckBoxChange
      * @param {any} item the item to be deleted
      * @const index the index of the item in the sorted list
-     * @description onCheckBoxChange will first get the index of the item then splice it with 1-removing it from the list
-     * Then, it updates the shoppingCollection, pushing the change to the database
+     * @description onCheckBoxChange will first get the index of the item then splice it with 1-removing it from the list.
+     * Then, it updates the shoppingCollection, pushing the change to the database.
      */
     onCheckBoxChange(item): void {
       const index = this.sortedList.indexOf(item);
