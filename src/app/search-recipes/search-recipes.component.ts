@@ -1,9 +1,12 @@
-import {Component, OnDestroy, Injectable} from '@angular/core';
+import {Component, OnDestroy, Injectable, Input, Output, EventEmitter, Inject} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {AuthService} from 'app/services/auth.service';
 import {AngularFireAnalytics} from '@angular/fire/analytics';
 import FuzzySearch from 'fuzzy-search';
 import mocker from 'mocker-data-generator';
+import {MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+
 
 @Injectable({providedIn: 'root'})
 @Component({
@@ -15,6 +18,11 @@ import mocker from 'mocker-data-generator';
  * Componenent that handles the searching of recipes. Uses a fuzzy search algorithm.
  */
 export class SearchRecipesComponent implements OnDestroy {
+  @Input()
+    embeddedPage: string;
+
+  @Output() onMealSelected = new EventEmitter<string>();
+
   searchTerm: string;
   userInfo: unknown;
   collectionPath: string;
@@ -40,7 +48,7 @@ export class SearchRecipesComponent implements OnDestroy {
    * @param {AuthService} authService
    * @param {AngularFireAnalytics} analytics
    */
-  constructor(private afs: AngularFirestore, private authService: AuthService, private analytics: AngularFireAnalytics) {
+  constructor(private afs: AngularFirestore, private authService: AuthService, private analytics: AngularFireAnalytics, public dialogRef: MatDialogRef<SearchRecipesComponent>, @Inject(MAT_DIALOG_DATA) public data: {embeddedPage: string}) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -55,7 +63,11 @@ export class SearchRecipesComponent implements OnDestroy {
       } else {
         this.fetchCache();
       }
+      this.fuseResults = this.userRecipes;
     });
+    if (!this.embeddedPage) {
+      this.embeddedPage == '';
+    }
   }
 
   /**
@@ -66,11 +78,35 @@ export class SearchRecipesComponent implements OnDestroy {
   }
 
   /**
+   * If the component is referenced as a dialog this function can close it and send variable to parent
+   * @param {string} selectedMeal the uid of the recipe to send back to parent component
+   */
+  selectMealDialogClose(selectedMeal: string): void {
+    this.dialogRef.close(selectedMeal);
+  }
+
+  /**
+   * On Click function that sends selected meal to parent through an event listener
+   * @param {string} selectedMeal the uid of the meal the user has selected
+   */
+  selectMeal(selectedMeal: string): void {
+    this.onMealSelected.emit(selectedMeal);
+  }
+
+  /**
    * Search function to be used without a parameter
    */
   searchFuzzy() {
     this.recipeFuse = new FuzzySearch(this.userRecipes, ['recipeName'], {keys: ['recipeName']});
     this.fuseResults = this.recipeFuse.search(this.searchTerm);
+  }
+
+  /**
+   * Sets fuseResults
+   * @param {string} item
+   */
+  setFuseResults(item) {
+    this.fuseResults = item;
   }
 
   /**
@@ -116,14 +152,14 @@ export class SearchRecipesComponent implements OnDestroy {
       this.ingredientList = this.ingredientListLoading;
       this.previousUID = uid;
       const ingredientPath = 'users/' + this.userInfo + '/recipeList/' + uid + '/ingredients';
-      ingredientFunction(ingredientPath).then((list) => {
+      ingredientFunction(this, ingredientPath).then((list) => {
         this.ingredientList = list;
       });
     // If none of the other cases are true fetch new data
     } else {
       this.previousUID = uid;
       const ingredientPath = 'users/' + this.userInfo + '/recipeList/' + uid + '/ingredients';
-      ingredientFunction(ingredientPath).then((list) => {
+      ingredientFunction(this, ingredientPath).then((list) => {
         this.ingredientList = list;
       });
     }
@@ -218,12 +254,13 @@ export class SearchRecipesComponent implements OnDestroy {
 
   /**
    * Retrieves the ingredients from the path specified as a list
+   * @param {this} component - passes the instance of the component to the function, allows it to be used a parameter inside another function
    * @param {string} path - The Firestore path to retrieve ingredients from
    */
-  async listIngredients(path: string) {
+  async listIngredients(component: this, path: string) {
     try {
       // collects a snapshot of a Firestore collection base on parameter path
-      const snapshot = await this.afs
+      const snapshot = await component.afs
           .collection(path)
           .get().toPromise();
       // Creates an empty list to populate collection data into
