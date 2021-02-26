@@ -1,8 +1,16 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {AuthService} from 'app/services/auth.service';
 import {AngularFireAnalytics} from '@angular/fire/analytics';
 import {SearchRecipesComponent} from './search-recipes.component';
+import {MatExpansionModule} from '@angular/material/expansion';
+import {MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {By} from '@angular/platform-browser';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatInputModule} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
 
 describe('SearchRecipesComponent', () => {
   let service: SearchRecipesComponent;
@@ -45,6 +53,9 @@ describe('SearchRecipesComponent', () => {
     },
   ];
 
+  let debugSelectMeal;
+
+
   /**
    * Sets up stubs and providors that will be defined before each test is run
    */
@@ -59,11 +70,21 @@ describe('SearchRecipesComponent', () => {
     const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
     const angularFireAnalyticsStub = () => ({logEvent: (string) => ({})});
     TestBed.configureTestingModule({
+      declarations: [SearchRecipesComponent],
       providers: [
         SearchRecipesComponent,
         {provide: AngularFirestore, useFactory: angularFirestoreStub},
         {provide: AuthService, useFactory: authServiceStub},
         {provide: AngularFireAnalytics, useFactory: angularFireAnalyticsStub},
+        {provide: MatDialogRef, useValue: {}},
+        {provide: MAT_DIALOG_DATA, useValue: {}},
+      ],
+      imports: [
+        MatExpansionModule,
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        BrowserAnimationsModule,
       ],
     });
     spyOn(SearchRecipesComponent.prototype, 'listRecipes');
@@ -74,11 +95,19 @@ describe('SearchRecipesComponent', () => {
   /**
    * Initializes Test Bed and test component
    */
-  beforeEach(() => {
+  beforeEach(async () => {
     fixture = TestBed.createComponent(SearchRecipesComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
-    component.setCache(mockRecipes);
+    component.fuseResults = mockRecipes;
+    component.data.embeddedPage = 'mealPlan';
+    fixture.whenStable().then(() => {
+      // after something in the component changes, you should detect changes
+      fixture.detectChanges();
+
+      // everything else in the beforeEach needs to be done here.
+      debugSelectMeal = fixture.debugElement.queryAll(By.css('button[name=\'SelectRecipe\']'));
+      component.setCache(mockRecipes);
+    });
   });
 
   /**
@@ -177,4 +206,21 @@ describe('SearchRecipesComponent', () => {
     expect(component.previousUID).toEqual(2);
     expect(component.ingredientList).toEqual(mockIngredients);
   });
+
+  /**
+   * Test to ensure search-recipes dialog closes when Select Meal button is pressed
+   * Uses the fakeAsync function wrapper to allow for the use of the tick function
+   */
+  it('dialog should close on Close', fakeAsync( () => {
+    // Creats a spy on the selectMealDialogClose function
+    spyOn(component, 'selectMealDialogClose');
+    // Gets the native html element of the first item in the debugSelectMeal array and runs a click event on it
+    debugSelectMeal[0].nativeElement.click();
+    // Detects changes to the fixture
+    fixture.detectChanges();
+    // Fakes async activity to all changes to occur
+    tick();
+    // Looks at selectMealDialogClose spy and expects that the function has been run
+    expect(component.selectMealDialogClose).toHaveBeenCalled();
+  }));
 });
