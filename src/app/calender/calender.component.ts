@@ -104,16 +104,15 @@ export class CalenderComponent {
   submitMeal(uid: string | number, modalID: string) {
     if (this.date != null) {
       alert('Adding ' + uid + ' on ' + this.simplifyDate(this.date));
-      let returnMessage = 'Adding ' + uid + ' on ' + this.simplifyDate(this.date);
+      const returnMessage = 'Adding ' + uid + ' on ' + this.simplifyDate(this.date);
       this.errorDate = false;
       this.date = null;
-      returnMessage += ' ' + this.errorDate + this.date;
       // this.closeModal(modalID);
       return returnMessage;
     } else {
       this.errorDate = true;
       this.errorMessage = 'You must enter a valid date';
-      const returnMessage = this.errorDate + this.errorMessage;
+      const returnMessage = this.errorMessage;
       return returnMessage;
     }
   }

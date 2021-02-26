@@ -48,7 +48,8 @@ describe('CalenderComponent', () => {
     let error: string = '';
     error = component.submitMeal('uid', 'modalid');
 
-    expect(error).toBe('trueYou must enter a valid date');
+    expect(component.errorDate).toBe(true);
+    expect(error).toBe('You must enter a valid date');
   });
 
   it('Submit meal: not null date', () => {
@@ -56,6 +57,8 @@ describe('CalenderComponent', () => {
     component.date = new Date(2021, 1, 19);
     error = component.submitMeal('uid', 'modalid');
 
-    expect(error).toBe('Adding uid on 2/19/2021 falsenull');
+    expect(component.errorDate).toBe(false);
+    expect(component.date).toBe(null);
+    expect(error).toBe('Adding uid on 2/19/2021');
   });
 });
