@@ -103,23 +103,23 @@
       <!-- shorter drag time for more responsive reordering-->
       <ng-template #pcDrag>
         <div class="center">
-          <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+          <mat-card cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
     
     
-             <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
+            <div class="example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
               <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
               <mat-checkbox (change)="completionToggle(item)" color = primary [checked] = "item.isComplete"> </mat-checkbox>
               <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
-          <p>
-          {{item.quantity}}
-          {{item.unit}}
-          {{item.isComplete}}
-          <!--isComplete will be removed from showing here once a more elegant visual represntation happens-->
-          </p>
+              <p>
+              {{item.quantity}}
+              {{item.unit}}
+              {{item.isComplete}}
+              <!--isComplete will be removed from showing here once a more elegant visual represntation happens-->
+              </p>
             </div> 
     
-          </div>
-          </div>
+          </mat-card>
+        </div>
       </ng-template>
 
       <!--longer drag time for mobile, to allow for scrolling-->
