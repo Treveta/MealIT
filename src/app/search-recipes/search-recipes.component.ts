@@ -1,4 +1,4 @@
-import {Component, OnDestroy, Injectable, Input, Output, EventEmitter, Inject} from '@angular/core';
+import {Component, OnInit, OnDestroy, Injectable, Input, Output, EventEmitter, Inject} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {AuthService} from 'app/services/auth.service';
 import {AngularFireAnalytics} from '@angular/fire/analytics';
@@ -17,7 +17,7 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 /**
  * Componenent that handles the searching of recipes. Uses a fuzzy search algorithm.
  */
-export class SearchRecipesComponent implements OnDestroy {
+export class SearchRecipesComponent implements OnDestroy, OnInit {
   @Input()
     embeddedPage: string;
 
@@ -65,11 +65,17 @@ export class SearchRecipesComponent implements OnDestroy {
       }
       this.fuseResults = this.userRecipes;
     });
-    if (!this.embeddedPage) {
-      this.embeddedPage == '';
-    }
   }
 
+  /**
+   * Initializes the component as a lifecycle hook
+   */
+  ngOnInit(): void {
+    if (this.embeddedPage) {
+      this.data.embeddedPage = this.embeddedPage;
+    }
+    console.log(this.embeddedPage);
+  }
   /**
    * Destroys the component
    */

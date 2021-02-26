@@ -9,7 +9,7 @@
     </button>
 </mat-form-field>
 <mat-accordion>
-    <mat-expansion-panel *ngFor="let recipe of fuseResults" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+    <mat-expansion-panel *ngFor="let recipe of fuseResults | slice:0:10; let i=index" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
         <mat-expansion-panel-header (click)="fetchRecipe(recipe.uid, this.listIngredients)">
             <mat-panel-title>
                 {{recipe.recipeName}}
@@ -17,6 +17,11 @@
             <mat-panel-description *ngIf="data.embeddedPage === 'mealPlan'">
               <button mat-raised-button name="SelectRecipe" (click)="selectMealDialogClose(recipe.uid)">
                 Select As Meal
+              </button>
+            </mat-panel-description>
+            <mat-panel-description *ngIf="data.embeddedPage === 'recipe'">
+              <button mat-raised-button name="ShowRecipe">
+                Show Recipe
               </button>
             </mat-panel-description>
         </mat-expansion-panel-header>

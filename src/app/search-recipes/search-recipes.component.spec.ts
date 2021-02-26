@@ -54,6 +54,7 @@ describe('SearchRecipesComponent', () => {
   ];
 
   let debugSelectMeal;
+  let debugShowRecipe;
 
 
   /**
@@ -222,12 +223,17 @@ describe('SearchRecipesComponent', () => {
 
         // everything else in the beforeEach needs to be done here.
         debugSelectMeal = fixture.debugElement.queryAll(By.css('button[name=\'SelectRecipe\']'));
+        debugShowRecipe = fixture.debugElement.queryAll(By.css('button[name=\'ShowRecipe\']'));
         component.setCache(mockRecipes);
       });
     });
 
     it('should show Select Recipe button', function() {
       expect(debugSelectMeal.length).toBeGreaterThan(0);
+    });
+
+    it('should not have Show Recipe button', function() {
+      expect(debugShowRecipe.length).toBe(0);
     });
 
     /**
@@ -263,12 +269,17 @@ describe('SearchRecipesComponent', () => {
 
         // everything else in the beforeEach needs to be done here.
         debugSelectMeal = fixture.debugElement.queryAll(By.css('button[name=\'SelectRecipe\']'));
+        debugShowRecipe = fixture.debugElement.queryAll(By.css('button[name=\'ShowRecipe\']'));
         component.setCache(mockRecipes);
       });
     });
 
     it('should not have Select Recipe button', function() {
       expect(debugSelectMeal.length).toBe(0);
+    });
+
+    it('should have Show Recipe button', function() {
+      expect(debugShowRecipe.length).toBeGreaterThan(0);
     });
   });
 });
