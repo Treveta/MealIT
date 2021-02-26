@@ -1,4 +1,4 @@
-The model can be imported using: import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from '~/mealPlan.model.ts';
+The model can be imported using: import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from '~/mealPlan.model';
 
 Here is an example of the mealPlanModel as an expanded explicit JSON Object
 This could be used as a template if necessary, however the example below the explicit

@@ -1,5 +1,5 @@
 <body>
-    <button (click)="openModal('addRecipeToDay')">Add new recipe</button>
+    <button (click)="openDialog()">Add new recipe</button>
     <button (click)="getWeek(date)">Week Button</button>
     <table>
         <tr>
@@ -157,16 +157,19 @@
 </jw-modal>
 
 <jw-modal id="addRecipeToDay">
+  <div class="mat-app-background">
     <mat-form-field>
-        <mat-label>Clearable input</mat-label>
-        <input matInput type="text" [(ngModel)]="searchTerm" (keyup)="searchFuzzy()">
-        <button mat-button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''" (click)="searchFuzzy()">
-          <mat-icon>close</mat-icon>
-        </button>
-    </mat-form-field>
-    <input [(ngModel)]="date" type="date"  required>
-    <h3 class="error" *ngIf="errorDate">{{errorMessage}}</h3>
-    <!--search and select recipe goes here-->
+      <mat-label>Clearable input</mat-label>
+      <input matInput type="text" [(ngModel)]="searchTerm" (keyup)="searchFuzzy()">
+      <button mat-button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''" (click)="searchFuzzy()">
+        <mat-icon>close</mat-icon>
+      </button>
+  </mat-form-field>
+  <input [(ngModel)]="date" type="date"  required>
+  <h3 class="error" *ngIf="errorDate">{{errorMessage}}</h3>
+  <app-search-recipes [embeddedPage]="'mealPlan'" (onMealSelected)="logSelectedRecipe($event)"></app-search-recipes>
+  </div>
+    <!-- POSSIBLY DEPRECATED CODE, LINE ABOVE PULLS FROM SEARCH RECIPE COMPONENT DIRECTLY
     <mat-accordion class="example-headers-align">
         <mat-expansion-panel *ngFor="let recipe of fuzzyResults" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
             <mat-expansion-panel-header (click)="fetchRecipe(recipe.uid)">
@@ -184,5 +187,5 @@
                 {{ingredient.ingredientName}}
             </div>
         </mat-expansion-panel>
-    </mat-accordion>
+    </mat-accordion> -->
 </jw-modal>

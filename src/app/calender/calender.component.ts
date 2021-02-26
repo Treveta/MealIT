@@ -2,6 +2,8 @@ import {Component} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {ModalService} from '../modal-functionality';
 import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
+import {MatDialog} from '@angular/material/dialog';
+import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from './mealPlan.model';
 
 @Component({
   selector: 'app-calender',
@@ -74,6 +76,24 @@ export class CalenderComponent {
   public weekDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   /**
+   * A week of meals for the user
+   * @type {mealPlanWeek}
+   */
+  public mealPlanWeek: mealPlanWeek;
+
+  /**
+   * One day in a meal plan week
+   * @type {mealPlanDay}
+   */
+  public mealPlanDay: mealPlanDay;
+
+  /**
+   * One recipe in a meal plan day
+   * @type {mealPlanRecipe}
+   */
+  public mealPlanRecipe: mealPlanRecipe;
+
+  /**
    * Convert the date to simplified form
    * @param {Date} date
    * @return {string}
@@ -89,7 +109,7 @@ export class CalenderComponent {
    * @param {SearchRecipesComponent} search
    * @param {AuthService} authService
    */
-  constructor(private modalService: ModalService, private search: SearchRecipesComponent, private authService: AuthService) {
+  constructor(private modalService: ModalService, private search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -130,6 +150,23 @@ export class CalenderComponent {
    */
   closeModal(id: string) {
     this.modalService.close(id);
+  }
+
+  /**
+   * Opens the dialog on click
+   */
+  openDialog() {
+    const dialogRef = this.dialog.open(SearchRecipesComponent, {
+      width: '50%',
+      height: '75%',
+      data: {embeddedPage: 'mealPlan'},
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      // Only takes action if the result is defined
+      if (result) {
+        this.logSelectedRecipe(result);
+      }
+    });
   }
 
   /**
@@ -176,9 +213,12 @@ export class CalenderComponent {
   /**
    * Fetches the ingredient information for a specific recipe based on its uid
    * Returns the fetched data to this.ingredients to be displayed by Material UI in HTML
+   * THIS FUNCTION MAY BE DEPRECATED DUE TO CHANGES TO WHERE SEARCH ORIGINATES FROM
+   * WITH SEARCH BEING HANDLED BY A TEMPLATE CALL TO <app-search-recipes> IN THE HTML
+   * THIS FUNCTION IS NO LONGER REQUIRED AND ACTUALLY CAUSES ERRORS IF UNCOMMENTED
    * @param {string | number} uid
    */
-  fetchRecipe(uid: string | number) {
+  /** fetchRecipe(uid: string | number) {
     if (uid == this.previousUID && this.panelOpenState == false) {
       this.ingredientList = this.ingredientListLoading;
       this.previousUID = 0;
@@ -196,5 +236,13 @@ export class CalenderComponent {
         this.ingredientList = list;
       });
     }
+  }*/
+
+  /**
+   * Debug Function to Log selected recipe to console
+   * @param {string} mealSelected meal to log to console
+   */
+  logSelectedRecipe(mealSelected: string) {
+    console.log(mealSelected);
   }
 }

@@ -35,8 +35,8 @@
         </div>
         <button (click)="closeModal('custom-modal-2');">Close</button>
 </jw-modal>
-
-<mat-form-field>
+<body>
+  <mat-form-field>
     <mat-label>Clearable input</mat-label>
     <input matInput type="text" [(ngModel)]="searchTerm" (keyup)="searchFuzzy()">
     <button mat-button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''" (click)="searchFuzzy()">
@@ -63,6 +63,9 @@
         <th *ngIf="recipe.recipeName"><input (click)="deleteRecipe(recipe)" type="button" value="delete recipe"></th><!--delete button-->
     </tr> 
 </table>
+
+<app-search-recipes [embeddedPage]="'recipe'"></app-search-recipes>
+</body>
 
 <jw-modal id="custom-modal-3">
     <div *ngIf="recipe">
