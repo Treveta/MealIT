@@ -75,13 +75,20 @@ describe('CalenderComponent', () => {
    * the value is defined.
    */
   it('Should log data from dialog when data is defined', () => {
+    // Creates a spy on the component's dialog's open function.
+    // Changes the open function's return behavior to be a function that returns a observable with a undefined value.
     spyOn(component.dialog, 'open')
         .and
         .returnValue({afterClosed: () => of('uidstring')} as MatDialogRef<typeof component>);
+    // Creates a spy on the openDialog that will delegate to the component's implementation
     spyOn(component, 'openDialog').and.callThrough();
+    // Creates a spy on the logSelectedRecipe function
     spyOn(component, 'logSelectedRecipe');
+    // Runs the openDialog function
     component.openDialog();
+    // Expects the component.dialog variable to defined
     expect(component.dialog).toBeDefined();
+    // Expects that the spy registered at least one call to the logSelectedRecipe function
     expect(component.logSelectedRecipe).toHaveBeenCalled();
   });
 
@@ -91,13 +98,20 @@ describe('CalenderComponent', () => {
    * called when the dialogs returned value is defined.
    */
   it('Should not log data from dialog when data is undefined', () => {
+    // Creates a spy on the component's dialog's open function.
+    // Changes the open function's return behavior to be a function that returns a observable with an undefined value.
     spyOn(component.dialog, 'open')
         .and
         .returnValue({afterClosed: () => of('')} as MatDialogRef<typeof component>);
+    // Creates a spy on the openDialog that will delegate to the component's implementation
     spyOn(component, 'openDialog').and.callThrough();
+    // Creates a spy on the logSelectedRecipe function
     spyOn(component, 'logSelectedRecipe');
+    // Runs the openDialog function
     component.openDialog();
+    // Expects the component.dialog variable to defined
     expect(component.dialog).toBeDefined();
+    // Expects that the spy registered at least one call to the logSelectedRecipe function
     expect(component.logSelectedRecipe).not.toHaveBeenCalled();
   });
 });
