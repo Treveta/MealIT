@@ -71,9 +71,9 @@ export class ItemListComponent implements OnDestroy, OnInit {
   constructor(
         private modalService: ModalService,
         private fb: FormBuilder,
-        private afs: AngularFirestore,
         private authService: AuthService,
         public platform: Platform,
+        public afs: AngularFirestore,
   ) {
     this.form = this.fb.group({
       checkArray: this.fb.array([]),
@@ -195,7 +195,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
           unit: this.newUnit,
         };
         this.sortedList.push(addedItem);
-        this.shoppingCollection.doc('List').update({Items: this.sortedList});
+        this.updateList();
         this.newItem = '';
         this.newQuantity = '';
         this.newUnit = '';
@@ -235,22 +235,26 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * @param {any} item the item to be deleted
      * @const index the index of the item in the sorted list
      * @description onCheckBoxChange will first get the index of the item then splice it with 1-removing it from the list.
-     * Then, it updates the shoppingCollection, pushing the change to the database.
+     * Then, it calls @function updateList , which updates the shoppingCollection, pushing the change to the database.
      */
     onCheckBoxChange(item): void {
       const index = this.sortedList.indexOf(item);
       this.sortedList.splice(index, 1);
-      this.shoppingCollection.doc('List').update({Items: this.sortedList});
+      this.updateList();
     }
 
     /** @function
      * @name completionToggle
      * @param {any} item the item whose isComplete value is to be edited
      * @description completionToggle sets isComplete opposite to what it was, similar to togggleEdit
-     * Then, it updates the shoppingCollection, pushing the change to the database
+     * Then, it calls @function updateList, which updates the shoppingCollection, pushing the change to the database
      */
     completionToggle(item): void {
       item.isComplete=!item.isComplete;
+      this.updateList();
+    }
+
+    updateList():void {
       this.shoppingCollection.doc('List').update({Items: this.sortedList});
     }
 

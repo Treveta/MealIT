@@ -13,13 +13,47 @@ import {ItemListComponent} from './item-list.component';
 describe('ItemListComponent', () => {
   let component: ItemListComponent;
   let fixture: ComponentFixture<ItemListComponent>;
-
+  /**
+   * Mock of sortedList, used by several functions in item-list.component.ts
+   */
+  const mockSortedList = [
+    {
+      isComplete: false,
+      itemName: 'Apples',
+      quantity: 3,
+      unit: 'oz',
+    },
+    {
+      isComplete: false,
+      itemName: 'blueberry',
+      quantity: 5,
+      unit: 'lb',
+    },
+    {
+      isComplete: false,
+      itemName: 'steak',
+      quantity: 2,
+      unit: 'ct',
+    },
+    {
+      isComplete: false,
+      itemName: 'ApplesbutBetter',
+      quantity: 4,
+      unit: 'oz',
+    },
+  ];
   beforeEach(() => {
     const formBuilderStub = () => ({
       group: (object) => ({}),
       array: (array) => ({}),
     });
-    const angularFirestoreStub = () => ({collection: (arg) => ({})});
+    const angularFirestoreStub = () => ({
+      collection: (collectionPath) => ({
+        add: () => ({id: {}}),
+        doc: () => ({update: () => ({})}),
+        get: () => ({toPromise: () => ({forEach: () => ({})})}),
+      }),
+    });
     const modalServiceStub = () => ({open: (id) => ({}), close: (id) => ({})});
     const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
     const platformStub = () => ({ANDROID: {}, IOS: {}});
@@ -35,30 +69,50 @@ describe('ItemListComponent', () => {
         {provide: Platform, useFactory: platformStub},
       ],
     });
+  });
+  /**
+   * Initializes Test Bed and test component
+   */
+  beforeEach(() => {
     fixture = TestBed.createComponent(ItemListComponent);
     component = fixture.componentInstance;
+    component.sortedList=mockSortedList;
+    // after something in the component changes, detects changes
+    fixture.detectChanges();
   });
-
+  /**
+   * Tests that the instance can load
+   */
   it('can load instance', () => {
     expect(component).toBeTruthy();
   });
-
+  /**
+   * Tests that displayedColumns has correct default values
+   */
   it(`displayedColumns has default value`, () => {
     expect(component.displayedColumns).toEqual([`name`, `quantity`, `unit`]);
   });
-
+  /**
+   * tests that editToggle starts as false
+   */
   it(`editToggle has default value`, () => {
     expect(component.editToggle).toEqual(false);
   });
-
+  /**
+   * Tests that isLarge starts as either true or false (depending on the size of the karma window)
+   */
   it(`isLarge has default value`, () => {
-    expect(component.isLarge).toEqual(true);
+    expect(component.isLarge===true || component.isLarge===false).toEqual(true);
   });
-
+  /**
+   * Tests that screenWidth gets initialized
+   */
   it(`screenWidth has default value`, () => {
     expect(component.screenWidth).toEqual(window.innerWidth);
   });
-
+  /**
+   * Tests that unitGroups has a default value as defined
+   */
   it(`unitGroups has default value`, () => {
     expect(component.unitGroups).toEqual([{
       name: 'US Units',
@@ -85,9 +139,12 @@ describe('ItemListComponent', () => {
         {value: 'pinch', viewValue: 'pinch(es)'},
       ],
     }]);
-    // create a mock array
   });
-  it('completionToggle successfully edits an items boolean', () => {
+  /**
+   * Tests that completionToggle can change an item isComplete boolean opposite to what it was and
+   * calls updateList
+   */
+  it('completionToggle successfully edits an items boolean and calls updateList', () => {
     const item = {
       isComplete: false,
       itemName: 'Apples',
@@ -100,19 +157,56 @@ describe('ItemListComponent', () => {
       quantity: 3,
       unit: 'oz',
     };
-    class MockItemListComponent extends ItemListComponent {
-      static completionToggle(item: any):void {
-        item.isComplete=!item.isComplete;
-      }
-    }
-    MockItemListComponent.completionToggle(item);
+    // delcaring a spy to check that updateList is called
+    spyOn(component, 'updateList');
+
+    component.completionToggle(item);
     expect(item.isComplete).toEqual(true);
-    MockItemListComponent.completionToggle(item);
+    expect(component.updateList).toHaveBeenCalled();
+
+    component.completionToggle(item);
     expect(item.isComplete).toEqual(false);
+    expect(component.updateList).toHaveBeenCalled();
+
     // what if it starts as true?
-    MockItemListComponent.completionToggle(itemt);
+
+    component.completionToggle(itemt);
     expect(itemt.isComplete).toEqual(false);
-    MockItemListComponent.completionToggle(itemt);
+    expect(component.updateList).toHaveBeenCalled();
+
+    component.completionToggle(itemt);
     expect(itemt.isComplete).toEqual(true);
+    expect(component.updateList).toHaveBeenCalled();
+  });
+  /**
+   * Tests that onCheckBoxChange successfully removes a designated item from sortedlList
+   */
+  it('onCheckBoxChange successfully removes an item from sortedList', () => {
+    const noItemList = [
+      {
+        isComplete: false,
+        itemName: 'blueberry',
+        quantity: 5,
+        unit: 'lb',
+      },
+      {
+        isComplete: false,
+        itemName: 'steak',
+        quantity: 2,
+        unit: 'ct',
+      },
+      {
+        isComplete: false,
+        itemName: 'ApplesbutBetter',
+        quantity: 4,
+        unit: 'oz',
+      },
+    ];
+    // delcaring a spy to check that updateList is called
+    spyOn(component, 'updateList');
+
+    component.onCheckBoxChange(component.sortedList[0]);
+    expect(component.sortedList).toEqual(noItemList);
+    expect(component.updateList).toHaveBeenCalled();
   });
 });
