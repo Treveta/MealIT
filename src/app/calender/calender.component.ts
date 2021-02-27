@@ -109,7 +109,7 @@ export class CalenderComponent {
    * @param {SearchRecipesComponent} search
    * @param {AuthService} authService
    */
-  constructor(private modalService: ModalService, private search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog) {
+  constructor(public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -127,7 +127,7 @@ export class CalenderComponent {
       const returnMessage = 'Adding ' + uid + ' on ' + this.simplifyDate(this.date);
       this.errorDate = false;
       this.date = null;
-      // this.closeModal(modalID);
+      this.closeModal(modalID);
       return returnMessage;
     } else {
       this.errorDate = true;
@@ -241,8 +241,10 @@ export class CalenderComponent {
   /**
    * Debug Function to Log selected recipe to console
    * @param {string} mealSelected meal to log to console
+   * @return {string}
    */
   logSelectedRecipe(mealSelected: string) {
     console.log(mealSelected);
+    return mealSelected;
   }
 }
