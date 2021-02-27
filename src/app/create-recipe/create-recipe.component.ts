@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import {Component} from '@angular/core';
 import {Observable} from 'rxjs';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
@@ -16,17 +15,60 @@ import {SearchRecipesComponent} from '../search-recipes/search-recipes.component
   templateUrl: './create-recipe.component.html',
   styleUrls: ['./create-recipe.component.css'],
 })
+/**
+ * Creates a recipe component
+ */
 export class CreateRecipeComponent {
+       /**
+        * List that hold ingredients
+        * @type {any[]}
+        */
        public Ingredients = [];
+       /**
+        * List that holds the number portion of an ingredient
+        * @type {float[]}
+        */
        public amount = [];
+       /**
+        * List that holds the size portion of an ingredient
+        * @type {float[]}
+        */
        public units = [];
 
+       /**
+        * A string holding an ingredient
+        * @type {string}
+        */
        public newIngredient;
+       /**
+        * A string holding an ingredient amount
+        * @type {string}
+        */
        public newAmount;
+       /**
+        * A string holding an ingredient unit
+        * @type {string}
+        */
        public newUnit;
+       /**
+        *  A string holding the number of servings
+        * @type {string}
+        */
        public servings;
+       /**
+        * A string holding the number of calories
+        * @type {string}
+        */
        public calories;
+       /**
+        * A string holding the recipe name
+        * @type {string}
+        */
        public recipeName;
+       /**
+        * The user's information
+        * @type {string}
+        */
        private userInfo;
 
        /**
@@ -47,6 +89,14 @@ export class CreateRecipeComponent {
         recipeListCollection: AngularFirestoreCollection<recipeList>;
         listRecipes: Observable<recipeList[]>
 
+        /**
+         * The constructor for the modal services
+         * @param {Modal} modalService
+         * @param {any} afs Change this later
+         * @param {AuthService} authService
+         * @param {any} dbHelp Change this later
+         * @param {SearchRecipesComponent} search
+         */
         constructor(
         private modalService: ModalService,
         private afs: AngularFirestore,
@@ -65,7 +115,9 @@ export class CreateRecipeComponent {
             };
           });
         }
-
+        /**
+         * A function that adds an ingredient to a recipe list
+         */
         public addToList() {
           const amount= parseFloat(this.newAmount);
           // console.log(amount);
@@ -79,13 +131,19 @@ export class CreateRecipeComponent {
             this.newUnit = '';
           }
         }
-
+        /**
+         * A funtion that removes an ingredient from the recipe list
+         * @param {int} index
+         */
         public deleteIngredient(index) {
           this.Ingredients.splice(index, 1);
           this.amount.splice(index, 1);
           this.units.splice(index, 1);
         }
 
+        /**
+         * A function that brings a form to fill out for a recipe
+         */
         async submitRecipe() {
           if (this.Ingredients.length>0 && this.servings != '' && this.calories != '' && this.recipeName != '') {
             const data = {
@@ -123,15 +181,24 @@ export class CreateRecipeComponent {
             window.alert('Please fill in all fields and have at least one ingredient');
           }
         }
-
+        /**
+         * A funtion that opens a modal
+         * @param {string} id
+         */
         openModal(id: string) {
           this.modalService.open(id);
         }
-
+        /**
+         * A funtion that closes a modal
+         * @param {string} id
+         */
         closeModal(id: string) {
           this.modalService.close(id);
         }
-
+        /**
+         * A funtion that remove a recipe from the databse
+         * @param {any} recipe
+         */
         public deleteRecipe(recipe) {
           console.log(recipe);
           const query = 'recipeName:==:'+ recipe.recipeName+'';
@@ -159,6 +226,10 @@ export class CreateRecipeComponent {
           console.log(this.fuzzyResults);
         }
 
+        /**
+         * A funtion that opens a recipes information
+         * @param {any} recipe
+         */
         async openRecipe(recipe) {
           this.recipe.recipeName = recipe.recipeName;
           this.recipe.calories = recipe.calories;

@@ -109,7 +109,7 @@ export class CalenderComponent {
    * @param {SearchRecipesComponent} search
    * @param {AuthService} authService
    */
-  constructor(private modalService: ModalService, private search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog) {
+  constructor(public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -124,16 +124,15 @@ export class CalenderComponent {
   submitMeal(uid: string | number, modalID: string) {
     if (this.date != null) {
       alert('Adding ' + uid + ' on ' + this.simplifyDate(this.date));
-      let returnMessage = 'Adding ' + uid + ' on ' + this.simplifyDate(this.date);
+      const returnMessage = 'Adding ' + uid + ' on ' + this.simplifyDate(this.date);
       this.errorDate = false;
       this.date = null;
-      returnMessage += ' ' + this.errorDate + this.date;
-      // this.closeModal(modalID);
+      this.closeModal(modalID);
       return returnMessage;
     } else {
       this.errorDate = true;
       this.errorMessage = 'You must enter a valid date';
-      const returnMessage = this.errorDate + this.errorMessage;
+      const returnMessage = this.errorMessage;
       return returnMessage;
     }
   }
@@ -242,8 +241,10 @@ export class CalenderComponent {
   /**
    * Debug Function to Log selected recipe to console
    * @param {string} mealSelected meal to log to console
+   * @return {string}
    */
   logSelectedRecipe(mealSelected: string) {
     console.log(mealSelected);
+    return mealSelected;
   }
 }
