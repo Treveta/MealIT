@@ -79,15 +79,19 @@ describe('LoginPageComponent', () => {
     */
   it('should login successfully', () => {
     spyOn(component.auth, 'signInEmailUser');
+    component.email = mockUsername;
+    component.password = mockPassword;
     component.login();
-    expect(component.auth.signInEmailUser).toHaveBeenCalled();
+    expect(component.auth.signInEmailUser).toHaveBeenCalledWith(mockUsername, mockPassword);
   });
   /**
     * Tests if the user sign up works successfully
     */
   it('should sign up successfully', () => {
     spyOn(component.auth, 'createEmailUser');
+    component.email = mockUsername;
+    component.password = mockPassword;
     component.signUp();
-    expect(component.auth.createEmailUser).toHaveBeenCalled();
+    expect(component.auth.createEmailUser).toHaveBeenCalledWith(mockUsername, mockPassword);
   });
 });
