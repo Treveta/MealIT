@@ -21,12 +21,18 @@ export class LoginPageComponent implements OnInit {
    * Holds collections of items from angular firestore
    * @type {Item}
    */
-  public itemCollection: any;
+  itemCollection: any;
   /**
    * Holds observable array of items from angular firestore
    * @type {any[]}
    */
-  public items: any;
+  items: any;
+  /**
+   * Holds username and password from signup modal
+   * @type {string}
+   */
+  email: string;
+  password: string;
 
   /**
    * The constructor for the modal service
@@ -35,25 +41,19 @@ export class LoginPageComponent implements OnInit {
    * @param {AngularFirestore} firestore
    * @param {DatabaseHelperComponent} dbHelp
    */
-  constructor(private modalService: ModalService, public auth: AuthService, private firestore: AngularFirestore, private dbHelp: DatabaseHelperComponent) {
+  constructor(public modalService: ModalService, public auth: AuthService, private firestore: AngularFirestore, private dbHelp: DatabaseHelperComponent) {
   }
   /**
    * A function for a user to sign up for an account
    */
   signUp(): void {
-    const inputUsername = (<HTMLInputElement>document.getElementById('signUpEmail')).value;
-    const inputPassword = (<HTMLInputElement>document.getElementById('signUpPassword')).value;
-
-    this.auth.createEmailUser(inputUsername, inputPassword);
+    this.auth.createEmailUser(this.email, this.password);
   }
   /**
    * A function for a user to log in with an account
    */
   login(): void {
-    const inputUsername = (<HTMLInputElement>document.getElementById('loginEmail')).value;
-    const inputPassword = (<HTMLInputElement>document.getElementById('loginPassword')).value;
-
-    this.auth.signInEmailUser(inputUsername, inputPassword);
+    this.auth.signInEmailUser(this.email, this.password);
   }
   /**
    * A function to open a modal
