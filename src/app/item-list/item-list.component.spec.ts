@@ -254,14 +254,12 @@ describe('ItemListComponent', () => {
   });
 
   it('mat checkBox should call call completionToggle on change', async () => {
-    /* const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'completionCheck'}));
+    spyOn(component, 'completionToggle');
+    const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'completionCheck'}));
     expect(await checkbox.isChecked()).toBe(false);
     await checkbox.check();
     expect(await checkbox.isChecked()).toBe(true);
-    expect(await checkbox.getName()).toBe('completionCheck'); */
-    spyOn(component, 'addToItemList');
-    const button = await loader.getHarness(MatButtonHarness);
-    await button.click();
-    expect(component.addToItemList).toHaveBeenCalled();
+    expect(await checkbox.getName()).toBe('completionCheck');
+    expect(component.completionToggle).toHaveBeenCalled();
   });
 });
