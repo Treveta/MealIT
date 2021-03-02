@@ -102,7 +102,7 @@ describe('SearchRecipesComponent', () => {
       component = fixture.componentInstance;
       component.fuseResults = mockRecipes;
       fixture.whenStable().then(() => {
-      // after something in the component changes, you should detect changes
+        // after something in the component changes, you should detect changes
         fixture.detectChanges();
 
         // everything else in the beforeEach needs to be done here.
