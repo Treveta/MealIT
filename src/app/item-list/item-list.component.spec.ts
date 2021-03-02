@@ -1,5 +1,9 @@
 /* eslint-disable require-jsdoc */
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {MatCheckboxHarness} from '@angular/material/checkbox/testing';
+import {MatSelectHarness} from '@angular/material/select/testing';
+import {HarnessLoader} from '@angular/cdk/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AngularFirestore} from '@angular/fire/firestore';
@@ -23,6 +27,7 @@ import {By} from '@angular/platform-browser';
 describe('ItemListComponent', () => {
   let component: ItemListComponent;
   let fixture: ComponentFixture<ItemListComponent>;
+  let loader: HarnessLoader;
   /**
    * Mock of sortedList, used by several functions in item-list.component.ts
    */
@@ -72,7 +77,6 @@ describe('ItemListComponent', () => {
     const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
     const platformStub = () => ({ANDROID: {}, IOS: {}});
 
-
     TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
       declarations: [ItemListComponent],
@@ -107,7 +111,7 @@ describe('ItemListComponent', () => {
     fixture = TestBed.createComponent(ItemListComponent);
     component = fixture.componentInstance;
     component.sortedList=mockSortedList;
-
+    loader = TestbedHarnessEnvironment.loader(fixture);
     fixture.whenStable().then(() => {
       // after something in the component changes, detects changes
       fixture.detectChanges();
@@ -115,7 +119,6 @@ describe('ItemListComponent', () => {
       inputCompletionCheck = <HTMLInputElement>debugCompletionCheck[0].nativeElement.querySelector('input');
       labelCompletionCheck = <HTMLInputElement>debugCompletionCheck[0].nativeElement.querySelector('label');
     });
-    console.log(labelCompletionCheck);
   });
   /**
    * Tests that the instance can load
@@ -254,7 +257,11 @@ describe('ItemListComponent', () => {
     expect(debugCompletionCheck.length).toBeGreaterThan(0);
   });
 
-  it('mat checkBox should call call completionToggle on change', fakeAsync( () => {
- // TODO
-  }));
+  it('mat checkBox should call call completionToggle on change', async () => {
+    const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'completionCheck'}));
+    expect(await checkbox.isChecked()).toBe(false);
+    await checkbox.check();
+    expect(await checkbox.isChecked()).toBe(true);
+    expect(await checkbox.getName()).toBe('completionCheck');
+  });
 });
