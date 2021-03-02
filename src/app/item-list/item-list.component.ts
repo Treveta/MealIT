@@ -195,7 +195,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
           unit: this.newUnit,
         };
         this.sortedList.push(addedItem);
-        this.updateList();
+        this.updateDocument('List', {Items: this.sortedList});
         this.newItem = '';
         this.newQuantity = '';
         this.newUnit = '';
@@ -235,27 +235,33 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * @param {any} item the item to be deleted
      * @const index the index of the item in the sorted list
      * @description onCheckBoxChange will first get the index of the item then splice it with 1-removing it from the list.
-     * Then, it calls @function updateList , which updates the shoppingCollection, pushing the change to the database.
+     * Then, it calls @function updateDocument , which updates the shoppingCollection, pushing the change to the database.
      */
     onCheckBoxChange(item): void {
       const index = this.sortedList.indexOf(item);
       this.sortedList.splice(index, 1);
-      this.updateList();
+      this.updateDocument('List', {Items: this.sortedList});
     }
 
     /** @function
      * @name completionToggle
      * @param {any} item the item whose isComplete value is to be edited
      * @description completionToggle sets isComplete opposite to what it was, similar to togggleEdit
-     * Then, it calls @function updateList, which updates the shoppingCollection, pushing the change to the database
+     * Then, it calls @function updateDocument, which updates the shoppingCollection, pushing the change to the database
      */
     completionToggle(item): void {
       item.isComplete=!item.isComplete;
-      this.updateList();
+      this.updateDocument('List', {Items: this.sortedList});
     }
 
-    updateList():void {
-      this.shoppingCollection.doc('List').update({Items: this.sortedList});
+    /** @function
+     * @name updateDocument
+     * @param {string} docName name of the document to update
+     * @param {any} data the data to update the document with
+     * @description helper function. API call to update the list.
+     */
+    updateDocument(docName: string, data):void {
+      this.shoppingCollection.doc(docName).update(data);
     }
 
     // these functions are all that is needed to show and hide a modal view

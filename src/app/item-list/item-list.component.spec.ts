@@ -1,13 +1,23 @@
 /* eslint-disable require-jsdoc */
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {ModalService} from '../modal-functionality';
 import {AuthService} from '../services/auth.service';
-// import {CdkDragDrop} from '@angular/cdk/drag-drop'; //not testing this
 import {Platform} from '@angular/cdk/platform';
 import {ItemListComponent} from './item-list.component';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {MatCardModule} from '@angular/material/card';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatButtonModule} from '@angular/material/button';
+import {MatChipsModule} from '@angular/material/chips';
+import {MatIconModule} from '@angular/material/icon';
+import {MatSelectModule} from '@angular/material/select';
+import {By} from '@angular/platform-browser';
 
 
 describe('ItemListComponent', () => {
@@ -42,6 +52,10 @@ describe('ItemListComponent', () => {
       unit: 'oz',
     },
   ];
+  let debugCompletionCheck;
+  let inputCompletionCheck;
+  let labelCompletionCheck;
+
   beforeEach(() => {
     const formBuilderStub = () => ({
       group: (object) => ({}),
@@ -58,6 +72,7 @@ describe('ItemListComponent', () => {
     const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
     const platformStub = () => ({ANDROID: {}, IOS: {}});
 
+
     TestBed.configureTestingModule({
       schemas: [NO_ERRORS_SCHEMA],
       declarations: [ItemListComponent],
@@ -67,6 +82,21 @@ describe('ItemListComponent', () => {
         {provide: ModalService, useFactory: modalServiceStub},
         {provide: AuthService, useFactory: authServiceStub},
         {provide: Platform, useFactory: platformStub},
+        // {provide: NG_VALUE_ACCESSOR, useValue: {}},
+      ],
+      imports: [
+        MatFormFieldModule,
+        MatInputModule,
+        FormsModule,
+        BrowserAnimationsModule,
+        MatCardModule,
+        MatCheckboxModule,
+        MatButtonModule,
+        MatChipsModule,
+        DragDropModule,
+        MatIconModule,
+        ReactiveFormsModule,
+        MatSelectModule,
       ],
     });
   });
@@ -77,8 +107,15 @@ describe('ItemListComponent', () => {
     fixture = TestBed.createComponent(ItemListComponent);
     component = fixture.componentInstance;
     component.sortedList=mockSortedList;
-    // after something in the component changes, detects changes
-    fixture.detectChanges();
+
+    fixture.whenStable().then(() => {
+      // after something in the component changes, detects changes
+      fixture.detectChanges();
+      debugCompletionCheck = fixture.debugElement.queryAll(By.css('mat-checkbox[name=\'completionCheck\']'));
+      inputCompletionCheck = <HTMLInputElement>debugCompletionCheck[0].nativeElement.querySelector('input');
+      labelCompletionCheck = <HTMLInputElement>debugCompletionCheck[0].nativeElement.querySelector('label');
+    });
+    console.log(labelCompletionCheck);
   });
   /**
    * Tests that the instance can load
@@ -157,26 +194,28 @@ describe('ItemListComponent', () => {
       quantity: 3,
       unit: 'oz',
     };
+    const docName: string = 'List';
+    const data: any = {Items: component.sortedList};
     // delcaring a spy to check that updateList is called
-    spyOn(component, 'updateList');
+    spyOn(component, 'updateDocument');
 
     component.completionToggle(item);
     expect(item.isComplete).toEqual(true);
-    expect(component.updateList).toHaveBeenCalled();
+    expect(component.updateDocument).toHaveBeenCalledWith(docName, data );
 
     component.completionToggle(item);
     expect(item.isComplete).toEqual(false);
-    expect(component.updateList).toHaveBeenCalled();
+    expect(component.updateDocument).toHaveBeenCalledWith(docName, data );
 
     // what if it starts as true?
 
     component.completionToggle(itemt);
     expect(itemt.isComplete).toEqual(false);
-    expect(component.updateList).toHaveBeenCalled();
+    expect(component.updateDocument).toHaveBeenCalledWith(docName, data );
 
     component.completionToggle(itemt);
     expect(itemt.isComplete).toEqual(true);
-    expect(component.updateList).toHaveBeenCalled();
+    expect(component.updateDocument).toHaveBeenCalledWith(docName, data);
   });
   /**
    * Tests that onCheckBoxChange successfully removes a designated item from sortedlList
@@ -203,10 +242,19 @@ describe('ItemListComponent', () => {
       },
     ];
     // delcaring a spy to check that updateList is called
-    spyOn(component, 'updateList');
+    spyOn(component, 'updateDocument');
 
     component.onCheckBoxChange(component.sortedList[0]);
     expect(component.sortedList).toEqual(noItemList);
-    expect(component.updateList).toHaveBeenCalled();
+    expect(component.updateDocument).toHaveBeenCalled();
   });
+
+
+  it('mat checkBox should appear on the page', () => {
+    expect(debugCompletionCheck.length).toBeGreaterThan(0);
+  });
+
+  it('mat checkBox should call call completionToggle on change', fakeAsync( () => {
+ // TODO
+  }));
 });
