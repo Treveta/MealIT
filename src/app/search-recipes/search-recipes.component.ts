@@ -85,10 +85,15 @@ export class SearchRecipesComponent implements OnDestroy, OnInit {
 
   /**
    * If the component is referenced as a dialog this function can close it and send variable to parent
-   * @param {string} selectedMeal the uid of the recipe to send back to parent component
+   * @param {string} selectedMealuid the uid of the recipe to send back to parent component
+   * @param {string} selectedMealName the common name of the recipe to send back to parent component
    */
-  selectMealDialogClose(selectedMeal: string): void {
-    this.dialogRef.close(selectedMeal);
+  selectMealDialogClose(selectedMealuid: string, selectedMealName: string): void {
+    const returnData = {
+      recipeName: selectedMealName,
+      uid: selectedMealuid,
+    };
+    this.dialogRef.close(returnData);
   }
 
   /**

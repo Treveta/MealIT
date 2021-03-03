@@ -1,153 +1,60 @@
 <body>
     <button (click)="openDialog()">Add new recipe</button>
     <button (click)="getWeek(date)">Week Button</button>
-    <table>
-        <tr>
-          <th *ngFor="let day of weekDayName">{{day}}</th>
-        </tr>
-        <tr>
-            <td>
-              <a role="button" (click)="openModal('viewDay')">
-                <mat-card class="example-card 1">
+    <table *ngFor="let plan of currentWeekPlanObs | async" class="fixWeek">
+          <th *ngFor="let day of plan.days">
+            {{day.weekDayName}}
+                <mat-card>
                   <mat-card-header>
-                    <mat-card-title>fish</mat-card-title>
-                    <mat-card-subtitle>breakfast</mat-card-subtitle>
+                    <mat-card-title class="larger-mat-card-title">Breakfast</mat-card-title>
                   </mat-card-header>
-                  <img mat-card-image src="https://pixabay.com/get/53e1dd434950b10ff3d8992cc621337e1c38dbe54e507749722c7cd09348c2_640.jpg">
-                  <mat-card-content>
-                    <p>
-                      calories:250 <br>
-  
-                      servings:1
-                    </p>
+                  <mat-card-content class="center-content"> 
+                    <!--BREAKFAST CARD CONTENT GOES HERE-->
+                    <mat-card *ngFor="let recipe of day.breakfast" class="mat-card-accent">
+                      <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
+                      <mat-card-content>
+                        {{recipe.uid}}
+                      </mat-card-content>
+                    </mat-card>
+                    <button mat-mini-fab name="breakfastButton" (click)="setMealInfo('breakfast', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
+                      <mat-icon>add</mat-icon>
+                    </button>
                   </mat-card-content>
                 </mat-card>
-              </a>
-            </td>
-            <td>
-              <a role="button" (click)="openModal('viewDay')">
-                <mat-card class="example-card 2">
+                <mat-card>
                   <mat-card-header>
-                    <mat-card-title>Mac and cheese</mat-card-title>
-                    <mat-card-subtitle>breakfast</mat-card-subtitle>
+                    <mat-card-title class="larger-mat-card-title">Lunch</mat-card-title>
                   </mat-card-header>
-                  <img mat-card-image src="https://pixabay.com/get/52e3d5464d56af14f1dc846096293e7a1536d9e0534c704f752878d3934cc45f_640.jpg">
-                  <mat-card-content>
-                    <p>
-                      calories:250 <br>
-
-                      servings:1
-                    </p>
-                  </mat-card-content>
-                  <mat-card-footer>
-                    <mat-chip-list aria-label="Tags">
-                      <mat-chip>noodles</mat-chip>
-                      <mat-chip>cheese</mat-chip>
-                      <mat-chip color="Primary" selected>Favorite</mat-chip>
-                    </mat-chip-list>
-                  </mat-card-footer>
-                </mat-card>
-              </a>
-            </td>
-            <td></td>
-            <td>
-              <mat-card class="example-card 2">
-                <mat-card-header>
-                  <mat-card-title>Mac and cheese</mat-card-title>
-                  <mat-card-subtitle>breakfast</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                  <p>
-                    calories:250 <br>
-
-                    servings:1
-                  </p>
-                </mat-card-content>
-                <mat-card-footer>
-                  <mat-chip-list aria-label="Tags">
-                    <mat-chip>noodles</mat-chip>
-                    <mat-chip>cheese</mat-chip>
-                    <mat-chip color="Primary" selected>Favorite</mat-chip>
-                  </mat-chip-list>
-                </mat-card-footer>
-              </mat-card>
-            </td>
-        </tr>
-        <tr>
-            <td>
-              <a role="button" (click)="openModal('viewDay')">
-                <mat-card class="example-card 1">
-                  <mat-card-header>
-                    <mat-card-title>bacon and eggs</mat-card-title>
-                    <mat-card-subtitle>lunch</mat-card-subtitle>
-                  </mat-card-header>
-                  <img mat-card-image src="https://pixabay.com/get/57e2d64b4856af14f1dc846096293e7a1536d9e0534c704f752878d3934dc058_640.jpg">
-                  <mat-card-content>
-                    <p>
-                      calories:250 <br>
-                      
-                      servings:1
-                    </p>
+                  <mat-card-content class="center-content">
+                    <!--LUNCH CARD CONTENT GOES HERE-->
+                    <mat-card *ngFor="let recipe of day.lunch" class="mat-card-accent">
+                      <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
+                      <mat-card-content>
+                        {{recipe.uid}}
+                      </mat-card-content>
+                    </mat-card>
+                    <button mat-mini-fab name="lunchButton" (click)="setMealInfo('lunch', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
+                      <mat-icon>add</mat-icon>
+                    </button>
                   </mat-card-content>
                 </mat-card>
-              </a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td>
-              <a role="button" (click)="openModal('viewDay')">
-                <mat-card class="example-card 1">
+                <mat-card>
                   <mat-card-header>
-                    <mat-card-title>fish</mat-card-title>
-                    <mat-card-subtitle>Dinner</mat-card-subtitle>
+                    <mat-card-title class="larger-mat-card-title">Dinner</mat-card-title>
                   </mat-card-header>
-                  <img mat-card-image src="https://pixabay.com/get/53e1dd434950b10ff3d8992cc621337e1c38dbe54e507749722c7cd09348c2_640.jpg">
-                  <mat-card-content>
-                    <p>
-                      calories:250 <br>
-                      
-                      servings:1
-                    </p>
+                  <mat-card-content class="center-content">
+                    <!--DINNER CARD CONTENT GOES HERE-->
+                    <mat-card *ngFor="let recipe of day.dinner" class="mat-card-accent">
+                      <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
+                      <mat-card-content>
+                        {{recipe.uid}}
+                      </mat-card-content>
+                    </mat-card>
+                    <button mat-mini-fab name="dinnerButton" (click)="setMealInfo('dinner', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
+                      <mat-icon>add</mat-icon>
+                    </button>
                   </mat-card-content>
                 </mat-card>
-              </a>
-            </td>
-            <td></td>
-            <td></td>
-        </tr>
-    </table>
-    <table class="fixWeek">
-          <th *ngFor="let day of weekDayName">
-            {{day}}
-                <mat-card (click)="openModal('viewDay')" (click)="setMealDate()">
-                  <mat-card-header>
-                    <mat-card-title>fish</mat-card-title>
-                    <mat-card-subtitle>breakfast</mat-card-subtitle>
-                  </mat-card-header>
-                  <mat-card-content>
-                    <p>
-                      calories:250 <br>
-  
-                      servings:1
-                    </p>
-                  </mat-card-content>
-                </mat-card>
-                <mat-card (click)="openModal('viewDay')">
-                  <mat-card-header>
-                    <mat-card-title>fish</mat-card-title>
-                    <mat-card-subtitle>breakfast</mat-card-subtitle>
-                  </mat-card-header>
-                  <mat-card-content>
-                    <p>
-                      calories:250 <br>
-  
-                      servings:1
-                    </p>
-                  </mat-card-content>
-                </mat-card>
-            Row 3
           </th>
     </table>
 </body>
