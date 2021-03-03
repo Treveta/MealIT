@@ -108,7 +108,7 @@
     
             <div class="example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
               <mat-checkbox (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
-              <mat-checkbox (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete"> </mat-checkbox>
+              <mat-checkbox (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
               <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
               <p>
               {{item.quantity}}
@@ -130,7 +130,7 @@
     
              <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="700" cdkDrag>
               <mat-checkbox (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
-              <mat-checkbox (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete"> </mat-checkbox>
+              <mat-checkbox (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
               <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
           <p>
           {{item.quantity}}
