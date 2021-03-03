@@ -102,7 +102,7 @@ export class CreateRecipeComponent {
         private afs: AngularFirestore,
         private authService: AuthService,
         private dbHelp: DatabaseHelperComponent,
-        private search: SearchRecipesComponent,
+        public search: SearchRecipesComponent,
         ) {
           authService.getUid().then((uid) => {
             this.userInfo = uid;
@@ -131,6 +131,7 @@ export class CreateRecipeComponent {
             this.newUnit = '';
           }
         }
+
         /**
          * A funtion that removes an ingredient from the recipe list
          * @param {int} index
