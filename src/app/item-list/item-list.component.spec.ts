@@ -2,6 +2,7 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatCheckboxHarness} from '@angular/material/checkbox/testing';
+import {MatButtonHarness} from '@angular/material/button/testing';
 import {MatSelectHarness} from '@angular/material/select/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
@@ -21,7 +22,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatIconModule} from '@angular/material/icon';
 import {MatSelectModule} from '@angular/material/select';
+import {MatRippleModule} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
+import { MaterialModule } from 'app/material-module/material-module.module';
 
 
 describe('ItemListComponent', () => {
@@ -89,18 +92,11 @@ describe('ItemListComponent', () => {
         // {provide: NG_VALUE_ACCESSOR, useValue: {}},
       ],
       imports: [
-        MatFormFieldModule,
-        MatInputModule,
+        MaterialModule,
         FormsModule,
         BrowserAnimationsModule,
-        MatCardModule,
-        MatCheckboxModule,
-        MatButtonModule,
-        MatChipsModule,
         DragDropModule,
-        MatIconModule,
         ReactiveFormsModule,
-        MatSelectModule,
       ],
     });
   });
@@ -258,10 +254,12 @@ describe('ItemListComponent', () => {
   });
 
   it('mat checkBox should call call completionToggle on change', async () => {
+    spyOn(component, 'completionToggle');
     const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'completionCheck'}));
     expect(await checkbox.isChecked()).toBe(false);
     await checkbox.check();
     expect(await checkbox.isChecked()).toBe(true);
     expect(await checkbox.getName()).toBe('completionCheck');
+    expect(component.completionToggle).toHaveBeenCalled();
   });
 });
