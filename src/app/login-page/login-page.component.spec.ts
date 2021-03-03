@@ -11,6 +11,9 @@ import {of} from 'rxjs';
 describe('LoginPageComponent', () => {
   let component: LoginPageComponent;
   let fixture: ComponentFixture<LoginPageComponent>;
+
+  const mockUsername = 'testUser@gmail.com';
+  const mockPassword = 'testPass123';
   const mockFirestore = function() {
     const obj = {valueChanges() {
       return of({data: 'data'});
@@ -18,12 +21,11 @@ describe('LoginPageComponent', () => {
     };
     return obj;
   };
-
+  /**
+   * Constructs stubs and providers to be defined before tests are run
+   */
   beforeEach(async () => {
-    const authServiceStub = () => ({
-      createEmailUser: (inputUsername, inputPassword) => ({}),
-      signInEmailUser: (inputUsername, inputPassword) => ({}),
-    });
+    const authServiceStub = () => ({createEmailUser: (inputUsername, inputPassword) => ({}), signInEmailUser: (inputUsername, inputPassword) => ({})});
     const angularFirestoreStub = () => ({});
     const modalServiceStub = () => ({open: (id) => ({}), close: (id) => ({})});
     const databaseHelperComponentStub = () => ({});
@@ -34,10 +36,6 @@ describe('LoginPageComponent', () => {
         {provide: AuthService, useFactory: authServiceStub},
         {provide: AngularFirestore, useFactory: angularFirestoreStub},
         {provide: ModalService, useFactory: modalServiceStub},
-        {provide: AngularFirestore, useValue: {mockFirestore}},
-        {provide: AuthService, useClass: class {
-          fetchUserData = jasmine.createSpy('fetchUserData')
-        }},
         {
           provide: DatabaseHelperComponent,
           useFactory: databaseHelperComponentStub,
@@ -46,14 +44,54 @@ describe('LoginPageComponent', () => {
     })
         .compileComponents();
   });
-
+  /**
+   * Initializes Test Bed and test component
+   */
   beforeEach(() => {
     fixture = TestBed.createComponent(LoginPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
-
+  /**
+   * Tests that the component loads
+   */
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+  /**
+   * Tests if the modal successfully opens
+   */
+  it('should open modal', () => {
+    spyOn(component.modalService, 'open');
+    component.openModal('test');
+    expect(component.modalService.open).toHaveBeenCalled();
+  });
+  /**
+   * Tests if the modal successfully closes
+   */
+  it('should close modal', () => {
+    spyOn(component.modalService, 'close');
+    component.closeModal('test');
+    expect(component.modalService.close).toHaveBeenCalled();
+  });
+  /**
+    * Tests if the user login works successfully
+    */
+  it('should login successfully', () => {
+    spyOn(component.auth, 'signInEmailUser');
+    component.email = mockUsername;
+    component.password = mockPassword;
+    component.login();
+    expect(component.auth.signInEmailUser).toHaveBeenCalledWith(mockUsername, mockPassword);
+  });
+  /**
+    * Tests if the user sign up works successfully
+    */
+  it('should sign up successfully', () => {
+    spyOn(component.auth, 'createEmailUser');
+    component.email = mockUsername;
+    component.password = mockPassword;
+    component.signUp();
+    expect(component.auth.createEmailUser).toHaveBeenCalledWith(mockUsername, mockPassword);
   });
 });
