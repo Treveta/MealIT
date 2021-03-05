@@ -62,3 +62,15 @@ th mat-card-subtitle {
   height:20vh;
   width:14.28%;
 }
+
+.center-content {
+  text-align: center;
+}
+
+.smaller-mat-card-title {
+  font-size: 18px;
+}
+
+.larger-mat-card-title {
+  font-size: 22px;
+}

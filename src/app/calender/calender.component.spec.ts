@@ -55,17 +55,28 @@ describe('CalenderComponent', () => {
    */
   it('Get a week', () => {
     // String array to hold week days
-    let week: string[] = [];
+    let week = [];
     // The expected date. The first day of the week containing the selected day
-    const longDate = 'Sunday 2/14/2021';
+    let date = 'Sunday 3/14/2021';
+    let weekDayName = 'Sunday';
     // The date being tested
-    const shortDate = new Date(2021, 1, 16);
-
+    let shortDate = new Date(2021, 2, 14); // Zero is January
     // week will now be an array that holds 7 days
     week = component.getWeek(shortDate);
 
-    // Check the first day is the expected date
-    expect(longDate).toBe(week[0]);
+    // Check the first day is the expected date and has the name Sunday
+    expect({weekDayName, date}).toEqual(week[0]);
+
+    // The expected date. The first day of the week containing the selected day
+    date = 'Wednesday 3/17/2021';
+    weekDayName = 'Wednesday';
+    // The date being tested
+    shortDate = new Date(2021, 2, 17); // Zero is January
+    // week will now be an array that holds 7 days
+    week = component.getWeek(shortDate);
+
+    // Check the 4th day is the expected date and has the name Wednesday
+    expect({weekDayName, date}).toEqual(week[3]);
   });
 
   /**

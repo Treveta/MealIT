@@ -4,6 +4,8 @@ import {ModalService} from '../modal-functionality';
 import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
 import {MatDialog} from '@angular/material/dialog';
 import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from './mealPlan.model';
+import {AngularFirestore} from '@angular/fire/firestore';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-calender',
@@ -94,6 +96,19 @@ export class CalenderComponent {
   public mealPlanRecipe: mealPlanRecipe;
 
   /**
+   * A blank base meal plan week
+   */
+  mealPlanBase: mealPlanWeek;
+
+  /**
+   * Holds the current values of the current week mealPlan
+   */
+  currentWeekPlanObs: Observable<any>;
+  mealTypeToSet: any;
+  dateToSet: Date;
+  constructorHasRun: boolean = false;
+
+  /**
    * Convert the date to simplified form
    * @param {Date} date
    * @return {string}
@@ -109,10 +124,18 @@ export class CalenderComponent {
    * @param {SearchRecipesComponent} search
    * @param {AuthService} authService
    */
-  constructor(public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog) {
+  constructor(public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
+      this.currentWeekPlanObs = this.afs.collection('users/'+this.userInfo+'/mealplan', (ref) => ref.where('label', '==', 'currentWeek')).valueChanges();
+      this.currentWeekPlanObs.subscribe((element) => {
+        if (element[0].defined == false && this.constructorHasRun == false) {
+          const currentWeekDates = this.getWeek(new Date());
+          this.addBlankPlan('currentWeek', currentWeekDates);
+          this.constructorHasRun = true;
+        }
+      });
     });
   }
   /**
@@ -135,6 +158,31 @@ export class CalenderComponent {
       const returnMessage = this.errorMessage;
       return returnMessage;
     }
+  }
+
+  /**
+   * creates and adds a blank mealPlanWeek into firestore at the defined document path
+   * @param {string} docPath the path to send the blank mealPlanWeek to
+   * @param {Array<Date>} weekDates an Array of Dates to use to create the otherwise blank mealPlan
+   */
+  addBlankPlan(docPath, weekDates) {
+    const mealPlanBlankWeek: mealPlanWeek = {
+      label: docPath,
+      defined: false,
+      startDate: new Date(),
+      days: [],
+    };
+    weekDates.forEach((element) => {
+      const mealPlanBlankDay: mealPlanDay = {
+        date: element.date,
+        weekDayName: element.weekDayName,
+        breakfast: [],
+        lunch: [],
+        dinner: [],
+      };
+      mealPlanBlankWeek.days.push(mealPlanBlankDay);
+    });
+    this.afs.collection('users/'+this.userInfo+'/mealplan').doc(docPath).set(mealPlanBlankWeek);
   }
   /**
    * A function to open a modal
@@ -165,8 +213,48 @@ export class CalenderComponent {
       // Only takes action if the result is defined
       if (result) {
         this.logSelectedRecipe(result);
+        this.setRecipeInPlan(result.recipeName, result.uid);
       }
     });
+  }
+
+  /**
+   * updates the mealPlan with the partialData representing the new recipe the user has added
+   * @param {string} recipeName
+   * @param {string} uid
+   */
+  setRecipeInPlan(recipeName, uid) {
+    this.listData('users/'+this.userInfo+'/mealplan').then((mealPlanWeeks) => {
+      for (let i = 0; i < mealPlanWeeks.length; i++) {
+        const partialData = mealPlanWeeks[i];
+        console.log(partialData);
+        for (let j = 0; j < partialData.days.length; j++) {
+          console.log('LOOP RUN');
+          if (partialData.days[j].date == this.dateToSet) {
+            console.log('HIT DATE');
+            if (this.mealTypeToSet == 'breakfast') {
+              console.log('ITS BREAKFAST TIME');
+              const newMeal = partialData.days[j].breakfast.concat([{recipeName: recipeName, uid: uid}]);
+              partialData.days[j].breakfast = newMeal;
+              console.log(partialData);
+            }
+          }
+        }
+        console.log(partialData);
+        this.afs.collection('users/'+this.userInfo+'/mealplan').doc(mealPlanWeeks[i].label).update(partialData);
+      }
+    });
+  }
+
+  /**
+   * Sets the component variables mealTypeToSet and dateToSet to represent the mealType and date representing the card user has clicked on
+   * @param {string} mealType the type of meal the user is attempting to set (ie Breakfast, Lunch, Dinner)
+   * @param {Date} date the date the meal is being added to
+   */
+  setMealInfo(mealType, date) {
+    this.mealTypeToSet = mealType;
+    this.dateToSet = date;
+    console.log('Meal Info: ' + this.mealTypeToSet + ' ' + this.dateToSet);
   }
 
   /**
@@ -178,12 +266,12 @@ export class CalenderComponent {
 
   /**
    * Takes in a date an returns the week of that day. Sunday to Saturday.
-   * @param {Date} uid
+   * @param {Date} date
    * @return {Array}
    */
-  getWeek(uid: Date) {
+  getWeek(date: Date) {
     // Set dateData to uid
-    const dateData = uid;
+    const dateData = date;
 
     // Variable for the input day
     const day = dateData.getDay();
@@ -197,10 +285,13 @@ export class CalenderComponent {
     dateData.setDate(dateData.getDate() - day);
     for (let i = 0; i <= 6; i++) {
       dt = dateData.getDate();
-      newDate = this.weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dt + '/' + dateData.getFullYear();
+      newDate = {
+        weekDayName: this.weekDayName[i],
+        date: this.weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dt + '/' + dateData.getFullYear(),
+      };
       dateData.setDate(dateData.getDate() + 1);
       weekDay.push(newDate);
-      return weekDay;
+      // return weekDay; This return was added for testing but would cause the for loop to exit prematurely, return has moved below. TEST MAY NEED TO BE REFACTORED
     }
 
     // Print out weekDay as a test
@@ -208,6 +299,8 @@ export class CalenderComponent {
     for (let i = 0; i <= 6; i++) {
       console.log(weekDay[i]);
     }
+
+    return weekDay;
   }
 
   /**
@@ -246,5 +339,29 @@ export class CalenderComponent {
   logSelectedRecipe(mealSelected: string) {
     console.log(mealSelected);
     return mealSelected;
+  }
+
+  /**
+   * Retrieves the mealPlan from the path specified as a list
+   * @param {string} path - The Firestore path to retrieve recipes from
+   */
+  async listData(path: string) {
+    try {
+      // collects a snapshot of a Firestore collection base on parameter path
+      const snapshot = await this.afs
+          .collection(path)
+          .get().toPromise();
+      // Creates an empty list to populate collection data into
+      const list = [];
+      // Loops through snapshot and pushes document data to list
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        list.push(data);
+      });
+      // Returns the now populated list
+      return list;
+    } catch (err) {
+      console.log('Error getting documents', err);
+    }
   }
 }

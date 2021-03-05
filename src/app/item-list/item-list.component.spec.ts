@@ -12,19 +12,10 @@ import {ModalService} from '../modal-functionality';
 import {AuthService} from '../services/auth.service';
 import {Platform} from '@angular/cdk/platform';
 import {ItemListComponent} from './item-list.component';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatCardModule} from '@angular/material/card';
-import {MatCheckboxModule} from '@angular/material/checkbox';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {MatButtonModule} from '@angular/material/button';
-import {MatChipsModule} from '@angular/material/chips';
-import {MatIconModule} from '@angular/material/icon';
-import {MatSelectModule} from '@angular/material/select';
-import {MatRippleModule} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
-import { MaterialModule } from 'app/material-module/material-module.module';
+import {MaterialModule} from 'app/material-module/material-module.module';
 
 
 describe('ItemListComponent', () => {
@@ -92,9 +83,9 @@ describe('ItemListComponent', () => {
         // {provide: NG_VALUE_ACCESSOR, useValue: {}},
       ],
       imports: [
+        NoopAnimationsModule,
         MaterialModule,
         FormsModule,
-        BrowserAnimationsModule,
         DragDropModule,
         ReactiveFormsModule,
       ],
@@ -111,9 +102,7 @@ describe('ItemListComponent', () => {
     fixture.whenStable().then(() => {
       // after something in the component changes, detects changes
       fixture.detectChanges();
-      debugCompletionCheck = fixture.debugElement.queryAll(By.css('mat-checkbox[name=\'completionCheck\']'));
-      inputCompletionCheck = <HTMLInputElement>debugCompletionCheck[0].nativeElement.querySelector('input');
-      labelCompletionCheck = <HTMLInputElement>debugCompletionCheck[0].nativeElement.querySelector('label');
+      debugCompletionCheck = fixture.nativeElement.querySelector('mat-checkbox[name=\"completionCheck\"]');
     });
   });
   /**
@@ -248,18 +237,26 @@ describe('ItemListComponent', () => {
     expect(component.updateDocument).toHaveBeenCalled();
   });
 
+  describe('Material Tests', () => {
+    beforeEach(() => {
 
-  it('mat checkBox should appear on the page', () => {
-    expect(debugCompletionCheck.length).toBeGreaterThan(0);
-  });
+    });
 
-  it('mat checkBox should call call completionToggle on change', async () => {
-    spyOn(component, 'completionToggle');
-    const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'completionCheck'}));
-    expect(await checkbox.isChecked()).toBe(false);
-    await checkbox.check();
-    expect(await checkbox.isChecked()).toBe(true);
-    expect(await checkbox.getName()).toBe('completionCheck');
-    expect(component.completionToggle).toHaveBeenCalled();
+    it('mat checkBox should appear on the page', async () => {
+      const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'completionCheck'}));
+      expect(checkbox).toBeTruthy();
+    });
+
+    it('mat checkBox should call call completionToggle on change', async () => {
+      spyOn(component, 'completionToggle');
+      console.log(debugCompletionCheck);
+      const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'completionCheck'}));
+      console.log(checkbox);
+      expect(await checkbox.isChecked()).toBe(false);
+      await checkbox.check();
+      expect(await checkbox.isChecked()).toBe(true);
+      expect(await checkbox.getName()).toBe('completionCheck');
+      expect(component.completionToggle).toHaveBeenCalled();
+    });
   });
 });
