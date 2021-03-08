@@ -104,8 +104,24 @@ export class CalenderComponent {
    * Holds the current values of the current week mealPlan
    */
   currentWeekPlanObs: Observable<any>;
+
+  /**
+   * The mealType (Breakfast, Lunch, Dinner) that the user is attempting to add a recipe to
+   */
   mealTypeToSet: any;
-  dateToSet: Date;
+
+  /**
+   * The Date the user is trying to add a recipe to
+   */
+  dateToSet: any;
+
+  /**
+   * The last set partial data, used primarily for testing
+   */
+  partialDataLastSet;
+  /**
+   * This boolean determines if the constructor is run, it acts as a stopgap to prevent blank workplans from getting set twice on initializations
+   */
   constructorHasRun: boolean = false;
 
   /**
@@ -129,17 +145,22 @@ export class CalenderComponent {
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
       this.currentWeekPlanObs = this.afs.collection('users/'+this.userInfo+'/mealplan', (ref) => ref.where('label', '==', 'currentWeek')).valueChanges();
-      this.currentWeekPlanObs.subscribe((element) => {
-        if (element[0].defined == false && this.constructorHasRun == false) {
-          const currentWeekDates = this.getWeek(new Date());
-          this.addBlankPlan('currentWeek', currentWeekDates);
-          this.constructorHasRun = true;
+      this.listData('users/'+this.userInfo+'/mealplan').then((listOfDocs) => {
+        for (let i = 0; i < listOfDocs.length; i++) {
+          if (listOfDocs[i].label == 'currentWeek') {
+            if (listOfDocs[i].defined == false) {
+              const currentWeekDates = this.getWeek(new Date());
+              this.addBlankPlan('currentWeek', currentWeekDates);
+              this.constructorHasRun = true;
+            }
+          }
         }
       });
     });
   }
   /**
    * A function for submitting a meal to a meal plan
+   * THIS FUNCTION HAS BEEN DEPRECATED IN FAVOR OF A NEW APPROACH
    * @param {string | number} uid
    * @param {string} modalID
    * @return {string}
@@ -163,13 +184,13 @@ export class CalenderComponent {
   /**
    * creates and adds a blank mealPlanWeek into firestore at the defined document path
    * @param {string} docPath the path to send the blank mealPlanWeek to
-   * @param {Array<Date>} weekDates an Array of Dates to use to create the otherwise blank mealPlan
+   * @param {Array} weekDates an Array of Dates to use to create the otherwise blank mealPlan
    */
   addBlankPlan(docPath, weekDates) {
     const mealPlanBlankWeek: mealPlanWeek = {
       label: docPath,
       defined: false,
-      startDate: new Date(),
+      startDate: weekDates[0].date,
       days: [],
     };
     weekDates.forEach((element) => {
@@ -182,8 +203,28 @@ export class CalenderComponent {
       };
       mealPlanBlankWeek.days.push(mealPlanBlankDay);
     });
-    this.afs.collection('users/'+this.userInfo+'/mealplan').doc(docPath).set(mealPlanBlankWeek);
+    this.setDocInFireStore(docPath, mealPlanBlankWeek);
+    return mealPlanBlankWeek;
   }
+
+  /**
+   * This is a helper function that abstracts the process of setting a documents data in firestore
+   * @param {string} docPath
+   * @param {Object} objectToSet
+   */
+  setDocInFireStore(docPath, objectToSet) {
+    this.afs.collection('users/'+this.userInfo+'/mealplan').doc(docPath).set(objectToSet);
+  }
+
+  /**
+   * This is a helper function that abstracts the process of setting a documents data in firestore
+   * @param {string} docPath
+   * @param {Object} objectToUpdate
+   */
+  updateDocInFireStore(docPath, objectToUpdate) {
+    this.afs.collection('users/'+this.userInfo+'/mealplan').doc(docPath).update(objectToUpdate);
+  }
+
   /**
    * A function to open a modal
    * @param {string} id
@@ -212,7 +253,6 @@ export class CalenderComponent {
     dialogRef.afterClosed().subscribe((result) => {
       // Only takes action if the result is defined
       if (result) {
-        this.logSelectedRecipe(result);
         this.setRecipeInPlan(result.recipeName, result.uid);
       }
     });
@@ -227,21 +267,18 @@ export class CalenderComponent {
     this.listData('users/'+this.userInfo+'/mealplan').then((mealPlanWeeks) => {
       for (let i = 0; i < mealPlanWeeks.length; i++) {
         const partialData = mealPlanWeeks[i];
-        console.log(partialData);
         for (let j = 0; j < partialData.days.length; j++) {
-          console.log('LOOP RUN');
-          if (partialData.days[j].date == this.dateToSet) {
-            console.log('HIT DATE');
+          if (partialData.days[j].date.toDate().toDateString() === this.dateToSet.toDateString()) {
             if (this.mealTypeToSet == 'breakfast') {
-              console.log('ITS BREAKFAST TIME');
               const newMeal = partialData.days[j].breakfast.concat([{recipeName: recipeName, uid: uid}]);
               partialData.days[j].breakfast = newMeal;
-              console.log(partialData);
+              // Sets a component variable with the partialData, this can then be later retrieved or used for testing
+              this.partialDataLastSet = partialData;
             }
           }
         }
-        console.log(partialData);
-        this.afs.collection('users/'+this.userInfo+'/mealplan').doc(mealPlanWeeks[i].label).update(partialData);
+        this.updateDocInFireStore(mealPlanWeeks[i].label, partialData);
+        // this.afs.collection('users/'+this.userInfo+'/mealplan').doc(mealPlanWeeks[i].label).update(partialData);
       }
     });
   }
@@ -254,7 +291,6 @@ export class CalenderComponent {
   setMealInfo(mealType, date) {
     this.mealTypeToSet = mealType;
     this.dateToSet = date;
-    console.log('Meal Info: ' + this.mealTypeToSet + ' ' + this.dateToSet);
   }
 
   /**
@@ -270,7 +306,7 @@ export class CalenderComponent {
    * @return {Array}
    */
   getWeek(date: Date) {
-    // Set dateData to uid
+    // Set dateData to date
     const dateData = date;
 
     // Variable for the input day
@@ -278,28 +314,21 @@ export class CalenderComponent {
 
     // Variables for weekdays
     const weekDay = [];
-    let newDate;
-    let dt;
 
     // Compiling the information for the days
-    dateData.setDate(dateData.getDate() - day);
+    dateData.setDate(dateData.getDate() - day - 1);
     for (let i = 0; i <= 6; i++) {
-      dt = dateData.getDate();
-      newDate = {
+      const incrementDay = dateData.getDate();
+      const month = dateData.getMonth();
+      const year = dateData.getFullYear();
+      const newDate = {
         weekDayName: this.weekDayName[i],
-        date: this.weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dt + '/' + dateData.getFullYear(),
+        date: new Date(year, month, incrementDay + 1),
+        // date: this.weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dateData.getDate(); + '/' + dateData.getFullYear(),
       };
-      dateData.setDate(dateData.getDate() + 1);
       weekDay.push(newDate);
-      // return weekDay; This return was added for testing but would cause the for loop to exit prematurely, return has moved below. TEST MAY NEED TO BE REFACTORED
+      dateData.setDate(dateData.getDate() + 1);
     }
-
-    // Print out weekDay as a test
-    console.log(weekDay);
-    for (let i = 0; i <= 6; i++) {
-      console.log(weekDay[i]);
-    }
-
     return weekDay;
   }
 
