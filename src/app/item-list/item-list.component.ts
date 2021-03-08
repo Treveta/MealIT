@@ -287,7 +287,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * this is a helper function for consolidateQuantity
      */
     compareNameUnit(itemExist, itemProposed): boolean {
-      if (itemExist.itemName===itemProposed.itemName&&itemExist.unit===itemProposed.unit) {
+      if (itemExist.itemName.toLowerCase()===itemProposed.itemName.toLowerCase()&&itemExist.unit===itemProposed.unit) {
         this.sumQuantity(itemExist, itemProposed);
         return true;
       } else return false;
