@@ -29,6 +29,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
+import {MatToolbarModule} from '@angular/material/toolbar';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {AngularFireAnalyticsModule} from '@angular/fire/analytics';
 import {PlatformModule} from '@angular/cdk/platform';
@@ -77,6 +78,7 @@ const config = {
     MatSlideToggleModule,
     MatCheckboxModule,
     MatDialogModule,
+    MatToolbarModule,
     DragDropModule,
     AngularFireAnalyticsModule,
     PlatformModule,
