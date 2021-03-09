@@ -183,7 +183,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * Then, addedItem gets pushed to the sortedList and update is called on the shoppingCollection.
      * Finally, the class variables are reset to empty
      * @summary addToItemList pulls information from class variables and packages it into a constant
-     * it then puishes that constant to the list and updates the collection
+     * it then pushes that constant to the list and updates the collection
      */
     async addToItemList() {
       if (this.newItem === '') {
@@ -194,11 +194,13 @@ export class ItemListComponent implements OnDestroy, OnInit {
           quantity: this.newQuantity,
           unit: this.newUnit,
         };
-        this.sortedList.push(addedItem);
-        this.updateDocument('List', {Items: this.sortedList});
-        this.newItem = '';
-        this.newQuantity = '';
-        this.newUnit = '';
+        if (this.consolidateQuantity(addedItem)===false) {
+          this.sortedList.push(addedItem);
+          this.updateDocument('List', {Items: this.sortedList});
+          this.newItem = '';
+          this.newQuantity = '';
+          this.newUnit = '';
+        }
       }
     }
 
@@ -263,7 +265,61 @@ export class ItemListComponent implements OnDestroy, OnInit {
     updateDocument(docName: string, data):void {
       this.shoppingCollection.doc(docName).update(data);
     }
+    // Below are three functions for item consolidation: 2 sub-helper functions, and 1 large helper function of addToItemList
+    /** @function
+     * @name sumQuantity
+     * @param {any} itemExist the item whose quantity will be updated with the quantity value from @param itemProposed
+     * @param {any} itemProposed the item proposed to be added which will have its quantity used to update @param itemExist
+     * @description sumQuantity combines two item's quantity. param names are for clarity, but this can technically be used between any two items
+     * this is a helper function for @function compareNameUnit
+     */
+    sumQuantity(itemExist, itemProposed): void {
+      itemExist.quantity+=itemProposed.quantity;
+    }
 
+    /** @function
+     * @name compareNameUnit
+     * @param {any} itemExist the item that exists in the list to have its name and units compared
+     * @param {any} itemProposed the item proposed to be added which will have its name and unit compared to @param itemExist
+     * @return {boolean} returns true if there is a match and false if not
+     * @description compareNameUnit will test the name and unit values of two items and call @function sumQuantity
+     * on the items if both fields are the same in each item
+     * this is a helper function for consolidateQuantity
+     */
+    compareNameUnit(itemExist, itemProposed): boolean {
+      if (itemExist.itemName.toLowerCase()===itemProposed.itemName.toLowerCase()&&itemExist.unit===itemProposed.unit) {
+        this.sumQuantity(itemExist, itemProposed);
+        return true;
+      } else return false;
+    }
+
+    /** @function
+     * @name consolidateQuantity
+     * @param {any} itemProposed the item proposed to be added
+     * @return {boolean} true if a match was found and the functions run. false if no match was found
+     * @description consolidateQuantity is the function that is called whenever a new item is added to the shopping list
+     * It looks through the existing shopping list and calls @function compareNameUnit on every item in the list.
+     * (If @function compareNameUnit finds an item that matches, it calls @function sumQuantity that performs the adding of quantity values
+     * in which case, @param itemProposed is NOT added to the list and @function consolidateQuantity returns true, as it has just been consolidated)
+     * after finding a match and calling the appropriate functions,  @function updateDocument is called
+     * if no match is found, proceed with adding the item as usual and return false.
+     * This function may be called by @function addToItemList \\TODO
+     * @summary consolidateQuantity takes a proposed item and checks the shopping list for a match. upon finding one, the quantities are summed,
+     * the item is not added ot the shopping list, the list is updated, and consolidateQuantity returns true.
+     *  If no match is found, the item gets added to the list as normal and consolidateQuantity returns false.
+     */
+    consolidateQuantity(itemProposed): boolean {
+      let consolidated: boolean;
+      const n = this.sortedList.length;
+      for (let i =0; i<n; i++) {
+        consolidated = this.compareNameUnit(this.sortedList[i], itemProposed);
+        if (consolidated===true) {
+          this.updateDocument('List', {Items: this.sortedList});
+          return true;
+        }
+      }
+      return false;
+    }
     // these functions are all that is needed to show and hide a modal view
 
     /** @function
