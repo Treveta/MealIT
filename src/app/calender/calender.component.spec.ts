@@ -1,48 +1,146 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {AngularFirestore} from '@angular/fire/firestore';
-import {SearchRecipesComponent} from 'app/search-recipes/search-recipes.component';
-import {AuthService} from 'app/services/auth.service';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
-import {of} from 'rxjs';
+
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+
+import {AuthService} from '../services/auth.service';
+
 import {ModalService} from '../modal-functionality';
+
+import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
+
+import {MatDialog, MatDialogRef} from '@angular/material/dialog';
+
+import {AngularFirestore} from '@angular/fire/firestore';
+
+import {FormsModule} from '@angular/forms';
+
 import {CalenderComponent} from './calender.component';
-import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import firebase from 'firebase';
-import { mealPlanWeek } from './mealPlan.model';
+import {of} from 'rxjs';
+import {mealPlanWeek} from './mealPlan.model';
+
 
 describe('CalenderComponent', () => {
   let component: CalenderComponent;
+
   let fixture: ComponentFixture<CalenderComponent>;
 
-  beforeEach(async () => {
-    const modalServiceStub = () => ({open: (id) => ({}), close: (id) => ({})});
-    await TestBed.configureTestingModule({
-      declarations: [CalenderComponent],
-      providers: [
-        {provide: AngularFirestore, useValue: {}}, {provide: AuthService, useClass: class {
-          getUid = () => {
-            return new Promise(function(resolve) {
-              resolve('');
-            });
-          }
-        }},
-        {provide: ModalService, useFactory: modalServiceStub},
-        {provide: SearchRecipesComponent, useValue: {}},
-        {provide: MatDialog, useClass: class {
-          open = () => {};
-        }}],
-    }).overrideModule(BrowserDynamicTestingModule, {
-      set: {
-        entryComponents: [SearchRecipesComponent],
-      },
-    })
-        .compileComponents();
-  });
 
   beforeEach(() => {
+    const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
+
+    const modalServiceStub = () => ({open: (id) => ({}), close: (id) => ({})});
+
+    const searchRecipesComponentStub = () => ({
+
+      searchService: (searchTerm) => ({}),
+
+    });
+
+    const matDialogStub = () => ({
+
+      open: (searchRecipesComponent, object) => ({
+
+        afterClosed: () => ({subscribe: (f) => f({})}),
+
+      }),
+
+    });
+
+    const angularFirestoreStub = () => ({
+
+      collection: (arg, function0) => ({
+
+        valueChanges: () => ({}),
+
+        doc: () => ({set: () => ({}), update: () => ({})}),
+
+        get: () => ({toPromise: () => ({forEach: () => ({})})}),
+
+      }),
+
+    });
+
+    TestBed.configureTestingModule({
+
+      imports: [FormsModule],
+
+      schemas: [NO_ERRORS_SCHEMA],
+
+      declarations: [CalenderComponent],
+
+      providers: [
+
+        {provide: AuthService, useFactory: authServiceStub},
+
+        {provide: ModalService, useFactory: modalServiceStub},
+
+        {
+
+          provide: SearchRecipesComponent,
+
+          useFactory: searchRecipesComponentStub,
+
+        },
+
+        {provide: MatDialog, useFactory: matDialogStub},
+
+        {provide: AngularFirestore, useFactory: angularFirestoreStub},
+
+      ],
+
+    });
+
     fixture = TestBed.createComponent(CalenderComponent);
+
     component = fixture.componentInstance;
-    fixture.detectChanges();
+  });
+
+
+  it('can load instance', () => {
+    expect(component).toBeTruthy();
+  });
+
+
+  it(`weekDayName has default value`, () => {
+    expect(component.weekDayName).toEqual([
+
+      `Sunday`,
+
+      `Monday`,
+
+      `Tuesday`,
+
+      `Wednesday`,
+
+      `Thursday`,
+
+      `Friday`,
+
+      `Saturday`,
+
+    ]);
+  });
+
+
+  describe('openDialog', () => {
+    it('makes expected calls', () => {
+      const matDialogStub: MatDialog = fixture.debugElement.injector.get(
+
+          MatDialog,
+
+      );
+
+      spyOn(component, 'setRecipeInPlan').and.callThrough();
+
+      spyOn(matDialogStub, 'open').and.callThrough();
+
+      component.openDialog();
+
+      expect(component.setRecipeInPlan).toHaveBeenCalled();
+
+      expect(matDialogStub.open).toHaveBeenCalled();
+    });
   });
 
   /**
@@ -260,11 +358,10 @@ describe('CalenderComponent', () => {
     /**
      * Tests that adding blank meal plan calls the setDocInFirestore helper function with the proper parameters
      */
-    it('addBlankPlan should call setDocInFirestore with proper parameters', () => {
+    it('addBlankPlan should call setDocInFirestore', () => {
       spyOn(component, 'setDocInFireStore');
-      const returnedValue = component.addBlankPlan('docPath', mockWeekDates);
-      expect(returnedValue).toEqual(mockBlankMealPlan);
-      // expect(component.setDocInFireStore).toHaveBeenCalledOnceWith('docPath', mockBlankMealPlan);
+      component.addBlankPlan('docPath', mockWeekDates);
+      expect(component.setDocInFireStore).toHaveBeenCalled();
     });
     /**
      * Tests that the setRecipeInPlan function calls the updateDocInFirestore helper function with the proper parameters
@@ -276,7 +373,7 @@ describe('CalenderComponent', () => {
       spyOn(component, 'updateDocInFireStore');
       // Sets the mealType and date as the setMealInfo function would in prod
       component.mealTypeToSet = 'breakfast';
-      component.dateToSet = new Date(2021, 2, 7);
+      component.dateToSet = firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7));
       // This needs to be awaited because of the reliance on the listData function internally, not awaiting will cause function to fail
       await component.setRecipeInPlan('Test Recipe', '12345');
       // Ensures the listData function was called
@@ -433,3 +530,4 @@ describe('CalenderComponent', () => {
     });
   });
 });
+
