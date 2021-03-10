@@ -1,62 +1,76 @@
-<body>
-    <button (click)="openDialog()">Add new recipe</button>
-    <button (click)="getWeek(date)">Week Button</button>
-    <table *ngFor="let plan of currentWeekPlanObs | async" class="fixWeek">
-          <th *ngFor="let day of plan.days">
-            {{day.weekDayName}}
-                <mat-card>
-                  <mat-card-header>
-                    <mat-card-title class="larger-mat-card-title">Breakfast</mat-card-title>
-                  </mat-card-header>
-                  <mat-card-content class="center-content"> 
-                    <!--BREAKFAST CARD CONTENT GOES HERE-->
-                    <mat-card *ngFor="let recipe of day.breakfast" class="mat-card-accent">
-                      <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
-                      <mat-card-content>
-                        {{recipe.uid}}
-                      </mat-card-content>
-                    </mat-card>
-                    <button mat-mini-fab name="breakfastButton" (click)="setMealInfo('breakfast', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
-                      <mat-icon>add</mat-icon>
-                    </button>
-                  </mat-card-content>
-                </mat-card>
-                <mat-card>
-                  <mat-card-header>
-                    <mat-card-title class="larger-mat-card-title">Lunch</mat-card-title>
-                  </mat-card-header>
-                  <mat-card-content class="center-content">
-                    <!--LUNCH CARD CONTENT GOES HERE-->
-                    <mat-card *ngFor="let recipe of day.lunch" class="mat-card-accent">
-                      <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
-                      <mat-card-content>
-                        {{recipe.uid}}
-                      </mat-card-content>
-                    </mat-card>
-                    <button mat-mini-fab name="lunchButton" (click)="setMealInfo('lunch', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
-                      <mat-icon>add</mat-icon>
-                    </button>
-                  </mat-card-content>
-                </mat-card>
-                <mat-card>
-                  <mat-card-header>
-                    <mat-card-title class="larger-mat-card-title">Dinner</mat-card-title>
-                  </mat-card-header>
-                  <mat-card-content class="center-content">
-                    <!--DINNER CARD CONTENT GOES HERE-->
-                    <mat-card *ngFor="let recipe of day.dinner" class="mat-card-accent">
-                      <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
-                      <mat-card-content>
-                        {{recipe.uid}}
-                      </mat-card-content>
-                    </mat-card>
-                    <button mat-mini-fab name="dinnerButton" (click)="setMealInfo('dinner', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
-                      <mat-icon>add</mat-icon>
-                    </button>
-                  </mat-card-content>
-                </mat-card>
-          </th>
-    </table>
+<body class="mat-app-background">
+  <div *ngIf="pageLoaded | async">
+    <div *ngIf="!plansExist" class="large-middle-screen-button-container">
+      <button mat-raised-button (click)="ensureMealPlansCreated()" class="large-middle-screen-button">Start Your Meal Plan</button>
+    </div>
+    <div *ngIf="plansExist">
+      <mat-toolbar color="accent">
+        <button mat-fab color="primary" (click)="changeView(-1)">
+          <mat-icon>keyboard_arrow_left</mat-icon>
+        </button>
+        <span class="example-spacer">{{mealPlanObsArray[currentView].label}}</span>
+        <button mat-fab color="primary" (click)="changeView(1)">
+          <mat-icon>keyboard_arrow_right</mat-icon>
+        </button>
+      </mat-toolbar>
+      <table *ngFor="let plan of mealPlanObsArray[currentView].obs | async" class="fixWeek">
+        <th *ngFor="let day of plan.days">
+          {{day.weekDayName}}
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title class="larger-mat-card-title">Breakfast</mat-card-title>
+                </mat-card-header>
+                <mat-card-content class="center-content"> 
+                  <!--BREAKFAST CARD CONTENT GOES HERE-->
+                  <mat-card *ngFor="let recipe of day.breakfast" class="mat-card-accent">
+                    <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
+                    <mat-card-content>
+                      {{recipe.uid}}
+                    </mat-card-content>
+                  </mat-card>
+                  <button mat-mini-fab name="breakfastButton" (click)="setMealInfo('breakfast', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </mat-card-content>
+              </mat-card>
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title class="larger-mat-card-title">Lunch</mat-card-title>
+                </mat-card-header>
+                <mat-card-content class="center-content">
+                  <!--LUNCH CARD CONTENT GOES HERE-->
+                  <mat-card *ngFor="let recipe of day.lunch" class="mat-card-accent">
+                    <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
+                    <mat-card-content>
+                      {{recipe.uid}}
+                    </mat-card-content>
+                  </mat-card>
+                  <button mat-mini-fab name="lunchButton" (click)="setMealInfo('lunch', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </mat-card-content>
+              </mat-card>
+              <mat-card>
+                <mat-card-header>
+                  <mat-card-title class="larger-mat-card-title">Dinner</mat-card-title>
+                </mat-card-header>
+                <mat-card-content class="center-content">
+                  <!--DINNER CARD CONTENT GOES HERE-->
+                  <mat-card *ngFor="let recipe of day.dinner" class="mat-card-accent">
+                    <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
+                    <mat-card-content>
+                      {{recipe.uid}}
+                    </mat-card-content>
+                  </mat-card>
+                  <button mat-mini-fab name="dinnerButton" (click)="setMealInfo('dinner', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
+                    <mat-icon>add</mat-icon>
+                  </button>
+                </mat-card-content>
+              </mat-card>
+        </th>
+      </table>
+    </div>
+  </div>
 </body>
 
 <jw-modal id="viewDay">

@@ -251,19 +251,23 @@ export class CreateRecipeComponent {
         /**
          * A funtion that remove a recipe from the databse
          * @param {any} recipe
+         * @param {any} r
          */
         public deleteRecipe(recipe) {
-          console.log(recipe);
-          const query = 'recipeName:==:'+ recipe.recipeName+'';
+          const r = confirm('Are you sure you want to delete this recipe?');
+          if (r == true) {
+            console.log(recipe);
+            const query = 'recipeName:==:'+ recipe.recipeName+'';
 
-          this.deleteDoc(query);
+            this.deleteDoc(query);
 
-          localStorage.setItem('updatePending', 'true');
-          const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
-          const index = temp.findIndex((index) => index.recipeName === recipe.recipeName);
+            localStorage.setItem('updatePending', 'true');
+            const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
+            const index = temp.findIndex((index) => index.recipeName === recipe.recipeName);
 
-          this.tempSplice(temp, index);
-          this.setLocalStorageDelete(temp);
+            this.tempSplice(temp, index);
+            this.setLocalStorageDelete(temp);
+          }
         }
 
         /**

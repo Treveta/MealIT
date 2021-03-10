@@ -2,26 +2,26 @@
  * Initializes the mealPlanWeek Object to be imported in calendar component
  * @property {string}                  - stores the label of the week (ie currentWeek, nextWeek)
  * @property {boolean}                 - Lets app know if doc is defined or not
- * @property {Date} startDate          - A String that holds the date of the first day in days
+ * @property {any} startDate          - A String that holds the date of the first day in days
  * @property {Array<mealPlanDay>} days - An array that holds 7 mealPlanDays to represent a week
  */
 export interface mealPlanWeek {
   label: string;
   defined: boolean;
-  startDate: Date;
+  startDate: any;
   days: Array<mealPlanDay>;
 }
 
 /**
  * Initializes the mealPlanDay Object to be imported in calendar component
- * @property {Date} date the date this meal belongs to
+ * @property {any} date the date this meal belongs to
  * @property {string} weekDayName the name of the day belonging to the date
  * @property {Array<mealPlanRecipe>} breakfast - An array that holds a list of mealPlanDays (The recipes and recipe names) for breakfast
  * @property {Array<mealPlanRecipe>} lunch     - An array that holds a list of mealPlanDays (The recipes and recipe names) for lunch
  * @property {Array<mealPlanRecipe>} dinner    - An array that holds a list of mealPlanDays (The recipes and recipe names) for dinner
  */
 export interface mealPlanDay {
-  date: Date;
+  date: any;
   weekDayName: string;
   breakfast: Array<mealPlanRecipe>;
   lunch: Array<mealPlanRecipe>;

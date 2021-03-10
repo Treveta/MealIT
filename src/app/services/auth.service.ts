@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import {Injectable} from '@angular/core';
 import {Router} from '@angular/router';
 import {User} from './user.model';
@@ -15,10 +14,27 @@ declare const checkPassword: any;
 @Injectable({
   providedIn: 'root',
 })
+/**
+ * creates the AuthService component
+ */
 export class AuthService {
+  /**
+   * Holds the observable type User to easily identify who is logged in
+   * @type {User}
+   */
   user$: Observable<User>;
+  /**
+   * Holds the information of the user
+   * @type {any}
+   */
   private userInfo;
 
+  /**
+   * The constructor for the Auth Service
+   * @param {AngularFireAuth} afAuth
+   * @param {AngularFirestore} afs
+   * @param {Router} router
+   */
   constructor(
     private afAuth: AngularFireAuth,
     private afs: AngularFirestore,
@@ -38,13 +54,21 @@ export class AuthService {
         }),
     );
   }
-
+  /**
+   * Function for when a user signs in with a google account
+   * @return {credential}
+   */
   async googleSignin() {
     const provider = new auth.GoogleAuthProvider();
     const credential = await this.afAuth.signInWithPopup(provider);
     return this.updateUserData(credential.user);
   }
-
+  /**
+   *A function that creates a user with a given email and password
+   * @param {string} email
+   * @param {string} password
+   * @return {credential}
+   */
   async createEmailUser(email, password) {
     console.log(password);
     const isValid = checkPassword(password);
@@ -59,7 +83,12 @@ export class AuthService {
       // Handle Invalid Password Here
     }
   }
-
+  /**
+   * A function for a user to log in with a valid email and password
+   * @param {string} email
+   * @param {string} password
+   * @return {credential}
+   */
   async signInEmailUser(email, password) {
     try {
       const credential = await this.afAuth.signInWithEmailAndPassword(email, password);
@@ -68,7 +97,11 @@ export class AuthService {
       // Handle errors here
     }
   }
-
+  /**
+   * A function that updates the user's data in firestore on login
+   * @param {any} user
+   * @return {userRef}
+   */
   private updateUserData(user) {
     // Sets user data to firestore on login
     const userRef: AngularFirestoreDocument<User> = this.afs.doc(`users/${user.uid}`);
@@ -112,17 +145,25 @@ export class AuthService {
 
     return userRef.set(data, {merge: true});
   }
-
+  /**
+   * A function for a user to sign out
+   */
   async signOut() {
     await this.afAuth.signOut();
     this.router.navigate(['/']);
   }
-
+  /**
+   * A function that fetches a user's data
+   * @return {afAuth}
+   */
   async fetchUserData() {
     // const  user  =  JSON.parse(localStorage.getItem('user'));
     return await this.afAuth.currentUser;
   }
-
+  /**
+   * A function that gets the user ID of the current user
+   * @return {Promise}
+   */
   public getUid() {
     return new Promise((resolve, reject) => {
       let data;

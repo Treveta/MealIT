@@ -1,26 +1,23 @@
-/* eslint-disable require-jsdoc */
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
-import {MatCheckboxHarness} from '@angular/material/checkbox/testing';
-import {MatButtonHarness} from '@angular/material/button/testing';
-import {MatSelectHarness} from '@angular/material/select/testing';
-import {HarnessLoader} from '@angular/cdk/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {ModalService} from '../modal-functionality';
 import {AuthService} from '../services/auth.service';
+import {CdkDragDrop, DragDropModule} from '@angular/cdk/drag-drop';
 import {Platform} from '@angular/cdk/platform';
 import {ItemListComponent} from './item-list.component';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {DragDropModule} from '@angular/cdk/drag-drop';
-import {By} from '@angular/platform-browser';
 import {MaterialModule} from 'app/material-module/material-module.module';
-
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
+import {HarnessLoader} from '@angular/cdk/testing';
+import {MatCheckboxHarness} from '@angular/material/checkbox/testing';
 
 describe('ItemListComponent', () => {
   let component: ItemListComponent;
+
   let fixture: ComponentFixture<ItemListComponent>;
+
   let loader: HarnessLoader;
   /**
    * Mock of sortedList, used by several functions in item-list.component.ts
@@ -34,13 +31,13 @@ describe('ItemListComponent', () => {
     },
     {
       isComplete: false,
-      itemName: 'blueberry',
+      itemName: 'Blueberry',
       quantity: 5,
       unit: 'lb',
     },
     {
       isComplete: false,
-      itemName: 'steak',
+      itemName: 'Steak',
       quantity: 2,
       unit: 'ct',
     },
@@ -52,35 +49,43 @@ describe('ItemListComponent', () => {
     },
   ];
   let debugCompletionCheck;
-  let inputCompletionCheck;
-  let labelCompletionCheck;
+
 
   beforeEach(() => {
     const formBuilderStub = () => ({
+
       group: (object) => ({}),
+
       array: (array) => ({}),
+
     });
-    const angularFirestoreStub = () => ({
-      collection: (collectionPath) => ({
-        add: () => ({id: {}}),
-        doc: () => ({update: () => ({})}),
-        get: () => ({toPromise: () => ({forEach: () => ({})})}),
-      }),
-    });
+
+    const angularFirestoreStub = () => ({collection: (arg) => ({})});
+
     const modalServiceStub = () => ({open: (id) => ({}), close: (id) => ({})});
+
     const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
-    const platformStub = () => ({ANDROID: {}, IOS: {}});
+
+    const platformStub = () => ({});
 
     TestBed.configureTestingModule({
+
       schemas: [NO_ERRORS_SCHEMA],
+
       declarations: [ItemListComponent],
+
       providers: [
+
         {provide: FormBuilder, useFactory: formBuilderStub},
+
         {provide: AngularFirestore, useFactory: angularFirestoreStub},
+
         {provide: ModalService, useFactory: modalServiceStub},
+
         {provide: AuthService, useFactory: authServiceStub},
+
         {provide: Platform, useFactory: platformStub},
-        // {provide: NG_VALUE_ACCESSOR, useValue: {}},
+
       ],
       imports: [
         NoopAnimationsModule,
@@ -89,6 +94,7 @@ describe('ItemListComponent', () => {
         DragDropModule,
         ReactiveFormsModule,
       ],
+
     });
   });
   /**
@@ -111,30 +117,37 @@ describe('ItemListComponent', () => {
   it('can load instance', () => {
     expect(component).toBeTruthy();
   });
+
   /**
    * Tests that displayedColumns has correct default values
    */
   it(`displayedColumns has default value`, () => {
     expect(component.displayedColumns).toEqual([`name`, `quantity`, `unit`]);
   });
+
   /**
    * tests that editToggle starts as false
    */
   it(`editToggle has default value`, () => {
     expect(component.editToggle).toEqual(false);
   });
+
+
   /**
    * Tests that isLarge starts as either true or false (depending on the size of the karma window)
    */
   it(`isLarge has default value`, () => {
     expect(component.isLarge===true || component.isLarge===false).toEqual(true);
   });
+
   /**
    * Tests that screenWidth gets initialized
    */
   it(`screenWidth has default value`, () => {
     expect(component.screenWidth).toEqual(window.innerWidth);
   });
+
+
   /**
    * Tests that unitGroups has a default value as defined
    */
@@ -206,19 +219,19 @@ describe('ItemListComponent', () => {
     expect(component.updateDocument).toHaveBeenCalledWith(docName, data);
   });
   /**
-   * Tests that onCheckBoxChange successfully removes a designated item from sortedlList
-   */
+ * Tests that onCheckBoxChange successfully removes a designated item from sortedlList
+ */
   it('onCheckBoxChange successfully removes an item from sortedList', () => {
     const noItemList = [
       {
         isComplete: false,
-        itemName: 'blueberry',
+        itemName: 'Blueberry',
         quantity: 5,
         unit: 'lb',
       },
       {
         isComplete: false,
-        itemName: 'steak',
+        itemName: 'Steak',
         quantity: 2,
         unit: 'ct',
       },
@@ -229,7 +242,7 @@ describe('ItemListComponent', () => {
         unit: 'oz',
       },
     ];
-    // delcaring a spy to check that updateList is called
+    // delcaring a spy to check that updateDocument is called
     spyOn(component, 'updateDocument');
 
     component.onCheckBoxChange(component.sortedList[0]);
@@ -241,12 +254,16 @@ describe('ItemListComponent', () => {
     beforeEach(() => {
 
     });
-
+    /**
+  * Tests that the mat checkbox will initialize and show up on the page
+  */
     it('mat checkBox should appear on the page', async () => {
       const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'completionCheck'}));
       expect(checkbox).toBeTruthy();
     });
-
+    /**
+  * Tests that the material checkbox should call completionToggle upon change
+  */
     it('mat checkBox should call call completionToggle on change', async () => {
       spyOn(component, 'completionToggle');
       console.log(debugCompletionCheck);
@@ -259,4 +276,270 @@ describe('ItemListComponent', () => {
       expect(component.completionToggle).toHaveBeenCalled();
     });
   });
+
+  describe('Consolidation Tests', () => {
+  /**
+ * Mock of sortedList, used by several functions in item-list.component.ts
+ */
+    const mockSortedList = [
+      {
+        isComplete: false,
+        itemName: 'Apples',
+        quantity: 3,
+        unit: 'oz',
+      },
+      {
+        isComplete: false,
+        itemName: 'Blueberry',
+        quantity: 5,
+        unit: 'lb',
+      },
+      {
+        isComplete: false,
+        itemName: 'Steak',
+        quantity: 2,
+        unit: 'ct',
+      },
+      {
+        isComplete: false,
+        itemName: 'ApplesbutBetter',
+        quantity: 4,
+        unit: 'oz',
+      },
+    ];
+
+    beforeEach(() => {
+      component.sortedList=mockSortedList;
+    });
+
+    /**
+  * Tests that sumQuantity successfully adds the quantity of two items
+  */
+    it('sumQuantity should add two items quantity values', () => {
+    // Defining mock items to add, and one that is the expected result
+      const itemExist = {
+        isComplete: false,
+        itemName: 'Apples',
+        quantity: 3,
+        unit: 'oz',
+      };
+      const itemProposed = {
+        isComplete: false,
+        itemName: 'Apples',
+        quantity: 2,
+        unit: 'oz',
+      };
+      const itemResult= {
+        isComplete: false,
+        itemName: 'Apples',
+        quantity: 5,
+        unit: 'oz',
+      };
+
+      component.sumQuantity(itemExist, itemProposed);
+      expect(itemExist).toEqual(itemResult);
+    });
+    /**
+  * Tests that compareNameUnit will call sumQuantity when the Name and Unit values match exactly
+  */
+    it('compareNameUnit should call sumQuantity on exact matching values', () => {
+    // Defining mock items to compare
+      const itemExist = {
+        isComplete: false,
+        itemName: 'Apples',
+        quantity: 3,
+        unit: 'oz',
+      };
+      const itemProposed = {
+        isComplete: false,
+        itemName: 'Apples',
+        quantity: 2,
+        unit: 'oz',
+      };
+
+      // delcaring a spy to check that sumQuantity is called
+      spyOn(component, 'sumQuantity');
+      component.compareNameUnit(itemExist, itemProposed);
+      expect(component.sumQuantity).toHaveBeenCalledWith(itemExist, itemProposed);
+      // also, we are expecting this successful match to return true
+      expect(component.compareNameUnit(itemExist, itemProposed)).toEqual(true);
+    });
+    /**
+  * Tests that compareNameUnit will call sumQuantity when the Name and Unit values match but not exactly
+  */
+    it('compareNameUnit should call sumQuantity on inexact matching values', () => {
+    // Defining mock items to compare
+      const itemExist = {
+        isComplete: false,
+        itemName: 'Apples ',
+        quantity: 3,
+        unit: 'oz',
+      };
+      const itemProposed = {
+        isComplete: false,
+        itemName: ' apples',
+        quantity: 2,
+        unit: 'oz',
+      };
+
+      // delcaring a spy to check that sumQuantity is called
+      spyOn(component, 'sumQuantity');
+      component.compareNameUnit(itemExist, itemProposed);
+      expect(component.sumQuantity).toHaveBeenCalledWith(itemExist, itemProposed);
+      // also, we are expecting this successful match to return true
+      expect(component.compareNameUnit(itemExist, itemProposed)).toEqual(true);
+    });
+    /**
+  * Tests that compareNameUnit will not call sumQuantity when neither the Name nor Unit values match at all
+  */
+    it('compareNameUnit should not call sumQuantity on completely mismatching values', () => {
+    // Defining mock items to compare
+      const itemExist = {
+        isComplete: false,
+        itemName: 'Apples ',
+        quantity: 3,
+        unit: 'oz',
+      };
+      const itemProposed = {
+        isComplete: false,
+        itemName: 'Oranges',
+        quantity: 2,
+        unit: 'tsp',
+      };
+
+      // delcaring a spy to check if sumQuantity is called
+      spyOn(component, 'sumQuantity');
+      component.compareNameUnit(itemExist, itemProposed);
+      expect(component.sumQuantity).not.toHaveBeenCalled();
+      // also, we are expecting this failed match to return false
+      expect(component.compareNameUnit(itemExist, itemProposed)).toEqual(false);
+    });
+    /**
+  * Tests that compareNameUnit will not call sumQuantity when the Name matches, but the Unit values don't
+  */
+    it('compareNameUnit should not call sumQuantity when the unit does not match', () => {
+    // Defining mock items to compare
+      const itemExist = {
+        isComplete: false,
+        itemName: 'Apples ',
+        quantity: 3,
+        unit: 'oz',
+      };
+      const itemProposed = {
+        isComplete: false,
+        itemName: 'Apples',
+        quantity: 2,
+        unit: 'tsp',
+      };
+
+      // delcaring a spy to check if sumQuantity is called
+      spyOn(component, 'sumQuantity');
+      component.compareNameUnit(itemExist, itemProposed);
+      expect(component.sumQuantity).not.toHaveBeenCalled();
+      // also, we are expecting this failed match to return false
+      expect(component.compareNameUnit(itemExist, itemProposed)).toEqual(false);
+    });
+    /**
+  * Tests that compareNameUnit will not call sumQuantity when the Unit matches, but the Name values don't
+  */
+    it('compareNameUnit should not call sumQuantity when the name does not match', () => {
+    // Defining mock items to compare
+      const itemExist = {
+        isComplete: false,
+        itemName: 'Apples ',
+        quantity: 3,
+        unit: 'oz',
+      };
+      const itemProposed = {
+        isComplete: false,
+        itemName: 'Oranges',
+        quantity: 2,
+        unit: 'oz',
+      };
+
+      // delcaring a spy to check if sumQuantity is called
+      spyOn(component, 'sumQuantity');
+      component.compareNameUnit(itemExist, itemProposed);
+      expect(component.sumQuantity).not.toHaveBeenCalled();
+      // also, we are expecting this failed match to return false
+      expect(component.compareNameUnit(itemExist, itemProposed)).toEqual(false);
+    });
+
+    /**
+     * Tests that consolidateQuantity will call the correct helper functions when it finds a match
+     * We also want to check that it updates sortedList and returns true
+     */
+    it('consolidateQuantity should call compareNameUnit and then updateDocument on a succesful match', () => {
+    // Defining mocks to compare
+      const itemProposed = {
+        isComplete: false,
+        itemName: 'Apples',
+        quantity: 2,
+        unit: 'oz',
+      };
+      const updatedList = [
+        {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 5,
+          unit: 'oz',
+        },
+        {
+          isComplete: false,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+        },
+        {
+          isComplete: false,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+        },
+        {
+          isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+        },
+      ];
+      expect(component.sortedList).toEqual(mockSortedList);
+      // delcaring a spy to check if compareNameUnit is called
+      spyOn(component, 'compareNameUnit').and.callThrough();
+      // delcaring a spy to check that updateDocument is called
+      spyOn(component, 'updateDocument');
+      component.consolidateQuantity(itemProposed);
+      expect(component.compareNameUnit).toHaveBeenCalled();
+      expect(component.updateDocument).toHaveBeenCalled();
+      // expect the list to equal the updated list and return true
+      expect(component.sortedList).toEqual(updatedList);
+      expect(component.consolidateQuantity(itemProposed)).toEqual(true);
+    });
+  });
+  /**
+  * Tests that consolidateQuantity will call compareNameUnit but not call updateDocument when there is no match
+  * We also want to check that it doesn't touch the list and returns false
+  */
+  it('consolidateQuantity should call compareNameUnit and return false when no matches are found', () => {
+    // Defining mocks to compare
+    const itemProposed = {
+      isComplete: false,
+      itemName: 'Funnel Cakes',
+      quantity: 2,
+      unit: 'L',
+    };
+
+    expect(component.sortedList).toEqual(mockSortedList);
+    // delcaring a spy to check if compareNameUnit is called
+    spyOn(component, 'compareNameUnit').and.callThrough();
+    // delcaring a spy to check that updateDocument is called
+    spyOn(component, 'updateDocument');
+    component.consolidateQuantity(itemProposed);
+    expect(component.compareNameUnit).toHaveBeenCalled();
+    expect(component.updateDocument).not.toHaveBeenCalled();
+    // expect the list to equal the initial list and return false
+    expect(component.sortedList).toEqual(mockSortedList);
+    expect(component.consolidateQuantity(itemProposed)).toEqual(false);
+  });
 });
+

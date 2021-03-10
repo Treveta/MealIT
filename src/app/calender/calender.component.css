@@ -74,3 +74,24 @@ th mat-card-subtitle {
 .larger-mat-card-title {
   font-size: 22px;
 }
+
+.large-middle-screen-button {
+  width: 75%;
+  height: 15%;
+  margin: 10px auto;
+  font-weight: bold;
+  font-size: 2vw;;
+  text-align: center;
+}
+
+.large-middle-screen-button-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.example-spacer {
+  text-align: center;
+  flex: 1 1 auto;
+}
