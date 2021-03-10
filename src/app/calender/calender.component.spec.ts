@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 
@@ -18,12 +18,19 @@ import {CalenderComponent} from './calender.component';
 import firebase from 'firebase';
 import {of} from 'rxjs';
 import {mealPlanWeek} from './mealPlan.model';
+import {By} from '@angular/platform-browser';
 
 
 describe('CalenderComponent', () => {
   let component: CalenderComponent;
 
   let fixture: ComponentFixture<CalenderComponent>;
+
+  let debugBreakfastButton;
+  let debugLunchButton;
+  let debugDinnerButton;
+
+  let debugLoadNewButton;
 
 
   beforeEach(() => {
@@ -528,6 +535,179 @@ describe('CalenderComponent', () => {
       expect(component.mealTypeToSet).toBe('breakfast');
       expect(component.dateToSet).toEqual(firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7)));
     });
+  });
+
+  describe('LoadNew Button Template Tests', () => {
+    beforeEach(async () => {
+      component.pageLoaded = Promise.resolve(true);
+      component.plansExist = false;
+      // after something in the component changes, you should detect changes
+      fixture.detectChanges();
+
+      // everything else in the beforeEach needs to be done here.
+    });
+    beforeEach(async () => {
+      await fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        debugLoadNewButton = fixture.debugElement.queryAll(By.css('button[name=\'loadNewButton\']'));
+      });
+    });
+    it('Should have debug elements', async () => {
+      expect(debugLoadNewButton.length).toBeGreaterThan(0);
+    });
+    it('Should Display start new meal plan button when plansExist is false', () => {
+      expect(debugLoadNewButton.length).toBe(1);
+    });
+  });
+
+  describe('MealPlan Template Tests', () => {
+    beforeEach(async () => {
+    /**
+     * A set of dates in our components format, {string name of the week, the date in firebase timestampformat}
+     */
+      const mockWeekDates = [
+        {weekDayName: 'Sunday', date: firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7))},
+        {weekDayName: 'Monday', date: firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 8))},
+        {weekDayName: 'Tuesday', date: firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 9))},
+        {weekDayName: 'Wednesday', date: firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 10))},
+        {weekDayName: 'Thursday', date: firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 11))},
+        {weekDayName: 'Friday', date: firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 12))},
+        {weekDayName: 'Saturday', date: firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 13))},
+      ];
+      /**
+     * A mock of a partial data object to use to update meal plan. Has a recipe added to sunday breakfast.
+     */
+      const mockPartialData = {
+        label: 'docPath', // This should equal the parameter docPath
+        defined: false,
+        startDate: mockWeekDates[0].date,
+        days: [
+          {
+            date: mockWeekDates[0].date,
+            weekDayName: mockWeekDates[0].weekDayName,
+            breakfast: [{recipeName: 'Test Recipe', uid: '12345'}],
+            lunch: [],
+            dinner: [],
+          },
+          {
+            date: mockWeekDates[1].date,
+            weekDayName: mockWeekDates[1].weekDayName,
+            breakfast: [],
+            lunch: [],
+            dinner: [],
+          },
+          {
+            date: mockWeekDates[2].date,
+            weekDayName: mockWeekDates[2].weekDayName,
+            breakfast: [],
+            lunch: [],
+            dinner: [],
+          },
+          {
+            date: mockWeekDates[3].date,
+            weekDayName: mockWeekDates[3].weekDayName,
+            breakfast: [],
+            lunch: [],
+            dinner: [],
+          },
+          {
+            date: mockWeekDates[4].date,
+            weekDayName: mockWeekDates[4].weekDayName,
+            breakfast: [],
+            lunch: [],
+            dinner: [],
+          },
+          {
+            date: mockWeekDates[5].date,
+            weekDayName: mockWeekDates[5].weekDayName,
+            breakfast: [],
+            lunch: [],
+            dinner: [],
+          },
+          {
+            date: mockWeekDates[6].date,
+            weekDayName: mockWeekDates[6].weekDayName,
+            breakfast: [],
+            lunch: [],
+            dinner: [],
+          },
+        ],
+      };
+      component.previousWeekPlanObs = of([mockPartialData]);
+      component.currentWeekPlanObs = of([mockPartialData]);
+      component.nextWeekPlanObs = of([mockPartialData]);
+      component.mealPlanObsArray = [{label: 'Previous Week', obs: component.previousWeekPlanObs}, {label: 'Current Week', obs: component.currentWeekPlanObs}, {label: 'Next Week', obs: component.nextWeekPlanObs}];
+      component.plansExist = true;
+      component.currentView = 1;
+      component.pageLoaded = Promise.resolve(true);
+      fixture.detectChanges();
+    });
+
+    beforeEach(async () => {
+      await fixture.whenStable().then(() => {
+        fixture.detectChanges();
+        debugLoadNewButton = fixture.debugElement.queryAll(By.css('button[name=\'loadNewButton\']'));
+        debugBreakfastButton = fixture.debugElement.queryAll(By.css('button[name=\'breakfastButton\']'));
+        debugLunchButton = fixture.debugElement.queryAll(By.css('button[name=\'lunchButton\']'));
+        debugDinnerButton = fixture.debugElement.queryAll(By.css('button[name=\'dinnerButton\']'));
+      });
+    });
+
+    it('Should have Debug Elements', () => {
+      expect(debugBreakfastButton.length).toBeGreaterThan(0);
+      expect(debugLunchButton.length).toBeGreaterThan(0);
+      expect(debugDinnerButton.length).toBeGreaterThan(0);
+    });
+
+    it('Should not display start new meal plan button if plansExist is true', () => {
+      expect(debugLoadNewButton.length).toBe(0);
+    });
+
+    it('Should open search recipe dialog when breakfastButton is clicked', fakeAsync( () => {
+      spyOn(component, 'openDialog');
+      debugBreakfastButton[0].nativeElement.click();
+      fixture.detectChanges();
+      tick();
+      expect(component.openDialog).toHaveBeenCalled();
+    }));
+    it('Should open search recipe dialog when lunchButton is clicked', fakeAsync( () => {
+      spyOn(component, 'openDialog');
+      debugLunchButton[0].nativeElement.click();
+      fixture.detectChanges();
+      tick();
+      expect(component.openDialog).toHaveBeenCalled();
+    }));
+    it('Should open search recipe dialog when dinnerButton is clicked', fakeAsync( () => {
+      spyOn(component, 'openDialog');
+      debugDinnerButton[0].nativeElement.click();
+      fixture.detectChanges();
+      tick();
+      expect(component.openDialog).toHaveBeenCalled();
+    }));
+    it('Should run setMealInfo with proper parameters when breakfastButton is clicked', fakeAsync( () => {
+      const dateToExpect = firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7)); // Should match mockWeekDates[0]
+      spyOn(component, 'setMealInfo');
+      debugBreakfastButton[0].nativeElement.click();
+      fixture.detectChanges();
+      tick();
+      expect(component.setMealInfo).toHaveBeenCalledOnceWith('breakfast', dateToExpect);
+    }));
+    it('Should run setMealInfo with proper parameters when lunchButton is clicked', fakeAsync( () => {
+      const dateToExpect = firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7)); // Should match mockWeekDates[0]
+      spyOn(component, 'setMealInfo');
+      debugLunchButton[0].nativeElement.click();
+      fixture.detectChanges();
+      tick();
+      expect(component.setMealInfo).toHaveBeenCalledOnceWith('lunch', dateToExpect);
+    }));
+    it('Should run setMealInfo with proper parameters when dinnerButton is clicked', fakeAsync( () => {
+      const dateToExpect = firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7)); // Should match mockWeekDates[0]
+      spyOn(component, 'setMealInfo');
+      debugDinnerButton[0].nativeElement.click();
+      fixture.detectChanges();
+      tick();
+      expect(component.setMealInfo).toHaveBeenCalledOnceWith('dinner', dateToExpect);
+    }));
   });
 });
 
