@@ -175,18 +175,4 @@ describe('CreateRecipeComponent', () => {
     // Check the console's log method was called with meal
     expect(console.log).toHaveBeenCalled();
   });
-
-  it(`delete a recipe`, () => {
-    spyOn(component, 'deleteDoc');
-    spyOn(component, 'tempSplice');
-    spyOn(component, 'setLocalStorageDelete');
-    spyOn(component, 'askConfirm').and.returnValue(true);
-
-    component.deleteRecipe({'servings': 96608, 'uid': '10GYtAA7wQcGnO7KrNJn', 'recipeName': 'Islands Salad Optimization', 'calories': 57203, 'id': '10GYtAA7wQcGnO7KrNJn'});
-
-    expect(component.askConfirm).toHaveBeenCalled();
-    expect(component.deleteDoc).toHaveBeenCalled();
-    expect(component.tempSplice).toHaveBeenCalled();
-    expect(component.setLocalStorageDelete).toHaveBeenCalled();
-  });
 });

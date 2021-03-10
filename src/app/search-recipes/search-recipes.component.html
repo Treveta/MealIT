@@ -23,6 +23,9 @@
               <button mat-raised-button name="ShowRecipe">
                 Show Recipe
               </button>
+              <button mat-raised-button (click)="deleteRecipe(recipe)" name="deleteRecipe">
+                Delete Recipe
+              </button>
             </mat-panel-description>
         </mat-expansion-panel-header>
         <div *ngFor="let ingredient of ingredientList">

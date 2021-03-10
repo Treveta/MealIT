@@ -11,6 +11,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputModule} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
+import { DatabaseHelperComponent } from 'app/database-helper/database-helper.component';
 
 describe('SearchRecipesComponent', () => {
   let service: SearchRecipesComponent;
@@ -68,6 +69,9 @@ describe('SearchRecipesComponent', () => {
         get: () => ({toPromise: () => ({forEach: () => ({})})}),
       }),
     });
+    const databaseHelperComponentStub = () => ({
+      deleteDocWhere: (arg, query) => ({}),
+    });
     const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
     const angularFireAnalyticsStub = () => ({logEvent: (string) => ({})});
     TestBed.configureTestingModule({
@@ -79,6 +83,10 @@ describe('SearchRecipesComponent', () => {
         {provide: AngularFireAnalytics, useFactory: angularFireAnalyticsStub},
         {provide: MatDialogRef, useValue: {}},
         {provide: MAT_DIALOG_DATA, useValue: {}},
+        {
+          provide: DatabaseHelperComponent,
+          useFactory: databaseHelperComponentStub,
+        },
       ],
       imports: [
         MatExpansionModule,
@@ -280,6 +288,19 @@ describe('SearchRecipesComponent', () => {
 
     it('should have Show Recipe button', function() {
       expect(debugShowRecipe.length).toBeGreaterThan(0);
+    });
+    it(`delete a recipe`, () => {
+      spyOn(component, 'deleteDoc');
+      spyOn(component, 'tempSplice');
+      spyOn(component, 'setLocalStorageDelete');
+      spyOn(component, 'askConfirm').and.returnValue(true);
+
+      component.deleteRecipe({'servings': 96608, 'uid': '10GYtAA7wQcGnO7KrNJn', 'recipeName': 'Islands Salad Optimization', 'calories': 57203, 'id': '10GYtAA7wQcGnO7KrNJn'});
+
+      expect(component.askConfirm).toHaveBeenCalled();
+      expect(component.deleteDoc).toHaveBeenCalled();
+      expect(component.tempSplice).toHaveBeenCalled();
+      expect(component.setLocalStorageDelete).toHaveBeenCalled();
     });
   });
 });
