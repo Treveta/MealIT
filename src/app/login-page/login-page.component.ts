@@ -37,7 +37,7 @@ export class LoginPageComponent implements OnInit {
   /**
    * The constructor for the modal service
    * @param {ModalService} modalService Variable to hold modal service functions to allow modal functionality
-   * @param {AuthService} auth Authentication vairiable for authenticating user
+   * @param {AuthService} auth Authentication variable for authenticating user
    * @param {AngularFirestore} firestore Holds reference to the firestore
    * @param {DatabaseHelperComponent} dbHelp Database helper reference to help with database calls
    */
