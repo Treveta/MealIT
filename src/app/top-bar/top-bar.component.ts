@@ -14,8 +14,8 @@ import {AuthService} from '../services/auth.service';
 export class TopBarComponent implements OnInit {
   /**
    * The constructor for the nav bar functions
-   * @param {AuthService} auth
-   * @param {ThemeService} themeService
+   * @param {AuthService} auth Authentication vairiable for authenticating user
+   * @param {ThemeService} themeService Theme service to allow dark mode functionality
    */
   constructor(public auth: AuthService, private themeService: ThemeService) {
     this.themeService.initTheme();

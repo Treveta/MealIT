@@ -36,10 +36,10 @@ export class LoginPageComponent implements OnInit {
 
   /**
    * The constructor for the modal service
-   * @param {ModalService} modalService
-   * @param {AuthService} auth
-   * @param {AngularFirestore} firestore
-   * @param {DatabaseHelperComponent} dbHelp
+   * @param {ModalService} modalService Variable to hold modal service functions to allow modal functionality
+   * @param {AuthService} auth Authentication vairiable for authenticating user
+   * @param {AngularFirestore} firestore Holds reference to the firestore
+   * @param {DatabaseHelperComponent} dbHelp Database helper reference to help with database calls
    */
   constructor(public modalService: ModalService, public auth: AuthService, private firestore: AngularFirestore, private dbHelp: DatabaseHelperComponent) {
   }
@@ -57,14 +57,14 @@ export class LoginPageComponent implements OnInit {
   }
   /**
    * A function to open a modal
-   * @param {string} id
+   * @param {string} id Id to identify the name of the modal being called
    */
   openModal(id: string) {
     this.modalService.open(id);
   }
   /**
    * A function to close a modal
-   * @param {string} id
+   * @param {string} id Id to identify the name of the modal being called
    */
   closeModal(id: string) {
     this.modalService.close(id);
