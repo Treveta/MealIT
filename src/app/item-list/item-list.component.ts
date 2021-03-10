@@ -211,8 +211,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
      */
     ngOnInit() {
       // console logs to output platforms
-      console.log('android: ', this.platform.ANDROID);
-      console.log('iOS: ', this.platform.IOS);
+      // console.log('android: ', this.platform.ANDROID);
+      // console.log('iOS: ', this.platform.IOS);
 
       // testing for screenwidth
       if (this.screenWidth <= 600) {
@@ -287,7 +287,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * this is a helper function for consolidateQuantity
      */
     compareNameUnit(itemExist, itemProposed): boolean {
-      if (itemExist.itemName.toLowerCase()===itemProposed.itemName.toLowerCase()&&itemExist.unit===itemProposed.unit) {
+      if (itemExist.itemName.trim().toLowerCase()===itemProposed.itemName.trim().toLowerCase()&&itemExist.unit===itemProposed.unit) {
         this.sumQuantity(itemExist, itemProposed);
         return true;
       } else return false;
