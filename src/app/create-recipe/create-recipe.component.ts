@@ -98,7 +98,7 @@ export class CreateRecipeComponent {
          * @param {SearchRecipesComponent} search
          */
         constructor(
-        private modalService: ModalService,
+        public modalService: ModalService,
         private afs: AngularFirestore,
         private authService: AuthService,
         private dbHelp: DatabaseHelperComponent,
@@ -143,6 +143,33 @@ export class CreateRecipeComponent {
         }
 
         /**
+         * @param {any} documentAdded
+         */
+        public docAndUpdate(documentAdded) {
+          this.recipeListCollection.doc(documentAdded.id).update({uid: documentAdded.id});
+        }
+
+        /**
+         * @param {any} data
+         */
+        public setLocalStorage(data) {
+          localStorage.setItem('updatePending', 'true');
+          const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
+          temp.push(data);
+          localStorage.setItem('cachedRecipes', JSON.stringify(temp));
+        }
+
+        /**
+         * @param {any} documentAdded
+         * @return {any}
+         */
+        public ingredientSet(documentAdded) {
+          this.search.fetchCache();
+          this.searchFuzzy();
+          return this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
+        }
+
+        /**
          * A function that brings a form to fill out for a recipe
          */
         async submitRecipe() {
@@ -154,14 +181,11 @@ export class CreateRecipeComponent {
               servings: this.servings,
             };
             const documentAdded = await this.recipeListCollection.add(data);
-            this.recipeListCollection.doc(documentAdded.id).update({uid: documentAdded.id});
-            localStorage.setItem('updatePending', 'true');
-            const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
-            temp.push(data);
-            localStorage.setItem('cachedRecipes', JSON.stringify(temp));
-            this.search.fetchCache();
-            this.searchFuzzy();
-            const ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
+
+            this.docAndUpdate(documentAdded);
+            this.setLocalStorage(data);
+
+            const ingredients = this.ingredientSet(documentAdded);
 
             for (let i = 0; i < this.Ingredients.length; i++) {
               ingredients.add(
@@ -172,6 +196,7 @@ export class CreateRecipeComponent {
                   },
               );
             }
+
             this.Ingredients = [];
             this.amount = [];
             this.units = [];
@@ -196,6 +221,33 @@ export class CreateRecipeComponent {
         closeModal(id: string) {
           this.modalService.close(id);
         }
+
+        /**
+         * Delete a document in a specific location
+         * @param {any} query
+         */
+        public deleteDoc(query) {
+          this.dbHelp.deleteDocWhere('users/'+this.userInfo+'/recipeList/', query);
+        }
+
+        /**
+         * splice the temp at the index
+         * @param {any} temp
+         * @param {any} index
+         */
+        public tempSplice(temp, index) {
+          temp.splice(index, 1);
+        }
+
+        /**
+         * @param {any} temp
+         */
+        public setLocalStorageDelete(temp) {
+          localStorage.setItem('cachedRecipes', JSON.stringify(temp));
+          this.search.fetchCache();
+          this.searchFuzzy();
+        }
+
         /**
          * A funtion that remove a recipe from the databse
          * @param {any} recipe
@@ -203,14 +255,15 @@ export class CreateRecipeComponent {
         public deleteRecipe(recipe) {
           console.log(recipe);
           const query = 'recipeName:==:'+ recipe.recipeName+'';
-          this.dbHelp.deleteDocWhere('users/'+this.userInfo+'/recipeList/', query);
+
+          this.deleteDoc(query);
+
           localStorage.setItem('updatePending', 'true');
           const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
           const index = temp.findIndex((index) => index.recipeName === recipe.recipeName);
-          temp.splice(index, 1);
-          localStorage.setItem('cachedRecipes', JSON.stringify(temp));
-          this.search.fetchCache();
-          this.searchFuzzy();
+
+          this.tempSplice(temp, index);
+          this.setLocalStorageDelete(temp);
         }
 
         /**

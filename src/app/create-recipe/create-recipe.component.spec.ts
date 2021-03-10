@@ -107,24 +107,77 @@ describe('CreateRecipeComponent', () => {
   });
 
   it(`submit a recipe`, () => {
-    component.Ingredients.length = 1;
-    component.servings = '2 people';
-    component.calories = '300 cl';
-    component.recipeName = 'Fruit Salad';
-
-    spyOn(component.search, 'fetchCache');
-    spyOn(component, 'searchFuzzy');
+    spyOn(component, 'docAndUpdate');
+    spyOn(component, 'setLocalStorage');
+    spyOn(component, 'ingredientSet');
 
     component.submitRecipe();
 
-    expect(component.search.fetchCache).toHaveBeenCalled();
-    expect(component.searchFuzzy).toHaveBeenCalled();
-
+    expect(component.docAndUpdate).toHaveBeenCalled();
+    expect(component.setLocalStorage).toHaveBeenCalled();
+    expect(component.ingredientSet).toHaveBeenCalled();
     expect(component.Ingredients).toEqual([]);
     expect(component.amount).toEqual([]);
     expect(component.units).toEqual([]);
     expect(component.servings).toBe('');
     expect(component.calories).toBe('');
     expect(component.recipeName).toBe('');
+  });
+
+  /**
+   * Check the modal is opened
+   */
+  it('Open a modal', () => {
+    // Spy on the modal services open method
+    spyOn(component.modalService, 'open');
+    // The test id
+    const id: string = '1234abcd';
+
+    component.openModal(id);
+
+    // Check the modal service open method was called with id
+    expect(component.modalService.open).toHaveBeenCalledWith(id);
+  });
+
+  /**
+   * Check the modal is closed
+   */
+  it('Close a modal', () => {
+    // Spy on the modal service close method
+    spyOn(component.modalService, 'close');
+    // The test id
+    const id: string = '1234abcd';
+
+    component.closeModal(id);
+
+    // Check the modal service close method was called with id
+    expect(component.modalService.close).toHaveBeenCalledWith(id);
+  });
+
+  /**
+   * Check that a selected meal is put into the debug log
+   */
+  it('Log the selected meal', () => {
+    // Spy on the colsole's log method
+    spyOn(console, 'log');
+
+    component.logResults();
+
+    // Check the console's log method was called with meal
+    expect(console.log).toHaveBeenCalled();
+  });
+
+  it(`delete a recipe`, () => {
+    spyOn(component, 'deleteDoc');
+    spyOn(component, 'tempSplice');
+    spyOn(component, 'setLocalStorageDelete');
+    spyOn(component, 'deleteRecipe');
+
+    const recipe = 9;
+    component.deleteRecipe(recipe);
+
+    expect(component.deleteDoc).toHaveBeenCalled();
+    expect(component.tempSplice).toHaveBeenCalled();
+    expect(component.setLocalStorageDelete).toHaveBeenCalled();
   });
 });
