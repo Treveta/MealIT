@@ -266,8 +266,8 @@ export class CreateRecipeComponent {
 
         /**
          * A funtion that remove a recipe from the databse
-         * @param {any} recipe
-         * @param {any} r
+         * @param {any} recipe Recipe being deleted
+         * @param {any} r Holds boolean value of the confirmation popup
          */
         public deleteRecipe(recipe) {
           const r = this.askConfirm('Are you sure you want to delete this recipe?');
