@@ -161,13 +161,32 @@ export class CreateRecipeComponent {
 
         /**
          * @param {any} documentAdded
+         */
+        public ingredientAdd(documentAdded) {
+          this.search.fetchCache();
+          const ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
+
+          for (let i = 0; i < this.Ingredients.length; i++) {
+            ingredients.add(
+                {
+                  ingredientName: this.Ingredients[i],
+                  amount: this.amount[i],
+                  unit: this.units[i],
+                },
+            );
+          }
+        }
+
+        /**
+         * Add a document
+         * @param {any} data
          * @return {any}
          */
-        public ingredientSet(documentAdded) {
-          this.search.fetchCache();
-          this.searchFuzzy();
-          return this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
+        async addDocumentRC(data) {
+          return this.recipeListCollection.add(data);
         }
+
+        public adding
 
         /**
          * A function that brings a form to fill out for a recipe
@@ -180,22 +199,12 @@ export class CreateRecipeComponent {
               calories: this.calories,
               servings: this.servings,
             };
-            const documentAdded = await this.recipeListCollection.add(data);
+            const documentAdded = await this.addDocumentRC(data);
 
             this.docAndUpdate(documentAdded);
             this.setLocalStorage(data);
 
-            const ingredients = this.ingredientSet(documentAdded);
-
-            for (let i = 0; i < this.Ingredients.length; i++) {
-              ingredients.add(
-                  {
-                    ingredientName: this.Ingredients[i],
-                    amount: this.amount[i],
-                    unit: this.units[i],
-                  },
-              );
-            }
+            this.ingredientAdd(documentAdded);
 
             this.Ingredients = [];
             this.amount = [];
@@ -245,7 +254,14 @@ export class CreateRecipeComponent {
         public setLocalStorageDelete(temp) {
           localStorage.setItem('cachedRecipes', JSON.stringify(temp));
           this.search.fetchCache();
-          this.searchFuzzy();
+        }
+
+        /**
+         * @param {string} message
+         * @return {any}
+         */
+        public askConfirm(message) {
+          return confirm(message);
         }
 
         /**
@@ -254,7 +270,7 @@ export class CreateRecipeComponent {
          * @param {any} r
          */
         public deleteRecipe(recipe) {
-          const r = confirm('Are you sure you want to delete this recipe?');
+          const r = this.askConfirm('Are you sure you want to delete this recipe?');
           if (r == true) {
             console.log(recipe);
             const query = 'recipeName:==:'+ recipe.recipeName+'';
@@ -268,13 +284,6 @@ export class CreateRecipeComponent {
             this.tempSplice(temp, index);
             this.setLocalStorageDelete(temp);
           }
-        }
-
-        /**
-         * Sends search term to search service and sets fuzzyResults to the resulting list of search results
-         */
-        public searchFuzzy() {
-          this.fuzzyResults = this.search.searchService(this.searchTerm);
         }
 
         /**

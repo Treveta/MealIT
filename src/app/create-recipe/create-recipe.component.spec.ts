@@ -106,16 +106,25 @@ describe('CreateRecipeComponent', () => {
     expect(window.alert).toHaveBeenCalledWith('Please fill in all fields and have at least one ingredient');
   });
 
-  it(`submit a recipe`, () => {
+  it(`submit a recipe`, async () => {
+    component.Ingredients.length = 1;
+
+    component.servings = '2 people';
+
+    component.calories = '300 cl';
+
+    component.recipeName = 'Fruit Salad';
+
     spyOn(component, 'docAndUpdate');
     spyOn(component, 'setLocalStorage');
-    spyOn(component, 'ingredientSet');
+    spyOn(component, 'ingredientAdd');
+    spyOn(component, 'addDocumentRC');
 
-    component.submitRecipe();
+    await component.submitRecipe();
 
     expect(component.docAndUpdate).toHaveBeenCalled();
     expect(component.setLocalStorage).toHaveBeenCalled();
-    expect(component.ingredientSet).toHaveBeenCalled();
+    expect(component.ingredientAdd).toHaveBeenCalled();
     expect(component.Ingredients).toEqual([]);
     expect(component.amount).toEqual([]);
     expect(component.units).toEqual([]);
@@ -171,11 +180,11 @@ describe('CreateRecipeComponent', () => {
     spyOn(component, 'deleteDoc');
     spyOn(component, 'tempSplice');
     spyOn(component, 'setLocalStorageDelete');
-    spyOn(component, 'deleteRecipe');
+    spyOn(component, 'askConfirm').and.returnValue(true);
 
-    const recipe = 9;
-    component.deleteRecipe(recipe);
+    component.deleteRecipe({'servings': 96608, 'uid': '10GYtAA7wQcGnO7KrNJn', 'recipeName': 'Islands Salad Optimization', 'calories': 57203, 'id': '10GYtAA7wQcGnO7KrNJn'});
 
+    expect(component.askConfirm).toHaveBeenCalled();
     expect(component.deleteDoc).toHaveBeenCalled();
     expect(component.tempSplice).toHaveBeenCalled();
     expect(component.setLocalStorageDelete).toHaveBeenCalled();
