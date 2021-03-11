@@ -30,6 +30,14 @@ describe('CalenderComponent', () => {
   let debugLunchButton;
   let debugDinnerButton;
 
+  let debugBreakfastCard;
+  let debugLunchCard;
+  let debugDinnerCard;
+
+  let debugBreakfastRecipeCard;
+  let debugLunchRecipeCard;
+  let debugDinnerRecipeCard;
+
   let debugLoadNewButton;
 
 
@@ -103,12 +111,16 @@ describe('CalenderComponent', () => {
     component = fixture.componentInstance;
   });
 
-
+  /**
+   * Tests that the component builds
+   */
   it('can load instance', () => {
     expect(component).toBeTruthy();
   });
 
-
+  /**
+   * Tests that weekDayName array has a default value when component is generated
+   */
   it(`weekDayName has default value`, () => {
     expect(component.weekDayName).toEqual([
 
@@ -129,7 +141,9 @@ describe('CalenderComponent', () => {
     ]);
   });
 
-
+  /**
+   * Tests for openDialog
+   */
   describe('openDialog', () => {
     it('makes expected calls', () => {
       const matDialogStub: MatDialog = fixture.debugElement.injector.get(
@@ -137,24 +151,17 @@ describe('CalenderComponent', () => {
           MatDialog,
 
       );
-
+      // Spys for the functions called in openDialog
       spyOn(component, 'setRecipeInPlan').and.callThrough();
-
       spyOn(matDialogStub, 'open').and.callThrough();
 
+      // Runs the function
       component.openDialog();
-
+      // Expects setRecipeInPlan to have been called
       expect(component.setRecipeInPlan).toHaveBeenCalled();
-
+      // Expects the dialog to have been opened
       expect(matDialogStub.open).toHaveBeenCalled();
     });
-  });
-
-  /**
-   * This should test the component is made with the calendar component constructor
-   */
-  it('should create', () => {
-    expect(component).toBeTruthy();
   });
 
   describe('Tests For getWeek Function', () => {
@@ -528,6 +535,10 @@ describe('CalenderComponent', () => {
   });
 
   describe('Tests for setMealInfo function', () => {
+    /**
+     * Tests that when the setMealInfo function is called it sets the proper component variables
+     * with the proper values based on its parameters
+     */
     it('Should set component variables based on given parameters', () => {
       expect(component.mealTypeToSet).toBeUndefined();
       expect(component.dateToSet).toBeUndefined();
@@ -537,30 +548,68 @@ describe('CalenderComponent', () => {
     });
   });
 
-  describe('LoadNew Button Template Tests', () => {
+  /**
+   * These tests test the HTML template in an state that assumes that firestore does not have the correct number of mealPlans
+   */
+  describe('Start New Meal Plan Button Template Tests', () => {
+    /**
+     * This before each sets the values that determine what state the template will be in on render
+     */
     beforeEach(async () => {
+      // Makes sure the page will render, this variable is used to allow the asyncronous data to be collected before
+      // the page will load, it needs to resolve a true promise before anything will appear at all
       component.pageLoaded = Promise.resolve(true);
+      // Assumes that the constructor did not recieve back the correct number of documents from firestore and that the user
+      // needs to start or restart their mealPlan
       component.plansExist = false;
       // after something in the component changes, you should detect changes
       fixture.detectChanges();
 
       // everything else in the beforeEach needs to be done here.
     });
+    /**
+     * This second beforeEach awaits the fixture becoming stable and the debug elements being retrieved
+     * The changes made to the variables (ngIf tested variables) in the first beforeEach will cause the
+     * template to rerender and we need to make sure we collect our debugElements after that happens
+     */
     beforeEach(async () => {
       await fixture.whenStable().then(() => {
         fixture.detectChanges();
         debugLoadNewButton = fixture.debugElement.queryAll(By.css('button[name=\'loadNewButton\']'));
+        debugBreakfastButton = fixture.debugElement.queryAll(By.css('button[name=\'breakfastButton\']'));
+        debugLunchButton = fixture.debugElement.queryAll(By.css('button[name=\'lunchButton\']'));
+        debugDinnerButton = fixture.debugElement.queryAll(By.css('button[name=\'dinnerButton\']'));
       });
     });
+    /**
+     * Makes sure that there are debugElements in the debug arrays used for testing
+     */
     it('Should have debug elements', async () => {
       expect(debugLoadNewButton.length).toBeGreaterThan(0);
     });
+    /**
+     * Checks to make sure exactly one button with the name loadNewButton is on the page
+     */
     it('Should Display start new meal plan button when plansExist is false', () => {
       expect(debugLoadNewButton.length).toBe(1);
     });
+    /**
+     * Makes sure that the mealPlan does not display by checking if the add meal buttons are appearing on the page
+     */
+    it('Should not display meal plan if plansExist is false', () => {
+      expect(debugBreakfastButton.length).toBe(0);
+      expect(debugLunchButton.length).toBe(0);
+      expect(debugDinnerButton.length).toBe(0);
+    });
   });
-
+  /**
+   * These tests test the HTML template in an assumed state where firestore returned all the necessary mealPlans in the constructor
+   */
   describe('MealPlan Template Tests', () => {
+    /**
+     * This before each sets the values that determine what state the template will be in on render
+     * It also declares the necessary consts used for testing these tests
+     */
     beforeEach(async () => {
     /**
      * A set of dates in our components format, {string name of the week, the date in firebase timestampformat}
@@ -633,16 +682,26 @@ describe('CalenderComponent', () => {
           },
         ],
       };
+      // Sets the previous, current, and next week observables to observables of the mockPartialData as an array
       component.previousWeekPlanObs = of([mockPartialData]);
       component.currentWeekPlanObs = of([mockPartialData]);
       component.nextWeekPlanObs = of([mockPartialData]);
+      // Sets the mealPlanObsArray to an array of objects containing the week label and the matching observable
       component.mealPlanObsArray = [{label: 'Previous Week', obs: component.previousWeekPlanObs}, {label: 'Current Week', obs: component.currentWeekPlanObs}, {label: 'Next Week', obs: component.nextWeekPlanObs}];
+      // Puts the template into a state where it believes it got the right number of mealPlans returned from firestore
       component.plansExist = true;
+      // Sets the current view to the currentWeek
       component.currentView = 1;
+      // Makes sure the page will render, this variable is used to allow the asyncronous data to be collected before
+      // the page will load, it needs to resolve a true promise before anything will appear at all
       component.pageLoaded = Promise.resolve(true);
       fixture.detectChanges();
     });
-
+    /**
+     * This second beforeEach awaits the fixture becoming stable and the debug elements being retrieved
+     * The changes made to the variables (ngIf tested variables) in the first beforeEach will cause the
+     * template to rerender and we need to make sure we collect our debugElements after that happens
+     */
     beforeEach(async () => {
       await fixture.whenStable().then(() => {
         fixture.detectChanges();
@@ -650,19 +709,66 @@ describe('CalenderComponent', () => {
         debugBreakfastButton = fixture.debugElement.queryAll(By.css('button[name=\'breakfastButton\']'));
         debugLunchButton = fixture.debugElement.queryAll(By.css('button[name=\'lunchButton\']'));
         debugDinnerButton = fixture.debugElement.queryAll(By.css('button[name=\'dinnerButton\']'));
+        debugBreakfastCard = fixture.debugElement.queryAll(By.css('mat-card[name=\'breakfastCard\']'));
+        debugLunchCard = fixture.debugElement.queryAll(By.css('mat-card[name=\'lunchCard\']'));
+        debugDinnerCard = fixture.debugElement.queryAll(By.css('mat-card[name=\'dinnerCard\']'));
+        debugBreakfastRecipeCard = fixture.debugElement.queryAll(By.css('mat-card[name=\'breakfastRecipeCard\']'));
+        debugLunchRecipeCard = fixture.debugElement.queryAll(By.css('mat-card[name=\'lunchRecipeCard\']'));
+        debugDinnerRecipeCard = fixture.debugElement.queryAll(By.css('mat-card[name=\'dinnerRecipeCard\']'));
       });
     });
-
+    /**
+     * Tests to ensure the necessary debugElements were obtained
+     */
     it('Should have Debug Elements', () => {
       expect(debugBreakfastButton.length).toBeGreaterThan(0);
       expect(debugLunchButton.length).toBeGreaterThan(0);
       expect(debugDinnerButton.length).toBeGreaterThan(0);
+      expect(debugBreakfastCard.length).toBeGreaterThan(0);
+      expect(debugLunchCard.length).toBeGreaterThan(0);
+      expect(debugDinnerCard.length).toBeGreaterThan(0);
+      expect(debugBreakfastRecipeCard.length).toBeGreaterThan(0);
+      // These expects are commented out because the partial data being tested with does not include lunch and dinner data
+      // thus these arrays will be empty, they are further tested in the Should display correct recipe cards based on data test
+      // expect(debugLunchRecipeCard.length).toBeGreaterThan(0);
+      // expect(debugDinnerRecipeCard.length).toBeGreaterThan(0);
     });
-
+    /**
+     * Test to make sure the right number of recipe cards are displayed based on data
+     */
+    it('Should display correct recipe cards based on data', () => {
+      // Based on the mockPartialData being used to create the observables there should be one breakfast recipe card and no lunch or dinner recipe cards
+      expect(debugBreakfastRecipeCard.length).toBe(1);
+      expect(debugLunchRecipeCard.length).toBe(0);
+      expect(debugDinnerRecipeCard.length).toBe(0);
+    });
+    /**
+     * Tests to make sure the right number of day and meal cards are displayed
+     */
+    it('Should display correct day and meal cards based on data', () => {
+      // Based on the mockPartialData being used to create the observables there should be 7 of each type of meal card, one for each day of the week
+      expect(debugBreakfastCard.length).toBe(7);
+      expect(debugLunchCard.length).toBe(7);
+      expect(debugDinnerCard.length).toBe(7);
+    });
+    /**
+     * Tests to make sure the right number of add meal buttons are displayed
+     */
+    it('Should display correct add meal buttons based on data', () => {
+      // Based on the mockPartialData being used to create the observables there should be 7 of each type of button, one per card for each day of the week
+      expect(debugBreakfastButton.length).toBe(7);
+      expect(debugLunchButton.length).toBe(7);
+      expect(debugDinnerButton.length).toBe(7);
+    });
+    /**
+     * Tests to make sure start new meal plan button doesn't display when template is in this state
+     */
     it('Should not display start new meal plan button if plansExist is true', () => {
       expect(debugLoadNewButton.length).toBe(0);
     });
-
+    /**
+     * Tests to ensure clicking on the button brings up the dialog
+     */
     it('Should open search recipe dialog when breakfastButton is clicked', fakeAsync( () => {
       spyOn(component, 'openDialog');
       debugBreakfastButton[0].nativeElement.click();
@@ -670,6 +776,9 @@ describe('CalenderComponent', () => {
       tick();
       expect(component.openDialog).toHaveBeenCalled();
     }));
+    /**
+     * Tests to ensure clicking on the button brings up the dialog
+     */
     it('Should open search recipe dialog when lunchButton is clicked', fakeAsync( () => {
       spyOn(component, 'openDialog');
       debugLunchButton[0].nativeElement.click();
@@ -677,6 +786,9 @@ describe('CalenderComponent', () => {
       tick();
       expect(component.openDialog).toHaveBeenCalled();
     }));
+    /**
+     * Tests to ensure clicking on the button brings up the dialog
+     */
     it('Should open search recipe dialog when dinnerButton is clicked', fakeAsync( () => {
       spyOn(component, 'openDialog');
       debugDinnerButton[0].nativeElement.click();
@@ -684,6 +796,9 @@ describe('CalenderComponent', () => {
       tick();
       expect(component.openDialog).toHaveBeenCalled();
     }));
+    /**
+     * Tests that this button runs the setMealInfo function with the correct parameters
+     */
     it('Should run setMealInfo with proper parameters when breakfastButton is clicked', fakeAsync( () => {
       const dateToExpect = firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7)); // Should match mockWeekDates[0]
       spyOn(component, 'setMealInfo');
@@ -692,6 +807,9 @@ describe('CalenderComponent', () => {
       tick();
       expect(component.setMealInfo).toHaveBeenCalledOnceWith('breakfast', dateToExpect);
     }));
+    /**
+     * Tests that this button runs the setMealInfo function with the correct parameters
+     */
     it('Should run setMealInfo with proper parameters when lunchButton is clicked', fakeAsync( () => {
       const dateToExpect = firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7)); // Should match mockWeekDates[0]
       spyOn(component, 'setMealInfo');
@@ -700,6 +818,9 @@ describe('CalenderComponent', () => {
       tick();
       expect(component.setMealInfo).toHaveBeenCalledOnceWith('lunch', dateToExpect);
     }));
+    /**
+     * Tests that this button runs the setMealInfo function with the correct parameters
+     */
     it('Should run setMealInfo with proper parameters when dinnerButton is clicked', fakeAsync( () => {
       const dateToExpect = firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7)); // Should match mockWeekDates[0]
       spyOn(component, 'setMealInfo');
@@ -708,6 +829,12 @@ describe('CalenderComponent', () => {
       tick();
       expect(component.setMealInfo).toHaveBeenCalledOnceWith('dinner', dateToExpect);
     }));
+    /**
+     * Tests that data is displayed in the correct place
+     */
+    it('Should display mealPlan data in correct place', () => {
+
+    });
   });
 });
 

@@ -244,23 +244,31 @@ export class CalenderComponent implements OnInit {
    * @return {Array} mealPlanBlankWeek, return used for testing
    */
   addBlankPlan(docPath, weekDates) {
+    // Creates a blank meal plan week
     const mealPlanBlankWeek: mealPlanWeek = {
       label: docPath,
       defined: false,
       startDate: weekDates[0].date,
       days: [],
     };
+    // Creates a blank mealPlanDay for each day of the week and pushes it into the days array of blankMealPlanWeek
     weekDates.forEach((element) => {
       const mealPlanBlankDay: mealPlanDay = {
+        // Fetching the date from the weekDates array
         date: element.date,
+        // Fetching the weekDayName from the weekDates array
         weekDayName: element.weekDayName,
+        // The recipes are empty
         breakfast: [],
         lunch: [],
         dinner: [],
       };
+      // Pushing the newly created blank meal plan day to the days array of blankMealPlanWeek
       mealPlanBlankWeek.days.push(mealPlanBlankDay);
     });
+    // Calls the set document helper function
     this.setDocInFireStore(docPath, mealPlanBlankWeek);
+    // Returns the blank meal plan week for unit testing
     return mealPlanBlankWeek;
   }
 
@@ -302,14 +310,17 @@ export class CalenderComponent implements OnInit {
    * Opens the dialog on click
    */
   openDialog() {
+    // Creates a reference to the dialog and declares the component to open and its options
     const dialogRef = this.dialog.open(SearchRecipesComponent, {
       width: '50%',
       height: '75%',
       data: {embeddedPage: 'mealPlan'},
     });
+    // The after closed hook returns an observable with returned data when the dialog closes
     dialogRef.afterClosed().subscribe((result) => {
       // Only takes action if the result is defined
       if (result) {
+        // Sets the recipe in the plan
         this.setRecipeInPlan(result.recipeName, result.uid);
       }
     });
@@ -321,31 +332,44 @@ export class CalenderComponent implements OnInit {
    * @param {string} uid
    */
   setRecipeInPlan(recipeName, uid) {
+    // Gets a snapshot of the mealPlanData, includes all existing mealPlans as an array
     this.listData('users/'+this.userInfo+'/mealplan').then((mealPlanWeeks) => {
+      // Iterates over the mealPlans
       for (let i = 0; i < mealPlanWeeks.length; i++) {
+        // Sets the partial data to the preexisting data from the snapshot
         const partialData = mealPlanWeeks[i];
+        // Iterates over the days in the mealPlan's days array
         for (let j = 0; j < partialData.days.length; j++) {
+          // checks if the date the user is trying to set equals the date in the days array
           if (partialData.days[j].date.toDate().getTime() === this.dateToSet.toDate().getTime()) {
+            // If the dates matched it checks whether the mealType was breakfast lunch or dinner
             if (this.mealTypeToSet == 'breakfast') {
+              // creates a new array of recipes equal to the previous recipes array concantenated with the new recipe
               const newMeal = partialData.days[j].breakfast.concat([{recipeName: recipeName, uid: uid}]);
+              // Sets the meals array equal to the new meal
               partialData.days[j].breakfast = newMeal;
               // Sets a component variable with the partialData, this can then be later retrieved or used for testing
               this.partialDataLastSet = partialData;
             }
             if (this.mealTypeToSet == 'lunch') {
+              // creates a new array of recipes equal to the previous recipes array concantenated with the new recipe
               const newMeal = partialData.days[j].lunch.concat([{recipeName: recipeName, uid: uid}]);
+              // Sets the meals array equal to the new meal
               partialData.days[j].lunch = newMeal;
               // Sets a component variable with the partialData, this can then be later retrieved or used for testing
               this.partialDataLastSet = partialData;
             }
             if (this.mealTypeToSet == 'dinner') {
+              // creates a new array of recipes equal to the previous recipes array concantenated with the new recipe
               const newMeal = partialData.days[j].dinner.concat([{recipeName: recipeName, uid: uid}]);
+              // Sets the meals array equal to the new meal
               partialData.days[j].dinner = newMeal;
               // Sets a component variable with the partialData, this can then be later retrieved or used for testing
               this.partialDataLastSet = partialData;
             }
           }
         }
+        // Calls the update document helper function
         this.updateDocInFireStore(mealPlanWeeks[i].label, partialData);
       }
     });
@@ -379,6 +403,7 @@ export class CalenderComponent implements OnInit {
 
   /**
    * Sends search term to search service and sets fuzzyResults to the resulting list of search results
+   * THIS FUNCTION IS LIKELY DEPRECATED, NEEDS INVESTIGATION BEFORE REMOVAL
    */
   public searchFuzzy() {
     this.fuzzyResults = this.search.searchService(this.searchTerm);
