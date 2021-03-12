@@ -70,7 +70,6 @@ export class AuthService {
    * @return {credential}
    */
   async createEmailUser(email, password) {
-    console.log(password);
     const isValid = checkPassword(password);
     if (isValid) {
       try {
