@@ -255,15 +255,15 @@ describe('ItemListComponent', () => {
 
     });
     /**
-  * Tests that the mat checkbox will initialize and show up on the page
-  */
+    * Tests that the mat checkbox will initialize and show up on the page
+    */
     it('mat checkBox should appear on the page', async () => {
       const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'completionCheck'}));
       expect(checkbox).toBeTruthy();
     });
     /**
-  * Tests that the material checkbox should call completionToggle upon change
-  */
+    * Tests that the material checkbox should call completionToggle upon change
+    */
     it('mat checkBox should call call completionToggle on change', async () => {
       spyOn(component, 'completionToggle');
       console.log(debugCompletionCheck);
@@ -279,8 +279,8 @@ describe('ItemListComponent', () => {
 
   describe('Consolidation Tests', () => {
   /**
- * Mock of sortedList, used by several functions in item-list.component.ts
- */
+  * Mock of sortedList, used by several functions in item-list.component.ts
+  */
     const mockSortedList = [
       {
         isComplete: false,
@@ -313,8 +313,8 @@ describe('ItemListComponent', () => {
     });
 
     /**
-  * Tests that sumQuantity successfully adds the quantity of two items
-  */
+    * Tests that sumQuantity successfully adds the quantity of two items
+    */
     it('sumQuantity should add two items quantity values', () => {
     // Defining mock items to add, and one that is the expected result
       const itemExist = {
@@ -340,8 +340,8 @@ describe('ItemListComponent', () => {
       expect(itemExist).toEqual(itemResult);
     });
     /**
-  * Tests that compareNameUnit will call sumQuantity when the Name and Unit values match exactly
-  */
+    * Tests that compareNameUnit will call sumQuantity when the Name and Unit values match exactly
+    */
     it('compareNameUnit should call sumQuantity on exact matching values', () => {
     // Defining mock items to compare
       const itemExist = {
@@ -365,8 +365,8 @@ describe('ItemListComponent', () => {
       expect(component.compareNameUnit(itemExist, itemProposed)).toEqual(true);
     });
     /**
-  * Tests that compareNameUnit will call sumQuantity when the Name and Unit values match but not exactly
-  */
+    * Tests that compareNameUnit will call sumQuantity when the Name and Unit values match but not exactly
+    */
     it('compareNameUnit should call sumQuantity on inexact matching values', () => {
     // Defining mock items to compare
       const itemExist = {
@@ -390,8 +390,8 @@ describe('ItemListComponent', () => {
       expect(component.compareNameUnit(itemExist, itemProposed)).toEqual(true);
     });
     /**
-  * Tests that compareNameUnit will not call sumQuantity when neither the Name nor Unit values match at all
-  */
+    * Tests that compareNameUnit will not call sumQuantity when neither the Name nor Unit values match at all
+    */
     it('compareNameUnit should not call sumQuantity on completely mismatching values', () => {
     // Defining mock items to compare
       const itemExist = {
@@ -415,8 +415,8 @@ describe('ItemListComponent', () => {
       expect(component.compareNameUnit(itemExist, itemProposed)).toEqual(false);
     });
     /**
-  * Tests that compareNameUnit will not call sumQuantity when the Name matches, but the Unit values don't
-  */
+    * Tests that compareNameUnit will not call sumQuantity when the Name matches, but the Unit values don't
+    */
     it('compareNameUnit should not call sumQuantity when the unit does not match', () => {
     // Defining mock items to compare
       const itemExist = {
@@ -440,8 +440,8 @@ describe('ItemListComponent', () => {
       expect(component.compareNameUnit(itemExist, itemProposed)).toEqual(false);
     });
     /**
-  * Tests that compareNameUnit will not call sumQuantity when the Unit matches, but the Name values don't
-  */
+    * Tests that compareNameUnit will not call sumQuantity when the Unit matches, but the Name values don't
+    */
     it('compareNameUnit should not call sumQuantity when the name does not match', () => {
     // Defining mock items to compare
       const itemExist = {
@@ -515,31 +515,197 @@ describe('ItemListComponent', () => {
       expect(component.sortedList).toEqual(updatedList);
       expect(component.consolidateQuantity(itemProposed)).toEqual(true);
     });
-  });
-  /**
-  * Tests that consolidateQuantity will call compareNameUnit but not call updateDocument when there is no match
-  * We also want to check that it doesn't touch the list and returns false
-  */
-  it('consolidateQuantity should call compareNameUnit and return false when no matches are found', () => {
-    // Defining mocks to compare
-    const itemProposed = {
-      isComplete: false,
-      itemName: 'Funnel Cakes',
-      quantity: 2,
-      unit: 'L',
-    };
 
-    expect(component.sortedList).toEqual(mockSortedList);
-    // delcaring a spy to check if compareNameUnit is called
-    spyOn(component, 'compareNameUnit').and.callThrough();
-    // delcaring a spy to check that updateDocument is called
-    spyOn(component, 'updateDocument');
-    component.consolidateQuantity(itemProposed);
-    expect(component.compareNameUnit).toHaveBeenCalled();
-    expect(component.updateDocument).not.toHaveBeenCalled();
-    // expect the list to equal the initial list and return false
-    expect(component.sortedList).toEqual(mockSortedList);
-    expect(component.consolidateQuantity(itemProposed)).toEqual(false);
+    /**
+     * Tests that consolidateQuantity will call compareNameUnit but not call updateDocument when there is no match
+     * We also want to check that it doesn't touch the list and returns false
+     */
+    it('consolidateQuantity should call compareNameUnit and return false when no matches are found', () => {
+    // Defining mocks to compare
+      const itemProposed = {
+        isComplete: false,
+        itemName: 'Funnel Cakes',
+        quantity: 2,
+        unit: 'L',
+      };
+
+      expect(component.sortedList).toEqual(mockSortedList);
+      // delcaring a spy to check if compareNameUnit is called
+      spyOn(component, 'compareNameUnit').and.callThrough();
+      // delcaring a spy to check that updateDocument is called
+      spyOn(component, 'updateDocument');
+      component.consolidateQuantity(itemProposed);
+      expect(component.compareNameUnit).toHaveBeenCalled();
+      expect(component.updateDocument).not.toHaveBeenCalled();
+      // expect the list to equal the initial list and return false
+      expect(component.sortedList).toEqual(mockSortedList);
+      expect(component.consolidateQuantity(itemProposed)).toEqual(false);
+    });
+  });
+
+
+  describe('addToItemList Tests', () => {
+    /**
+    * Mock of sortedList, used by several functions in item-list.component.ts
+    */
+    const mockSortedList = [
+      {
+        isComplete: false,
+        itemName: 'Apples',
+        quantity: 3,
+        unit: 'oz',
+      },
+      {
+        isComplete: false,
+        itemName: 'Blueberry',
+        quantity: 5,
+        unit: 'lb',
+      },
+      {
+        isComplete: false,
+        itemName: 'Steak',
+        quantity: 2,
+        unit: 'ct',
+      },
+      {
+        isComplete: false,
+        itemName: 'ApplesbutBetter',
+        quantity: 4,
+        unit: 'oz',
+      },
+    ];
+
+    beforeEach(() => {
+      component.sortedList=mockSortedList;
+      component.newItem='';
+      component.newQuantity ='';
+      component.newUnit = '';
+    });
+    /**
+    * Tests that addToItemList doesn't do anything when the class variables are empty
+    * @function updateDocument and @function consolidateQuantity are not called
+    */
+    it('addToItemList should do nothing when class variables are empty', async () => {
+      expect(component.sortedList).toEqual(mockSortedList);
+      // delcaring a spy to check if consolidateQuantity is called
+      spyOn(component, 'consolidateQuantity').and.callThrough();
+      // delcaring a spy to check that updateDocument is called
+      spyOn(component, 'updateDocument');
+      component.addToItemList();
+      expect(component.consolidateQuantity).not.toHaveBeenCalled();
+      expect(component.updateDocument).not.toHaveBeenCalled();
+      // expect the list to equal the initial list and return false
+      expect(component.sortedList).toEqual(mockSortedList);
+    });
+    /**
+    * Tests that addToItemList adds an item to the list when it should and also that
+    * @function updateDocument and @function consolidateQuantity are called
+    */
+    it('addToItemList should add an item to the list', async () => {
+    // initializing an item to test mocks to compare
+      component.newItem='Peaches';
+      component.newQuantity = 4;
+      component.newUnit = 'ct';
+      // initializing a mock updated list to compare to
+      const updatedList = [
+        {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 3,
+          unit: 'oz',
+        },
+        {
+          isComplete: false,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+        },
+        {
+          isComplete: false,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+        },
+        {
+          isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+        },
+        {
+          isComplete: false,
+          itemName: 'Peaches',
+          quantity: 4,
+          unit: 'ct',
+        },
+      ];
+      expect(component.sortedList).toEqual(mockSortedList);
+      // delcaring a spy to check if consolidateQuantity is called
+      spyOn(component, 'consolidateQuantity').and.callThrough();
+      // delcaring a spy to check that updateDocument is called
+      spyOn(component, 'updateDocument');
+      component.addToItemList();
+      expect(component.consolidateQuantity).toHaveBeenCalled();
+      expect(component.updateDocument).toHaveBeenCalled();
+      // expect the list to equal the initial list and return false
+      console.log(component.sortedList);
+      expect(component.sortedList).toEqual(updatedList);
+      // expecting the class variables to be reset to empty
+      expect(component.newItem).toEqual('');
+      expect(component.newQuantity).toEqual('');
+      expect(component.newUnit).toEqual('');
+    });
+    /**
+    * Tests that addToItemList adds doesn't add an item, but does consolidate it successfuly
+    * @function updateDocument and @function consolidateQuantity are called
+    */
+    it('addToItemList should not add an item to the list, but should update it', async () => {
+    // initializing an item to test mocks to compare
+      component.newItem='Apples';
+      component.newQuantity = 2;
+      component.newUnit = 'oz';
+      // initializing a mock updated list to compare to
+      const updatedList = [
+        {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 5,
+          unit: 'oz',
+        },
+        {
+          isComplete: false,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+        },
+        {
+          isComplete: false,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+        },
+        {
+          isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+        },
+      ];
+      expect(component.sortedList).toEqual(mockSortedList);
+      // delcaring a spy to check if consolidateQuantity is called
+      spyOn(component, 'consolidateQuantity').and.callThrough();
+      // delcaring a spy to check that updateDocument is called
+      spyOn(component, 'updateDocument');
+      component.addToItemList();
+      expect(component.consolidateQuantity).toHaveBeenCalled();
+      expect(component.updateDocument).toHaveBeenCalled();
+      // expect the list to equal the initial list and return false
+      expect(component.sortedList).toEqual(updatedList);
+      // expecting the class variables to be reset to empty
+      expect(component.newItem).toEqual('');
+      expect(component.newQuantity).toEqual('');
+      expect(component.newUnit).toEqual('');
+    });
   });
 });
 

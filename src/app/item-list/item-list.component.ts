@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 import {Component, HostListener, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormControl} from '@angular/forms';
 import {Observable, Subscription} from 'rxjs'; // Needed for Database
@@ -99,7 +98,6 @@ export class ItemListComponent implements OnDestroy, OnInit {
    * @name toggleEdit
    * @description toggleEdit changes the boolean editToggle opposite to what it was
    */
-
   toggleEdit():void {
     this.editToggle= !this.editToggle;
   }
@@ -180,7 +178,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * @description addToItemList is a void function that first tests if new item is empty.
      * If it is not empty, it creates the constant addedItem that has 4 elements.
      * isComplete is set to false, while itemName, quantity, and unit are all set to previously declared variables.
-     * Then, addedItem gets pushed to the sortedList and update is called on the shoppingCollection.
+     * Then, @function consolidateQuantity is run on @constant addedItem. if a match was found, stop. But if no match was found,
+     * addedItem gets pushed to the sortedList and update is called on the shoppingCollection.
      * Finally, the class variables are reset to empty
      * @summary addToItemList pulls information from class variables and packages it into a constant
      * it then pushes that constant to the list and updates the collection
@@ -197,6 +196,10 @@ export class ItemListComponent implements OnDestroy, OnInit {
         if (this.consolidateQuantity(addedItem)===false) {
           this.sortedList.push(addedItem);
           this.updateDocument('List', {Items: this.sortedList});
+          this.newItem = '';
+          this.newQuantity = '';
+          this.newUnit = '';
+        } else {
           this.newItem = '';
           this.newQuantity = '';
           this.newUnit = '';

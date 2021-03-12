@@ -1,7 +1,7 @@
 <body class="mat-app-background">
   <div *ngIf="pageLoaded | async">
     <div *ngIf="!plansExist" class="large-middle-screen-button-container">
-      <button mat-raised-button (click)="ensureMealPlansCreated()" class="large-middle-screen-button">Start Your Meal Plan</button>
+      <button mat-raised-button (click)="ensureMealPlansCreated()" class="large-middle-screen-button" name="loadNewButton">Start Your Meal Plan</button>
     </div>
     <div *ngIf="plansExist">
       <mat-toolbar color="accent">

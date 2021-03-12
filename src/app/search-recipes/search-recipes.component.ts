@@ -6,6 +6,7 @@ import FuzzySearch from 'fuzzy-search';
 import mocker from 'mocker-data-generator';
 import {MatDialogRef} from '@angular/material/dialog';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {DatabaseHelperComponent} from 'app/database-helper/database-helper.component';
 
 
 @Injectable({providedIn: 'root'})
@@ -48,7 +49,7 @@ export class SearchRecipesComponent implements OnDestroy, OnInit {
    * @param {AuthService} authService
    * @param {AngularFireAnalytics} analytics
    */
-  constructor(private afs: AngularFirestore, private authService: AuthService, private analytics: AngularFireAnalytics, public dialogRef: MatDialogRef<SearchRecipesComponent>, @Inject(MAT_DIALOG_DATA) public data: {embeddedPage: string}) {
+  constructor(private afs: AngularFirestore, private authService: AuthService, private analytics: AngularFireAnalytics, public dialogRef: MatDialogRef<SearchRecipesComponent>, @Inject(MAT_DIALOG_DATA) public data: {embeddedPage: string}, private dbHelp: DatabaseHelperComponent) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -235,6 +236,61 @@ export class SearchRecipesComponent implements OnDestroy, OnInit {
       for (let i = 0; i < data.ingredients.length; i++) {
         this.ingredients.add(data.ingredients[i]);
       }
+    }
+  }
+
+  /**
+   * Delete a document in a specific location
+   * @param {any} query
+   */
+  public deleteDoc(query) {
+    this.dbHelp.deleteDocWhere('users/'+this.userInfo+'/recipeList/', query);
+  }
+
+  /**
+   * splice the temp at the index
+   * @param {any} temp
+   * @param {any} index
+   */
+  public tempSplice(temp, index) {
+    temp.splice(index, 1);
+  }
+
+  /**
+   * @param {any} temp
+   */
+  public setLocalStorageDelete(temp) {
+    localStorage.setItem('cachedRecipes', JSON.stringify(temp));
+    this.fetchCache();
+  }
+
+  /**
+   * @param {string} message
+   * @return {any}
+   */
+  public askConfirm(message) {
+    return confirm(message);
+  }
+
+  /**
+   * A funtion that remove a recipe from the databse
+   * @param {any} recipe Recipe being deleted
+   * @param {any} r Holds boolean value of the confirmation popup
+   */
+  public deleteRecipe(recipe) {
+    const r = this.askConfirm('Are you sure you want to delete this recipe?');
+    if (r == true) {
+      const query = 'recipeName:==:'+ recipe.recipeName+'';
+
+      this.deleteDoc(query);
+
+      localStorage.setItem('updatePending', 'true');
+      const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
+      const index = temp.findIndex((index) => index.recipeName === recipe.recipeName);
+
+      this.tempSplice(temp, index);
+      this.setLocalStorageDelete(temp);
+      this.searchFuzzy();
     }
   }
 
