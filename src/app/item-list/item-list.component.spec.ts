@@ -544,7 +544,7 @@ describe('ItemListComponent', () => {
   });
 
 
-  fdescribe('addToItemList Tests', () => {
+  describe('addToItemList Tests', () => {
     /**
     * Mock of sortedList, used by several functions in item-list.component.ts
     */
