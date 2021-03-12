@@ -143,6 +143,7 @@ export class CreateRecipeComponent {
         }
 
         /**
+         * Update the document of the recipe list collection
          * @param {any} documentAdded
          */
         public docAndUpdate(documentAdded) {
@@ -150,6 +151,7 @@ export class CreateRecipeComponent {
         }
 
         /**
+         * Setting the local storage with recipes
          * @param {any} data
          */
         public setLocalStorage(data) {
@@ -160,6 +162,7 @@ export class CreateRecipeComponent {
         }
 
         /**
+         * Adding the ingredients
          * @param {any} documentAdded
          */
         public ingredientAdd(documentAdded) {
@@ -240,7 +243,7 @@ export class CreateRecipeComponent {
         }
 
         /**
-         * splice the temp at the index
+         * Splice the temp at the index
          * @param {any} temp
          * @param {any} index
          */
@@ -249,6 +252,7 @@ export class CreateRecipeComponent {
         }
 
         /**
+         * Set the local storage for delection
          * @param {any} temp
          */
         public setLocalStorageDelete(temp) {
@@ -257,6 +261,7 @@ export class CreateRecipeComponent {
         }
 
         /**
+         * Ask for confirmation about deletion
          * @param {string} message
          * @return {any}
          */
