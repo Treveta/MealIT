@@ -25,14 +25,14 @@
 							<div class="input-group-prepend">
 								<span class="input-group-text"><i class="fas fa-user"></i></span>
 							</div>
-							<input [(ngModel)] = "email" type="email" class="form-control" id="loginEmail" placeholder="email">
+							<input [(ngModel)] = "emailLogin" type="email" class="form-control" id="loginEmail" placeholder="email">
 							
 						</div>
 						<div class="input-group form-group">
 							<div class="input-group-prepend">
 								<span class="input-group-text"><i class="fas fa-key"></i></span>
 							</div>
-							<input [(ngModel)] = "password" type="password" class="form-control" id="loginPassword" placeholder="password">
+							<input [(ngModel)] = "passwordLogin" type="password" class="form-control" id="loginPassword" placeholder="password">
 						</div>
 						<div class="row align-items-center remember">
 							<input type="checkbox">Remember Me
@@ -53,8 +53,8 @@
 </ng-template>
 
 <jw-modal id="custom-modal-signup">
-  <input [(ngModel)] = "email" type="email" id=signUpEmail placeholder="Email Address">
-  <input [(ngModel)] = "password" type="password" id=signUpPassword placeholder="Password">
+  <input [(ngModel)] = "emailSignUp" type="email" id=signUpEmail placeholder="Email Address">
+  <input [(ngModel)] = "passwordSignUp" type="password" id=signUpPassword placeholder="Password">
   <button (click) ="signUp()" (click) ="closeModal('custom-modal-signup')">Sign Up</button>
 </jw-modal>
 

@@ -31,8 +31,10 @@ export class LoginPageComponent implements OnInit {
    * Holds username and password from signup modal
    * @type {string}
    */
-  email: string;
-  password: string;
+  emailSignUp: string;
+  passwordSignUp: string;
+  emailLogin: string;
+  passwordLogin: string;
 
   /**
    * The constructor for the modal service
@@ -47,13 +49,13 @@ export class LoginPageComponent implements OnInit {
    * A function for a user to sign up for an account
    */
   signUp(): void {
-    this.auth.createEmailUser(this.email, this.password);
+    this.auth.createEmailUser(this.emailSignUp, this.passwordSignUp);
   }
   /**
    * A function for a user to log in with an account
    */
   login(): void {
-    this.auth.signInEmailUser(this.email, this.password);
+    this.auth.signInEmailUser(this.emailLogin, this.passwordLogin);
   }
   /**
    * A function to open a modal
