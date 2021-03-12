@@ -3,13 +3,11 @@
 function checkPassword(password) {
   // Start valid, if invalde, turn false
   validPassword = true;
-  console.log(password);
 
   // Message to inform the user about the requirements
   correctionMessage = 'The password should satisfy the following:\nBe 8 or more characters long\nContain 1 or more numebrs\nContain 1 or more \'*,#,?,/,$\'';
 
   const AltPassword = password.split('');
-  console.log(AltPassword);
 
   // length check
   if (AltPassword.length < 8) {
