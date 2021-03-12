@@ -11,7 +11,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputModule} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
-import { DatabaseHelperComponent } from 'app/database-helper/database-helper.component';
+import {DatabaseHelperComponent} from 'app/database-helper/database-helper.component';
 
 describe('SearchRecipesComponent', () => {
   let service: SearchRecipesComponent;
