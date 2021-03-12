@@ -76,8 +76,16 @@ export class AuthService {
       try {
         const credential = await this.afAuth.createUserWithEmailAndPassword(email, password);
         return this.updateUserData(credential.user);
-      } catch {
+      } catch (error) {
         // Handle errors here
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        if (errorCode == 'auth/weak-password') {
+          alert('The password is too weak.');
+        } else {
+          alert(errorMessage);
+        }
+        console.log(error);
       }
     } else {
       // Handle Invalid Password Here
@@ -93,8 +101,16 @@ export class AuthService {
     try {
       const credential = await this.afAuth.signInWithEmailAndPassword(email, password);
       return this.updateUserData(credential.user);
-    } catch {
+    } catch (error) {
       // Handle errors here
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      if (errorCode === 'auth/wrong-password') {
+        alert('Wrong password.');
+      } else {
+        alert(errorMessage);
+      }
+      console.log(error);
     }
   }
   /**
