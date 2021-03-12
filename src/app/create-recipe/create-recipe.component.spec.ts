@@ -47,37 +47,57 @@ describe('CreateRecipeComponent', () => {
     component = fixture.componentInstance;
   });
 
+  /**
+   * Check the compoment works
+   */
   it('can load instance', () => {
     expect(component).toBeTruthy();
   });
 
+  /**
+   * Check the ingredents have a value
+   */
   it(`Ingredients has default value`, () => {
     expect(component.Ingredients).toEqual([]);
   });
 
+  /**
+   * Check the amounts have a value
+   */
   it(`amount has default value`, () => {
     expect(component.amount).toEqual([]);
   });
 
+  /**
+   * Check the units have a value
+   */
   it(`units has default value`, () => {
     expect(component.units).toEqual([]);
   });
 
+  /**
+   * Add ingredients, units, and amount to a list
+   */
   it('add something to a list', () => {
+    // Test variables
     component.newIngredient = 'corn';
     component.newUnit = 'kg';
     component.newAmount = 100;
 
+    // Check variables
     const ingredient = 'corn';
     const unit = 'kg';
     const amount = 100;
 
+    // Spys for the push functions
     spyOn(component.Ingredients, 'push');
     spyOn(component.amount, 'push');
     spyOn(component.units, 'push');
 
+    // Run the function
     component.addToList();
 
+    // Checking the results
     expect(component.Ingredients.push).toHaveBeenCalledWith(ingredient);
     expect(component.amount.push).toHaveBeenCalledWith(amount);
     expect(component.units.push).toHaveBeenCalledWith(unit);
@@ -86,42 +106,59 @@ describe('CreateRecipeComponent', () => {
     expect(component.newAmount).toBe('');
   });
 
+  /**
+   * Remove ingredients, units, and amounts from a list
+   */
   it('remove from a list', () => {
+    // Check variable
     const index = 0;
 
+    // Spys for the splice functions
     spyOn(component.Ingredients, 'splice');
     spyOn(component.amount, 'splice');
     spyOn(component.units, 'splice');
 
+    // Run the function
     component.deleteIngredient(index);
 
+    // Check the results
     expect(component.Ingredients.splice).toHaveBeenCalledWith(index, 1);
     expect(component.amount.splice).toHaveBeenCalledWith(index, 1);
     expect(component.units.splice).toHaveBeenCalledWith(index, 1);
   });
 
+  /**
+   * Check the submit recipe function in case of a failure
+   */
   it(`submit a reciepe: failure`, () => {
+    // Spys for the windows alert
     spyOn(window, 'alert');
+    // Run the function
     component.submitRecipe();
+    // Check the results
     expect(window.alert).toHaveBeenCalledWith('Please fill in all fields and have at least one ingredient');
   });
 
+  /**
+   * Check the submit recipe works properly
+   */
   it(`submit a recipe`, async () => {
+    // Test variables
     component.Ingredients.length = 1;
-
     component.servings = '2 people';
-
     component.calories = '300 cl';
-
     component.recipeName = 'Fruit Salad';
 
+    // Spy on the break out functions
     spyOn(component, 'docAndUpdate');
     spyOn(component, 'setLocalStorage');
     spyOn(component, 'ingredientAdd');
     spyOn(component, 'addDocumentRC');
 
+    // Run the async functions
     await component.submitRecipe();
 
+    // Check the results
     expect(component.docAndUpdate).toHaveBeenCalled();
     expect(component.setLocalStorage).toHaveBeenCalled();
     expect(component.ingredientAdd).toHaveBeenCalled();
@@ -174,5 +211,25 @@ describe('CreateRecipeComponent', () => {
 
     // Check the console's log method was called with meal
     expect(console.log).toHaveBeenCalled();
+  });
+
+  /**
+   * Check a recipe is deleted
+   */
+  it(`delete a recipe`, () => {
+    // Spys for the breakout functions
+    spyOn(component, 'deleteDoc');
+    spyOn(component, 'tempSplice');
+    spyOn(component, 'setLocalStorageDelete');
+    spyOn(component, 'askConfirm').and.returnValue(true);
+
+    // Run the function
+    component.deleteRecipe({'servings': 96608, 'uid': '10GYtAA7wQcGnO7KrNJn', 'recipeName': 'Islands Salad Optimization', 'calories': 57203, 'id': '10GYtAA7wQcGnO7KrNJn'});
+
+    // Check the results
+    expect(component.askConfirm).toHaveBeenCalled();
+    expect(component.deleteDoc).toHaveBeenCalled();
+    expect(component.tempSplice).toHaveBeenCalled();
+    expect(component.setLocalStorageDelete).toHaveBeenCalled();
   });
 });

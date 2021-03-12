@@ -143,6 +143,7 @@ export class CreateRecipeComponent {
         }
 
         /**
+         * Update the document of the recipe list collection
          * @param {any} documentAdded
          */
         public docAndUpdate(documentAdded) {
@@ -150,6 +151,7 @@ export class CreateRecipeComponent {
         }
 
         /**
+         * Setting the local storage with recipes
          * @param {any} data
          */
         public setLocalStorage(data) {
@@ -160,6 +162,7 @@ export class CreateRecipeComponent {
         }
 
         /**
+         * Adding the ingredients
          * @param {any} documentAdded
          */
         public ingredientAdd(documentAdded) {
@@ -229,6 +232,63 @@ export class CreateRecipeComponent {
          */
         closeModal(id: string) {
           this.modalService.close(id);
+        }
+
+        /**
+         * Delete a document in a specific location
+         * @param {any} query
+         */
+        public deleteDoc(query) {
+          this.dbHelp.deleteDocWhere('users/'+this.userInfo+'/recipeList/', query);
+        }
+
+        /**
+         * Splice the temp at the index
+         * @param {any} temp
+         * @param {any} index
+         */
+        public tempSplice(temp, index) {
+          temp.splice(index, 1);
+        }
+
+        /**
+         * Set the local storage for delection
+         * @param {any} temp
+         */
+        public setLocalStorageDelete(temp) {
+          localStorage.setItem('cachedRecipes', JSON.stringify(temp));
+          this.search.fetchCache();
+        }
+
+        /**
+         * Ask for confirmation about deletion
+         * @param {string} message
+         * @return {any}
+         */
+        public askConfirm(message) {
+          return confirm(message);
+        }
+
+        /**
+         * A funtion that remove a recipe from the databse
+         * @param {any} recipe Recipe being deleted
+         * @param {any} r Holds boolean value of the confirmation popup
+         */
+        public deleteRecipe(recipe) {
+          const r = this.askConfirm('Are you sure you want to delete this recipe?');
+          if (r == true) {
+            console.log(recipe);
+            const query = 'recipeName:==:'+ recipe.recipeName+'';
+
+            this.deleteDoc(query);
+
+            localStorage.setItem('updatePending', 'true');
+            const temp: Array<any> = JSON.parse(localStorage.getItem('cachedRecipes'));
+            const index = temp.findIndex((index) => index.recipeName === recipe.recipeName);
+
+            this.tempSplice(temp, index);
+            this.setLocalStorageDelete(temp);
+          }
         }
 
         /**
