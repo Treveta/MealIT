@@ -16,15 +16,15 @@
       <table *ngFor="let plan of mealPlanObsArray[currentView].obs | async" class="fixWeek">
         <th *ngFor="let day of plan.days">
           {{day.weekDayName}}
-              <mat-card>
+              <mat-card name="breakfastCard">
                 <mat-card-header>
                   <mat-card-title class="larger-mat-card-title">Breakfast</mat-card-title>
                 </mat-card-header>
                 <mat-card-content class="center-content"> 
                   <!--BREAKFAST CARD CONTENT GOES HERE-->
-                  <mat-card *ngFor="let recipe of day.breakfast" class="mat-card-accent">
+                  <mat-card *ngFor="let recipe of day.breakfast" class="mat-card-accent" name="breakfastRecipeCard">
                     <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
-                    <mat-card-content>
+                    <mat-card-content name="breakfastRecipeCard">
                       {{recipe.uid}}
                     </mat-card-content>
                   </mat-card>
@@ -33,13 +33,13 @@
                   </button>
                 </mat-card-content>
               </mat-card>
-              <mat-card>
+              <mat-card name="lunchCard">
                 <mat-card-header>
                   <mat-card-title class="larger-mat-card-title">Lunch</mat-card-title>
                 </mat-card-header>
                 <mat-card-content class="center-content">
                   <!--LUNCH CARD CONTENT GOES HERE-->
-                  <mat-card *ngFor="let recipe of day.lunch" class="mat-card-accent">
+                  <mat-card *ngFor="let recipe of day.lunch" class="mat-card-accent" name="lunchRecipeCard">
                     <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
                     <mat-card-content>
                       {{recipe.uid}}
@@ -50,13 +50,13 @@
                   </button>
                 </mat-card-content>
               </mat-card>
-              <mat-card>
+              <mat-card name="dinnerCard">
                 <mat-card-header>
                   <mat-card-title class="larger-mat-card-title">Dinner</mat-card-title>
                 </mat-card-header>
                 <mat-card-content class="center-content">
                   <!--DINNER CARD CONTENT GOES HERE-->
-                  <mat-card *ngFor="let recipe of day.dinner" class="mat-card-accent">
+                  <mat-card *ngFor="let recipe of day.dinner" class="mat-card-accent" name="dinnerRecipeCard">
                     <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
                     <mat-card-content>
                       {{recipe.uid}}
