@@ -591,7 +591,7 @@ describe('ItemListComponent', () => {
       spyOn(component, 'consolidateQuantity').and.callThrough();
       // delcaring a spy to check that updateDocument is called
       spyOn(component, 'updateDocument');
-      component.addToItemList();
+      await component.addToItemList();
       expect(component.consolidateQuantity).not.toHaveBeenCalled();
       expect(component.updateDocument).not.toHaveBeenCalled();
       // expect the list to equal the initial list and return false
@@ -606,6 +606,34 @@ describe('ItemListComponent', () => {
       component.newItem='Peaches';
       component.newQuantity = 4;
       component.newUnit = 'ct';
+      // initializing a control array to test with and setting sortedList to it
+      const mockSortedList1 = [
+        {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 3,
+          unit: 'oz',
+        },
+        {
+          isComplete: false,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+        },
+        {
+          isComplete: false,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+        },
+        {
+          isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+        },
+      ];
+      component.sortedList=mockSortedList1;
       // initializing a mock updated list to compare to
       const updatedList = [
         {
@@ -639,16 +667,16 @@ describe('ItemListComponent', () => {
           unit: 'ct',
         },
       ];
-      expect(component.sortedList).toEqual(mockSortedList);
+      expect(component.sortedList).toEqual(mockSortedList1);
       // delcaring a spy to check if consolidateQuantity is called
       spyOn(component, 'consolidateQuantity').and.callThrough();
       // delcaring a spy to check that updateDocument is called
       spyOn(component, 'updateDocument');
-      component.addToItemList();
+      await component.addToItemList();
       expect(component.consolidateQuantity).toHaveBeenCalled();
       expect(component.updateDocument).toHaveBeenCalled();
       // expect the list to equal the initial list and return false
-      console.log(component.sortedList);
+      // console.log(component.sortedList);
       expect(component.sortedList).toEqual(updatedList);
       // expecting the class variables to be reset to empty
       expect(component.newItem).toEqual('');
@@ -664,7 +692,34 @@ describe('ItemListComponent', () => {
       component.newItem='Apples';
       component.newQuantity = 2;
       component.newUnit = 'oz';
-      // initializing a mock updated list to compare to
+      // initializing a control array to test with and setting sortedList to it
+      const mockSortedList2 = [
+        {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 3,
+          unit: 'oz',
+        },
+        {
+          isComplete: false,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+        },
+        {
+          isComplete: false,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+        },
+        {
+          isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+        },
+      ];
+      component.sortedList=mockSortedList2;
       const updatedList = [
         {
           isComplete: false,
@@ -691,12 +746,12 @@ describe('ItemListComponent', () => {
           unit: 'oz',
         },
       ];
-      expect(component.sortedList).toEqual(mockSortedList);
+      expect(component.sortedList).toEqual(mockSortedList2);
       // delcaring a spy to check if consolidateQuantity is called
       spyOn(component, 'consolidateQuantity').and.callThrough();
       // delcaring a spy to check that updateDocument is called
       spyOn(component, 'updateDocument');
-      component.addToItemList();
+      await component.addToItemList();
       expect(component.consolidateQuantity).toHaveBeenCalled();
       expect(component.updateDocument).toHaveBeenCalled();
       // expect the list to equal the initial list and return false
