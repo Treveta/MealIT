@@ -79,8 +79,8 @@ describe('LoginPageComponent', () => {
     */
   it('should login successfully', () => {
     spyOn(component.auth, 'signInEmailUser');
-    component.email = mockUsername;
-    component.password = mockPassword;
+    component.emailLogin = mockUsername;
+    component.passwordLogin = mockPassword;
     component.login();
     expect(component.auth.signInEmailUser).toHaveBeenCalledWith(mockUsername, mockPassword);
   });
@@ -89,8 +89,8 @@ describe('LoginPageComponent', () => {
     */
   it('should sign up successfully', () => {
     spyOn(component.auth, 'createEmailUser');
-    component.email = mockUsername;
-    component.password = mockPassword;
+    component.emailSignUp = mockUsername;
+    component.passwordSignUp = mockPassword;
     component.signUp();
     expect(component.auth.createEmailUser).toHaveBeenCalledWith(mockUsername, mockPassword);
   });
