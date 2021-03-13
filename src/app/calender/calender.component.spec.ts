@@ -829,12 +829,6 @@ describe('CalenderComponent', () => {
       tick();
       expect(component.setMealInfo).toHaveBeenCalledOnceWith('dinner', dateToExpect);
     }));
-    /**
-     * Tests that data is displayed in the correct place
-     */
-    it('Should display mealPlan data in correct place', () => {
-
-    });
   });
 });
 
