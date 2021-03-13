@@ -103,20 +103,23 @@
       <!-- shorter drag time for more responsive reordering-->
       <ng-template #pcDrag>
         <div class="center">
-          <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+          <mat-card cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
     
     
-             <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
-              <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
+            <div class="example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
+              <mat-checkbox (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
+              <mat-checkbox (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
               <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
-          <p>
-          {{item.quantity}}
-          {{item.unit}}
-          </p>
+              <p>
+              {{item.quantity}}
+              {{item.unit}}
+              {{item.isComplete}}
+              <!--isComplete will be removed from showing here once a more elegant visual represntation happens-->
+              </p>
             </div> 
     
-          </div>
-          </div>
+          </mat-card>
+        </div>
       </ng-template>
 
       <!--longer drag time for mobile, to allow for scrolling-->
@@ -126,11 +129,14 @@
     
     
              <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="700" cdkDrag>
-              <mat-checkbox (change)="onCheckBoxChange(item)" color = primary> {{item.itemName}}</mat-checkbox>
+              <mat-checkbox (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
+              <mat-checkbox (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
               <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
           <p>
           {{item.quantity}}
           {{item.unit}}
+          {{item.isComplete}}
+          <!--isComplete will be removed from showing here once a more elegant visual represntation happens-->
           </p>
             </div> 
     

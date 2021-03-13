@@ -1,13 +1,11 @@
-/* eslint-disable require-jsdoc */
-/* eslint-disable no-unused-vars */
-import {Component} from '@angular/core';
-import {Observable} from 'rxjs';
-import {AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/firestore';
-import {AngularFireAuth} from '@angular/fire/auth';
+import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {ModalService} from '../modal-functionality';
-import {DatabaseHelperComponent} from 'app/database-helper/database-helper.component';
 import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
+import {MatDialog} from '@angular/material/dialog';
+import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from './mealPlan.model';
+import {AngularFirestore} from '@angular/fire/firestore';
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-calender',
@@ -18,13 +16,11 @@ import {SearchRecipesComponent} from '../search-recipes/search-recipes.component
  * creates CalenderComponent
  *
 */
-export class CalenderComponent {
-  public Mealtimes =[];
-
-  public newDate;
-  public newMealtype;
-  public newRecipe;
-
+export class CalenderComponent implements OnInit {
+  /**
+   * Holds the uid for a user
+   * @type {string}
+   */
   private userInfo;
 
   /**
@@ -38,94 +34,436 @@ export class CalenderComponent {
    */
   public fuzzyResults;
 
+  /**
+   * Boolean if the panel is open
+   * @type {boolean}
+   */
   public panelOpenState;
+  /**
+   * Float that holds the previous id for a recipe
+   * @type {float}
+   */
   private previousUID;
+  /**
+   * Array that holds a list of ingredients
+   * @type {any[]}
+   */
   public ingredientList;
+  /**
+   * Varaible for loading ingredient list
+   * @type {any[]}
+   */
   public ingredientListLoading
 
+  /**
+   * The date
+   * @type {Date}
+   */
   public date: Date;
+  /**
+   * Boolean to tell if an error occurs with the date
+   * @type {boolean}
+   */
   public errorDate: boolean;
+  /**
+   * A string to inform the user of an error
+   * @type {string}
+   */
   public errorMessage: string;
 
+  /**
+   * An array that holds the names of the week
+   * @type {string[]}
+   */
   public weekDayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-  constructor(private modalService: ModalService, private search: SearchRecipesComponent, private authService: AuthService) {
+  /**
+   * A week of meals for the user
+   * @type {mealPlanWeek}
+   */
+  public mealPlanWeek: mealPlanWeek;
+
+  /**
+   * One day in a meal plan week
+   * @type {mealPlanDay}
+   */
+  public mealPlanDay: mealPlanDay;
+
+  /**
+   * One recipe in a meal plan day
+   * @type {mealPlanRecipe}
+   */
+  public mealPlanRecipe: mealPlanRecipe;
+
+  /**
+   * A blank base meal plan week
+   */
+  mealPlanBase: mealPlanWeek;
+
+  /**
+   * Holds the values of the previous, current, and next week mealPlans
+   */
+  currentWeekPlanObs: Observable<any>;
+  previousWeekPlanObs: Observable<any>;
+  nextWeekPlanObs: Observable<any>;
+
+  /**
+   * Array of the mealPlan observables
+   */
+  mealPlanObsArray: Array<any>;
+
+  /**
+   * The index of the observable the user is currently viewing
+   */
+  currentView: number;
+
+  /**
+   * The mealType (Breakfast, Lunch, Dinner) that the user is attempting to add a recipe to
+   */
+  mealTypeToSet: any;
+
+  /**
+   * The Date the user is trying to add a recipe to
+   */
+  dateToSet: any;
+
+  /**
+   * The last set partial data, used primarily for testing
+   */
+  partialDataLastSet;
+
+  /**
+   * The class date objects used to create the mealPlans
+   */
+  todayDate = new Date();
+  oneWeekAgoDate = new Date(this.todayDate.getFullYear(), this.todayDate.getMonth(), this.todayDate.getDate() - 7);
+  oneWeekFromNowDate = new Date(this.todayDate.getFullYear(), this.todayDate.getMonth(), this.todayDate.getDate() + 7);
+  currentWeekDates = this.getWeek(this.todayDate);
+  previousWeekDates = this.getWeek(this.oneWeekAgoDate);
+  nextWeekDates = this.getWeek(this.oneWeekFromNowDate);
+
+  /**
+   * Boolean that determines if the mealPlans exist in the database so that remediation can occur if they dont
+   */
+  plansExist: boolean = false;
+
+  /**
+   * A promise that allows the page time to load data before displaying information to the user
+   */
+  pageLoaded: Promise<boolean>;
+
+  /**
+   * The constructor for the modal service
+   * @param {Modal} modalService
+   * @param {SearchRecipesComponent} search
+   * @param {AuthService} authService
+   */
+  constructor(public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
+      this.previousWeekPlanObs = this.afs.collection('users/'+this.userInfo+'/mealplan', (ref) => ref.where('label', '==', 'previousWeek')).valueChanges();
+      this.currentWeekPlanObs = this.afs.collection('users/'+this.userInfo+'/mealplan', (ref) => ref.where('label', '==', 'currentWeek')).valueChanges();
+      this.nextWeekPlanObs = this.afs.collection('users/'+this.userInfo+'/mealplan', (ref) => ref.where('label', '==', 'nextWeek')).valueChanges();
+      this.mealPlanObsArray = [{label: 'Previous Week', obs: this.previousWeekPlanObs}, {label: 'Current Week', obs: this.currentWeekPlanObs}, {label: 'Next Week', obs: this.nextWeekPlanObs}];
+      this.currentView = 1; // Sets the current view index to the middle value
+      this.listData('users/'+this.userInfo+'/mealplan').then((docs) => {
+        // Checks to ensure 3 documents are created, if not marks a boolean to display the Start Your Meal Plan Button
+        if (docs.length == 3) {
+          this.plansExist = true;
+        }
+        // Lets the html know that the data has loaded and the page can display
+        this.pageLoaded = Promise.resolve(true);
+      }).catch((err) => {});
     });
   }
+  /**
+   * Angular Lifecycle hook
+   */
+  ngOnInit(): void {
+
+  }
+
+  /**
+   * Convert the date to simplified form
+   * @param {Date} date
+   * @return {string}
+   */
+  simplifyDate(date) {
+    const simpleDate: string = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+    return simpleDate;
+  }
+
+  /**
+   * Checks wether a document in the meal plan collection exists
+   * @param {string} docName
+   * @return {boolean} exists
+   */
+  checkDocumentExists(docName) {
+    const arrayOfLabels: Array<any> = [];
+    this.listData('users/'+this.userInfo+'/mealplan/')
+        .then((listOfDocs) => {
+          listOfDocs.forEach((doc) => {
+            arrayOfLabels.push(doc.label);
+          });
+        });
+    if (arrayOfLabels.includes(docName)) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  /**
+   * A function for submitting a meal to a meal plan
+   * THIS FUNCTION HAS BEEN DEPRECATED IN FAVOR OF A NEW APPROACH
+   * @param {string | number} uid
+   * @param {string} modalID
+   * @return {string}
+   */
   submitMeal(uid: string | number, modalID: string) {
     if (this.date != null) {
-      alert('Adding ' + uid + ' on ' + this.date);
+      alert('Adding ' + uid + ' on ' + this.simplifyDate(this.date));
+      const returnMessage = 'Adding ' + uid + ' on ' + this.simplifyDate(this.date);
       this.errorDate = false;
       this.date = null;
       this.closeModal(modalID);
+      return returnMessage;
     } else {
       this.errorDate = true;
       this.errorMessage = 'You must enter a valid date';
+      const returnMessage = this.errorMessage;
+      return returnMessage;
     }
   }
+
+  /**
+   * creates and adds a blank mealPlanWeek into firestore at the defined document path
+   * @param {string} docPath the path to send the blank mealPlanWeek to
+   * @param {Array} weekDates an Array of Dates to use to create the otherwise blank mealPlan
+   * @return {Array} mealPlanBlankWeek, return used for testing
+   */
+  addBlankPlan(docPath, weekDates) {
+    // Creates a blank meal plan week
+    const mealPlanBlankWeek: mealPlanWeek = {
+      label: docPath,
+      defined: false,
+      startDate: weekDates[0].date,
+      days: [],
+    };
+    // Creates a blank mealPlanDay for each day of the week and pushes it into the days array of blankMealPlanWeek
+    weekDates.forEach((element) => {
+      const mealPlanBlankDay: mealPlanDay = {
+        // Fetching the date from the weekDates array
+        date: element.date,
+        // Fetching the weekDayName from the weekDates array
+        weekDayName: element.weekDayName,
+        // The recipes are empty
+        breakfast: [],
+        lunch: [],
+        dinner: [],
+      };
+      // Pushing the newly created blank meal plan day to the days array of blankMealPlanWeek
+      mealPlanBlankWeek.days.push(mealPlanBlankDay);
+    });
+    // Calls the set document helper function
+    this.setDocInFireStore(docPath, mealPlanBlankWeek);
+    // Returns the blank meal plan week for unit testing
+    return mealPlanBlankWeek;
+  }
+
+  /**
+   * This is a helper function that abstracts the process of setting a documents data in firestore
+   * @param {string} docPath
+   * @param {Object} objectToSet
+   */
+  setDocInFireStore(docPath, objectToSet) {
+    this.afs.collection('users/'+this.userInfo+'/mealplan').doc(docPath).set(objectToSet);
+  }
+
+  /**
+   * This is a helper function that abstracts the process of setting a documents data in firestore
+   * @param {string} docPath
+   * @param {Object} objectToUpdate
+   */
+  updateDocInFireStore(docPath, objectToUpdate) {
+    this.afs.collection('users/'+this.userInfo+'/mealplan').doc(docPath).update(objectToUpdate);
+  }
+
+  /**
+   * A function to open a modal
+   * @param {string} id
+   */
   openModal(id: string) {
     this.modalService.open(id);
   }
 
+  /**
+   * A function to close a modal
+   * @param {string} id
+   */
   closeModal(id: string) {
     this.modalService.close(id);
   }
 
   /**
+   * Opens the dialog on click
+   */
+  openDialog() {
+    // Creates a reference to the dialog and declares the component to open and its options
+    const dialogRef = this.dialog.open(SearchRecipesComponent, {
+      width: '50%',
+      height: '75%',
+      data: {embeddedPage: 'mealPlan'},
+    });
+    // The after closed hook returns an observable with returned data when the dialog closes
+    dialogRef.afterClosed().subscribe((result) => {
+      // Only takes action if the result is defined
+      if (result) {
+        // Sets the recipe in the plan
+        this.setRecipeInPlan(result.recipeName, result.uid);
+      }
+    });
+  }
+
+  /**
+   * updates the mealPlan with the partialData representing the new recipe the user has added
+   * @param {string} recipeName
+   * @param {string} uid
+   */
+  setRecipeInPlan(recipeName, uid) {
+    // Gets a snapshot of the mealPlanData, includes all existing mealPlans as an array
+    this.listData('users/'+this.userInfo+'/mealplan').then((mealPlanWeeks) => {
+      // Iterates over the mealPlans
+      for (let i = 0; i < mealPlanWeeks.length; i++) {
+        // Sets the partial data to the preexisting data from the snapshot
+        const partialData = mealPlanWeeks[i];
+        // Iterates over the days in the mealPlan's days array
+        for (let j = 0; j < partialData.days.length; j++) {
+          // checks if the date the user is trying to set equals the date in the days array
+          if (partialData.days[j].date.toDate().getTime() === this.dateToSet.toDate().getTime()) {
+            // If the dates matched it checks whether the mealType was breakfast lunch or dinner
+            if (this.mealTypeToSet == 'breakfast') {
+              // creates a new array of recipes equal to the previous recipes array concantenated with the new recipe
+              const newMeal = partialData.days[j].breakfast.concat([{recipeName: recipeName, uid: uid}]);
+              // Sets the meals array equal to the new meal
+              partialData.days[j].breakfast = newMeal;
+              // Sets a component variable with the partialData, this can then be later retrieved or used for testing
+              this.partialDataLastSet = partialData;
+            }
+            if (this.mealTypeToSet == 'lunch') {
+              // creates a new array of recipes equal to the previous recipes array concantenated with the new recipe
+              const newMeal = partialData.days[j].lunch.concat([{recipeName: recipeName, uid: uid}]);
+              // Sets the meals array equal to the new meal
+              partialData.days[j].lunch = newMeal;
+              // Sets a component variable with the partialData, this can then be later retrieved or used for testing
+              this.partialDataLastSet = partialData;
+            }
+            if (this.mealTypeToSet == 'dinner') {
+              // creates a new array of recipes equal to the previous recipes array concantenated with the new recipe
+              const newMeal = partialData.days[j].dinner.concat([{recipeName: recipeName, uid: uid}]);
+              // Sets the meals array equal to the new meal
+              partialData.days[j].dinner = newMeal;
+              // Sets a component variable with the partialData, this can then be later retrieved or used for testing
+              this.partialDataLastSet = partialData;
+            }
+          }
+        }
+        // Calls the update document helper function
+        this.updateDocInFireStore(mealPlanWeeks[i].label, partialData);
+      }
+    });
+  }
+
+  /**
+   * Creates the necessary documents in user's mealPlan collections if they dont already exist
+   */
+  ensureMealPlansCreated() {
+    if (!this.checkDocumentExists('previousWeek')) {
+      this.addBlankPlan('previousWeek', this.previousWeekDates);
+    }
+    if (!this.checkDocumentExists('currentWeek')) {
+      this.addBlankPlan('currentWeek', this.currentWeekDates);
+    }
+    if (!this.checkDocumentExists('nextWeek')) {
+      this.addBlankPlan('nextWeek', this.nextWeekDates);
+    }
+    this.plansExist = true;
+  }
+
+  /**
+   * Sets the component variables mealTypeToSet and dateToSet to represent the mealType and date representing the card user has clicked on
+   * @param {string} mealType the type of meal the user is attempting to set (ie Breakfast, Lunch, Dinner)
+   * @param {Date} date the date the meal is being added to
+   */
+  setMealInfo(mealType, date) {
+    this.mealTypeToSet = mealType;
+    this.dateToSet = date;
+  }
+
+  /**
    * Sends search term to search service and sets fuzzyResults to the resulting list of search results
+   * THIS FUNCTION IS LIKELY DEPRECATED, NEEDS INVESTIGATION BEFORE REMOVAL
    */
   public searchFuzzy() {
     this.fuzzyResults = this.search.searchService(this.searchTerm);
   }
 
   /**
-   * Test function that prints fuzzyResults to console
-   */
-  public logResults() {
-    console.log(this.fuzzyResults);
-  }
-
-  /**
    * Takes in a date an returns the week of that day. Sunday to Saturday.
-   * @param {Date} uid
+   * @param {Date} date
+   * @return {Array}
    */
-  getWeek(uid: Date) {
-    // Set dateData to uid
-    const dateData = new Date(2020, 11, 16);
+  getWeek(date: Date) {
+    // Set dateData to date
+    const dateData = date;
 
     // Variable for the input day
     const day = dateData.getDay();
 
     // Variables for weekdays
     const weekDay = [];
-    let newDate;
-    let dt;
 
     // Compiling the information for the days
-    dateData.setDate(dateData.getDate() - day);
+    dateData.setDate(dateData.getDate() - day - 1);
     for (let i = 0; i <= 6; i++) {
-      dt = dateData.getDate();
-      newDate = this.weekDayName[i] + ' ' + (dateData.getMonth() + 1) + '/' + dt + '/' + dateData.getFullYear();
-      dateData.setDate(dateData.getDate() + 1);
+      const incrementDay = dateData.getDate();
+      const month = dateData.getMonth();
+      const year = dateData.getFullYear();
+      const newDate = {
+        weekDayName: this.weekDayName[i],
+        date: new Date(year, month, incrementDay + 1),
+      };
       weekDay.push(newDate);
+      dateData.setDate(dateData.getDate() + 1);
     }
+    return weekDay;
+  }
 
-    // Print out weekDay as a test
-    console.log(weekDay);
-    for (let i = 0; i <= 6; i++) {
-      console.log(weekDay[i]);
+  /**
+   * Changes the current view based on parameter
+   * Includes bounding to ensure the user can't change to an index outside the bounds of the obs array
+   * @param {number} numToChange amount to add to current view
+   */
+  changeView(numToChange: number) {
+    if (this.currentView == 0 && numToChange < 0) {
+      Error('Attempting to change view would move the view out of bounds');
+    } else if (this.currentView == this.mealPlanObsArray.length - 1 && numToChange > 0) {
+      Error('Attempting to change view would move the view out of bounds');
+    } else {
+      this.currentView = this.currentView + numToChange;
     }
   }
 
   /**
    * Fetches the ingredient information for a specific recipe based on its uid
    * Returns the fetched data to this.ingredients to be displayed by Material UI in HTML
+   * THIS FUNCTION MAY BE DEPRECATED DUE TO CHANGES TO WHERE SEARCH ORIGINATES FROM
+   * WITH SEARCH BEING HANDLED BY A TEMPLATE CALL TO <app-search-recipes> IN THE HTML
+   * THIS FUNCTION IS NO LONGER REQUIRED AND ACTUALLY CAUSES ERRORS IF UNCOMMENTED
    * @param {string | number} uid
    */
-  fetchRecipe(uid: string | number) {
+  /** fetchRecipe(uid: string | number) {
     if (uid == this.previousUID && this.panelOpenState == false) {
       this.ingredientList = this.ingredientListLoading;
       this.previousUID = 0;
@@ -142,6 +480,40 @@ export class CalenderComponent {
       this.search.listIngredients(ingredientPath).then((list) => {
         this.ingredientList = list;
       });
+    }
+  }*/
+
+  /**
+   * Debug Function to Log selected recipe to console
+   * @param {string} mealSelected meal to log to console
+   * @return {string}
+   */
+  logSelectedRecipe(mealSelected: string) {
+    console.log(mealSelected);
+    return mealSelected;
+  }
+
+  /**
+   * Retrieves the mealPlan from the path specified as a list
+   * @param {string} path - The Firestore collection path to retrieve recipes from
+   */
+  async listData(path: string) {
+    try {
+      // collects a snapshot of a Firestore collection base on parameter path
+      const snapshot = await this.afs
+          .collection(path)
+          .get().toPromise();
+      // Creates an empty list to populate collection data into
+      const list = [];
+      // Loops through snapshot and pushes document data to list
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        list.push(data);
+      });
+      // Returns the now populated list
+      return list;
+    } catch (err) {
+      console.log('Error getting documents', err);
     }
   }
 }

@@ -1,69 +1,49 @@
-<jw-modal id="custom-modal-2">
-            Name <input [(ngModel)]="recipeName" type="text" value="" placeholder="enter ingredient name e.g. apple" required> 
-            <br>
-  
-    <!--input from user--> 
-        <p>
-                Ingredient<input [(ngModel)]="newIngredient" type="text" value="" placeholder="enter ingredient name e.g. apple">   <!--text input box for Ingredient-->
-                Amount<input [(ngModel)]="newAmount" type="text" value="" placeholder="number">  <!--text input box for Amount-->                                  
-                Unit<input [(ngModel)]="newUnit" type="text" value="" placeholder="unit e.g. lb,cups,oz">                           <!--text input box for Unit-->
-                <button (click)="addToList()"> <!--add button-->
-                    Add ingredient
-                </button>
-        </p>
+<body>
+  <button (click)="openModal('custom-modal-2')">Add new recipe</button>
 
-    <!--Ingredient added and shown in list-->
-    <table>
-        <tr>
-          <th>Ingredients</th>
-          <th>amount</th>
-          <th>Unit</th>
-          <th> </th>
-        </tr>
-        <tr *ngFor="let x of Ingredients; let index = index;"> <!--the loop-->
-            <th>{{x}}</th>                                      <!--display name-->
-            <th>{{amount[index]}}</th>                          <!--display amount-->
-            <th>{{units[index]}}</th>                           <!--display unit-->
-            <th><input (click)="deleteIngredient(index)" type="button" value="x"></th><!--delete button-->
-        </tr>   
-    </table>
-    Servings<br> <input [(ngModel)]="servings" type="number" value="" min="0" step=".25" required><br>
-    Calories<br> <input [(ngModel)]="calories" type="number" value="" min="0" required>
-    
-        <div>
-            <input (click)="submitRecipe()" type="submit" value="Submit Recipe"> <!--submit the recipe-->
-        </div>
-        <button (click)="closeModal('custom-modal-2');">Close</button>
+  <app-search-recipes [embeddedPage]="'recipe'"></app-search-recipes>
+</body>
+
+<!--The modal for adding recipes-->
+<jw-modal id="custom-modal-2">
+  Name <input [(ngModel)]="recipeName" type="text" value="" placeholder="enter ingredient name e.g. apple" required> 
+  <br>
+
+<!--input from user--> 
+<p>
+      Ingredient<input [(ngModel)]="newIngredient" type="text" value="" placeholder="enter ingredient name e.g. apple">   <!--text input box for Ingredient-->
+      Amount<input [(ngModel)]="newAmount" type="text" value="" placeholder="number">  <!--text input box for Amount-->                                  
+      Unit<input [(ngModel)]="newUnit" type="text" value="" placeholder="unit e.g. lb,cups,oz">                           <!--text input box for Unit-->
+      <button (click)="addToList()"> <!--add button-->
+          Add ingredient
+      </button>
+</p>
+
+<!--Ingredient added and shown in list-->
+<table>
+<tr>
+<th>Ingredients</th>
+<th>amount</th>
+<th>Unit</th>
+<th> </th>
+</tr>
+<tr *ngFor="let x of Ingredients; let index = index;"> <!--the loop-->
+  <th>{{x}}</th>                                      <!--display name-->
+  <th>{{amount[index]}}</th>                          <!--display amount-->
+  <th>{{units[index]}}</th>                           <!--display unit-->
+  <th><input (click)="deleteIngredient(index)" type="button" value="x"></th><!--delete button-->
+</tr>   
+</table>
+Servings<br> <input [(ngModel)]="servings" type="number" value="" min="0" step=".25" required><br>
+Calories<br> <input [(ngModel)]="calories" type="number" value="" min="0" required>
+
+<div>
+  <input (click)="submitRecipe()" type="submit" value="Submit Recipe"> <!--submit the recipe-->
+</div>
+<button (click)="closeModal('custom-modal-2');">Close</button>
 </jw-modal>
 
-<mat-form-field>
-    <mat-label>Clearable input</mat-label>
-    <input matInput type="text" [(ngModel)]="searchTerm" (keyup)="searchFuzzy()">
-    <button mat-button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''" (click)="searchFuzzy()">
-      <mat-icon>close</mat-icon>
-    </button>
-</mat-form-field>
-<button (click)="logResults()">Log Results</button>
-
-<button (click)="openModal('custom-modal-2')">Add new recipe</button>
-
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Calories</th>
-        <th>Servings</th>
-        <th> </th>
-        <th> </th>
-    </tr>
-    <tr *ngFor="let recipe of fuzzyResults"> <!--the loop-->
-        <th *ngIf="recipe.recipeName">{{ recipe.recipeName }}</th>                                      <!--display name-->
-        <th *ngIf="recipe.recipeName">{{ recipe.calories }}</th>                          <!--display amount-->
-        <th *ngIf="recipe.recipeName">{{ recipe.servings }}</th>                           <!--display unit-->
-        <th *ngIf="recipe.recipeName"><input (click)="openRecipe(recipe)" type="button" value="open recipe"></th>
-        <th *ngIf="recipe.recipeName"><input (click)="deleteRecipe(recipe)" type="button" value="delete recipe"></th><!--delete button-->
-    </tr> 
-</table>
-
+<!--The modal for viewing recipes-->
 <jw-modal id="custom-modal-3">
     <div *ngIf="recipe">
         {{recipe.recipeName}}

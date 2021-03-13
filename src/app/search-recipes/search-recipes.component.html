@@ -1,19 +1,32 @@
 <button (click)="addData()">Add Data</button>
-<button (click)="localStorageSpace()">Get Cached Space</button>
+<button (click)="setFuseResults([{recipeName: 'Test'}])">Set</button>
+<button (click)="localStorageSpace()" name="Test">Get Cached Space</button>
 <mat-form-field>
     <mat-label>Clearable input</mat-label>
     <input matInput type="text" [(ngModel)]="searchTerm" (keyup)="searchFuzzy()">
     <button mat-button *ngIf="searchTerm" matSuffix mat-icon-button aria-label="Clear" (click)="searchTerm=''" (click)="searchFuzzy()">
       <mat-icon>close</mat-icon>
     </button>
-    <button>Search</button>
 </mat-form-field>
 <mat-accordion>
-    <mat-expansion-panel *ngFor="let recipe of fuseResults" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-        <mat-expansion-panel-header (click)="fetchRecipe(recipe.uid)">
+    <mat-expansion-panel *ngFor="let recipe of fuseResults | slice:0:10; let i=index" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header (click)="fetchRecipe(recipe.uid, this.listIngredients)">
             <mat-panel-title>
                 {{recipe.recipeName}}
             </mat-panel-title>
+            <mat-panel-description *ngIf="data.embeddedPage === 'mealPlan'">
+              <button mat-raised-button name="SelectRecipe" (click)="selectMealDialogClose(recipe.uid, recipe.recipeName)">
+                Select As Meal
+              </button>
+            </mat-panel-description>
+            <mat-panel-description *ngIf="data.embeddedPage === 'recipe'">
+              <button mat-raised-button name="ShowRecipe">
+                Show Recipe
+              </button>
+              <button mat-raised-button (click)="deleteRecipe(recipe)" name="deleteRecipe">
+                Delete Recipe
+              </button>
+            </mat-panel-description>
         </mat-expansion-panel-header>
         <div *ngFor="let ingredient of ingredientList">
             <p *ngIf="ingredientList.Loading == true">LOADING...</p>
@@ -21,3 +34,4 @@
         </div>
     </mat-expansion-panel>
 </mat-accordion>
+<button *ngIf="data.embeddedPage !== 'recipe'" mat-button mat-dialog-close>Close</button>

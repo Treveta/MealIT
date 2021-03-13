@@ -1,17 +1,17 @@
 @import '~@angular/material/theming';
 @include mat-core();
 
-$custom-theme-primary: mat-palette($mat-deep-orange);
-$custom-theme-accent: mat-palette($mat-grey);
-$custom-theme-warn: mat-palette($mat-red);
+$light-primary: mat-palette($mat-deep-orange);
+$light-accent: mat-palette($mat-grey);
+$light-warn: mat-palette($mat-red);
 
-$custom-light-theme: mat-light-theme($custom-theme-primary, $custom-theme-accent, $custom-theme-warn);
+$light-theme: mat-light-theme($light-primary, $light-accent, $light-warn);
 
-@include angular-material-theme($custom-light-theme);
+@include angular-material-theme($light-theme);
 
 // Define an alternate dark theme.
 $dark-primary: mat-palette($mat-blue-grey);
-$dark-accent:  mat-palette($mat-amber, A200, A100, A400);
+$dark-accent:  mat-palette($mat-grey);
 $dark-warn:    mat-palette($mat-deep-orange);
 $dark-theme:   mat-dark-theme((
   color: (
@@ -26,8 +26,14 @@ $dark-theme:   mat-dark-theme((
 // `.unicorn-dark-theme` will be affected by this alternate dark theme instead of the default theme.
 .custom-dark-theme {
   @include angular-material-color($dark-theme);
+  .mat-card-accent {
+    background-color: mat-color($dark-accent, darker);
+  }
 }
 
 .custom-light-theme {
-  @include angular-material-theme($custom-light-theme);
+  @include angular-material-theme($light-theme);
+  .mat-card-accent {
+    background-color: mat-color($light-accent);
+  }
 }

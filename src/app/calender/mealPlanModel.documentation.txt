@@ -1,0 +1,137 @@
+The model can be imported using: import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from '~/mealPlan.model';
+
+Here is an example of the mealPlanModel as an expanded explicit JSON Object
+This could be used as a template if necessary, however the example below the explicit
+definition would be cleaner and more kosher.
+
+mealPlanModel = {
+  startDate: "2/8/21",
+  days: [{
+    breakfast: [{
+      recipeName: "Cereal",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    lunch: [{
+      recipeName: "PB&J",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    dinner: [{
+      recipeName: "Steak",
+      uid: "ADOEL3948DEOE20128D"
+    }, {
+      recipeName: "Mashed Potatos",
+      uid: "ADOEL3948DEOE20128D"
+    }]
+  },
+    breakfast: [{
+      recipeName: "Eggs and Bacon",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    lunch: [{
+      recipeName: "Ham and Cheese",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    dinner: [{
+      recipeName: "Mac and Cheese",
+      uid: "ADOEL3948DEOE20128D"
+    }, {
+      recipeName: "Broccoli",
+      uid: "ADOEL3948DEOE20128D"
+    }]
+  },
+    breakfast: [{
+      recipeName: "Eggs and Bacon",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    lunch: [{
+      recipeName: "Tomato Soup",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    dinner: [{
+      recipeName: "Chili",
+      uid: "ADOEL3948DEOE20128D"
+    }, {
+      recipeName: "Cornbread",
+      uid: "ADOEL3948DEOE20128D"
+    }]
+  },
+    breakfast: [{
+      recipeName: "Pancakes",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    lunch: [{
+      recipeName: "Grilled Cheese",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    dinner: [{
+      recipeName: "Grilled Chicken",
+      uid: "ADOEL3948DEOE20128D"
+    }, {
+      recipeName: "Rice",
+      uid: "ADOEL3948DEOE20128D"
+    }]
+  },
+    breakfast: [{
+      recipeName: "Eggs and Bacon",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    lunch: [{
+      recipeName: "Ham and Cheese",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    dinner: [{
+      recipeName: "Mac and Cheese",
+      uid: "ADOEL3948DEOE20128D"
+    }, {
+      recipeName: "Broccoli",
+      uid: "ADOEL3948DEOE20128D"
+    }]
+  },
+    breakfast: [{
+      recipeName: "Biscuits and Gravy",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    lunch: [{
+      recipeName: "Tuna Fish",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    dinner: [{
+      recipeName: "Shrimp",
+      uid: "ADOEL3948DEOE20128D"
+    }, {
+      recipeName: "Rice",
+      uid: "ADOEL3948DEOE20128D"
+    }]
+  },
+  breakfast: [{
+      recipeName: "Pop Tarts",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    lunch: [{
+      recipeName: "Salad",
+      uid: "ADOEL3948DEOE20128D"
+    }],
+    dinner: [{
+      recipeName: "Mc Donalds",
+      uid: "ADOEL3948DEOE20128D"
+    }]
+  }]
+}
+
+This is a cleaner more object oriented template for defining a mealPlanModel
+
+mealPlanRecipe = {
+  recipeName: "Recipe Name",
+  uid: "DOEO2093DLOE3049"
+}
+
+mealPlanDay = {
+  breakfast: [mealPlanRecipe],
+  lunch: [mealPlanRecipe],
+  dinner: [mealPlanRecipe]
+}
+
+mealPlanWeek = {
+  startDate: "1/8/21",
+  days: [mealPlanDay, mealPlanDay, mealPlanDay, mealPlanDay, mealPlanDay, mealPlanDay, mealPlanDay]
+}
