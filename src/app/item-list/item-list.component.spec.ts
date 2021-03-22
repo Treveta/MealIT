@@ -49,6 +49,7 @@ describe('ItemListComponent', () => {
     },
   ];
   let debugCompletionCheck;
+  let debugOnChangeCheck;
 
 
   beforeEach(() => {
@@ -109,6 +110,7 @@ describe('ItemListComponent', () => {
       // after something in the component changes, detects changes
       fixture.detectChanges();
       debugCompletionCheck = fixture.nativeElement.querySelector('mat-checkbox[name=\"completionCheck\"]');
+      debugOnChangeCheck = fixture.nativeElement.querySelector('mat-checkbox[name=\"completionCheck\"]');
     });
   });
   /**
@@ -218,37 +220,7 @@ describe('ItemListComponent', () => {
     expect(itemt.isComplete).toEqual(true);
     expect(component.updateDocument).toHaveBeenCalledWith(docName, data);
   });
-  /**
- * Tests that onCheckBoxChange successfully removes a designated item from sortedlList
- */
-  it('onCheckBoxChange successfully removes an item from sortedList', () => {
-    const noItemList = [
-      {
-        isComplete: false,
-        itemName: 'Blueberry',
-        quantity: 5,
-        unit: 'lb',
-      },
-      {
-        isComplete: false,
-        itemName: 'Steak',
-        quantity: 2,
-        unit: 'ct',
-      },
-      {
-        isComplete: false,
-        itemName: 'ApplesbutBetter',
-        quantity: 4,
-        unit: 'oz',
-      },
-    ];
-    // delcaring a spy to check that updateDocument is called
-    spyOn(component, 'updateDocument');
 
-    component.onCheckBoxChange(component.sortedList[0]);
-    expect(component.sortedList).toEqual(noItemList);
-    expect(component.updateDocument).toHaveBeenCalled();
-  });
 
   describe('Material Tests', () => {
     beforeEach(() => {
@@ -762,5 +734,59 @@ describe('ItemListComponent', () => {
       expect(component.newUnit).toEqual('');
     });
   });
-});
+  describe('item Removal Tests', () => {
+    /**
+    * Tests that onCheckBoxChange successfully removes a designated item from sortedlList
+    */
+    it('onCheckBoxChange successfully removes an item from sortedList', () => {
+      const noItemList = [
+        {
+          isComplete: false,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+        },
+        {
+          isComplete: false,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+        },
+        {
+          isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+        },
+      ];
+      // delcaring a spy to check that updateDocument is called
+      spyOn(component, 'updateDocument');
+      expect(component.sortedList).toEqual(mockSortedList);
+      component.onCheckBoxChange(component.sortedList[0]);
+      expect(component.sortedList).toEqual(noItemList);
+      expect(component.updateDocument).toHaveBeenCalled();
+    });
 
+    /**
+    * Tests that the mat checkbox will initialize and show up on the page
+    */
+    it('mat checkBox should appear on the page', async () => {
+      const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
+      expect(checkbox).toBeTruthy();
+    });
+    /**
+    * Tests that the material checkbox should call onCheckBoxChange upon change
+    */
+    it('mat checkBox should call call completionToggle on change', async () => {
+      spyOn(component, 'onCheckBoxChange');
+      console.log(debugOnChangeCheck);
+      const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
+      console.log(checkbox);
+      expect(await checkbox.isChecked()).toBe(false);
+      await checkbox.check();
+      expect(await checkbox.isChecked()).toBe(true);
+      expect(await checkbox.getName()).toBe('checkboxChange');
+      expect(component.onCheckBoxChange).toHaveBeenCalled();
+    });
+  });
+});
