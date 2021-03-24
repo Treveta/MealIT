@@ -1,0 +1,27 @@
+Sprint 3
+Scrum 1
+
+Casey
+  Did:
+  Plans to Do: 
+  Obstacles: 
+
+Daymion
+  Did: 
+  Plans to Do: 
+  Obstacles: 
+
+Ira
+  Did: 
+  Plans to Do: 
+  Obstacles: 
+
+Derek
+  Did: 
+    Fixed the adding of recipes to add ingredients to the recipe instead of a subcollection of the recipe. 
+    Retested the functions involved to make sure they are testing based on the altered code. 
+    Cleaned up some now redundant code.
+  Plans to Do: 
+    Begin working on functionality for removing recipes from a meal plan
+  Obstacles: 
+    Nothing
