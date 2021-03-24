@@ -91,16 +91,12 @@ describe('CreateRecipeComponent', () => {
 
     // Spys for the push functions
     spyOn(component.Ingredients, 'push');
-    spyOn(component.amount, 'push');
-    spyOn(component.units, 'push');
 
     // Run the function
     component.addToList();
 
     // Checking the results
-    expect(component.Ingredients.push).toHaveBeenCalledWith(ingredient);
-    expect(component.amount.push).toHaveBeenCalledWith(amount);
-    expect(component.units.push).toHaveBeenCalledWith(unit);
+    expect(component.Ingredients.push).toHaveBeenCalledWith({ingredientName: ingredient, amount: amount, unit: unit});
     expect(component.newIngredient).toBe('');
     expect(component.newUnit).toBe('');
     expect(component.newAmount).toBe('');
@@ -152,7 +148,6 @@ describe('CreateRecipeComponent', () => {
     // Spy on the break out functions
     spyOn(component, 'docAndUpdate');
     spyOn(component, 'setLocalStorage');
-    spyOn(component, 'ingredientAdd');
     spyOn(component, 'addDocumentRC');
 
     // Run the async functions
@@ -161,7 +156,6 @@ describe('CreateRecipeComponent', () => {
     // Check the results
     expect(component.docAndUpdate).toHaveBeenCalled();
     expect(component.setLocalStorage).toHaveBeenCalled();
-    expect(component.ingredientAdd).toHaveBeenCalled();
     expect(component.Ingredients).toEqual([]);
     expect(component.amount).toEqual([]);
     expect(component.units).toEqual([]);
