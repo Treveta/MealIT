@@ -28,9 +28,8 @@
               </button>
             </mat-panel-description>
         </mat-expansion-panel-header>
-        <div *ngFor="let ingredient of ingredientList">
-            <p *ngIf="ingredientList.Loading == true">LOADING...</p>
-            {{ingredient.ingredientName}}
+        <div *ngFor="let ingredient of recipe.ingredients">
+          {{ingredient.ingredientName}}
         </div>
     </mat-expansion-panel>
 </mat-accordion>

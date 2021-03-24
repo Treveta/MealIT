@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {Observable} from 'rxjs';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {AuthService} from '../services/auth.service';
@@ -95,14 +95,12 @@ export class CreateRecipeComponent {
          * @param {any} afs Change this later
          * @param {AuthService} authService
          * @param {any} dbHelp Change this later
-         * @param {SearchRecipesComponent} search
          */
         constructor(
         public modalService: ModalService,
         private afs: AngularFirestore,
         private authService: AuthService,
         private dbHelp: DatabaseHelperComponent,
-        public search: SearchRecipesComponent,
         ) {
           authService.getUid().then((uid) => {
             this.userInfo = uid;
@@ -115,6 +113,8 @@ export class CreateRecipeComponent {
             };
           });
         }
+        @ViewChild('search')
+        private search: SearchRecipesComponent;
         /**
          * A function that adds an ingredient to a recipe list
          */
@@ -123,9 +123,13 @@ export class CreateRecipeComponent {
           // console.log(amount);
           if (this.newIngredient == ''|| this.newUnit == '' || isNaN(amount)) {
           } else {
-            this.Ingredients.push(this.newIngredient);
-            this.amount.push(amount);
-            this.units.push(this.newUnit);
+            this.Ingredients.push({
+              ingredientName: this.newIngredient,
+              amount: amount,
+              unit: this.newUnit,
+            });
+            // this.amount.push(amount);
+            // this.units.push(this.newUnit);
             this.newIngredient = '';
             this.newAmount = '';
             this.newUnit = '';
@@ -162,31 +166,20 @@ export class CreateRecipeComponent {
         }
 
         /**
-         * Adding the ingredients
-         * @param {any} documentAdded
-         */
-        public ingredientAdd(documentAdded) {
-          this.search.fetchCache();
-          const ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
-
-          for (let i = 0; i < this.Ingredients.length; i++) {
-            ingredients.add(
-                {
-                  ingredientName: this.Ingredients[i],
-                  amount: this.amount[i],
-                  unit: this.units[i],
-                },
-            );
-          }
-        }
-
-        /**
          * Add a document
          * @param {any} data
          * @return {any}
          */
         async addDocumentRC(data) {
           return this.recipeListCollection.add(data);
+        }
+
+        /**
+         * Triggers the search component's searchFuzzy function to refresh search data after an addition of deletion
+         */
+        searchUpdate() {
+          this.search.fetchCache();
+          this.search.searchFuzzy();
         }
 
         public adding
@@ -201,14 +194,13 @@ export class CreateRecipeComponent {
               recipeName: this.recipeName, // get this stuff from auth.service.ts
               calories: this.calories,
               servings: this.servings,
+              ingredients: this.Ingredients,
             };
             const documentAdded = await this.addDocumentRC(data);
 
             this.docAndUpdate(documentAdded);
             this.setLocalStorage(data);
-
-            this.ingredientAdd(documentAdded);
-
+            this.searchUpdate();
             this.Ingredients = [];
             this.amount = [];
             this.units = [];
@@ -252,7 +244,7 @@ export class CreateRecipeComponent {
         }
 
         /**
-         * Set the local storage for delection
+         * Set the local storage for deletion
          * @param {any} temp
          */
         public setLocalStorageDelete(temp) {
