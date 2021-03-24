@@ -29,7 +29,7 @@
             </mat-panel-description>
         </mat-expansion-panel-header>
         <div *ngFor="let ingredient of recipe.ingredients">
-          {{ingredient.ingredientName}}
+          {{ingredient.ingredientName}} {{ingredient.quantity}} {{ingredient.unit}}
         </div>
     </mat-expansion-panel>
 </mat-accordion>

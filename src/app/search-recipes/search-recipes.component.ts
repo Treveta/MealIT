@@ -218,7 +218,7 @@ export class SearchRecipesComponent implements OnDestroy, OnInit {
     // Defines a schema to be used by mocker to create random Ingredients
     const ingredientScheme = {
       ingredientName: {faker: 'random.word'},
-      calories: {faker: 'random.number'},
+      quantity: {faker: 'random.number'},
       unit: {faker: 'random.word'},
     };
     // Number of recipes to add when function runs
@@ -233,6 +233,12 @@ export class SearchRecipesComponent implements OnDestroy, OnInit {
           .schema('ingredients', ingredientScheme, 5)
           .buildSync();
       // Adds random recipe to database
+      let index = 0;
+      const unitTypes = ['lb', 'tsp', 'tbsp', 'ct', 'oz'];
+      data.ingredients.forEach((ingredient) => {
+        ingredient.unit = unitTypes[index];
+        index++;
+      });
       const dataAdd = {
         recipeName: data.recipeName[0].recipeName,
         calories: data.recipeCalories[0].calories,
@@ -242,6 +248,7 @@ export class SearchRecipesComponent implements OnDestroy, OnInit {
       const documentAdded = await this.afs.collection(this.collectionPath).add(dataAdd);
       this.afs.collection(this.collectionPath).doc(documentAdded.id).update({uid: documentAdded.id});
       console.log(dataAdd);
+      localStorage.setItem('updatePending', 'true');
     }
   }
 
