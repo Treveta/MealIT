@@ -322,6 +322,48 @@ export class CalenderComponent implements OnInit {
       if (result) {
         // Sets the recipe in the plan
         this.setRecipeInPlan(result.recipeName, result.uid);
+        // FUNCTION TO ADD TO SHOPPING LIST HERE this.service.addToItemList(result.ingredients[i].name, ...)
+        /**
+         * result.ingredients.forEach((ingredient) => {
+         *  this.service.addToItemList(ingredient.name, ...)
+         * })
+         */
+      }
+    });
+  }
+
+  /**
+   * Removes a recipe from the plan
+   * @param {string} index the index of the recipe to be deleted within the recipes array of its given day and mealType
+   * @param {string} toEditLabel the label of the currently viewed mealPlan
+   */
+  removeRecipeFromPlan(index, toEditLabel) {
+    // Gets a snapshot of the mealPlanData, includes all existing mealPlans as an array
+    this.listData('users/'+this.userInfo+'/mealplan').then((mealPlanWeeks) => {
+      // Iterates over the mealPlans
+      for (let i = 0; i < mealPlanWeeks.length; i++) {
+        // Sets the partial data to the preexisting data from the snapshot
+        const partialData = mealPlanWeeks[i];
+        // Iterates over the days in the mealPlan's days array
+        if (partialData.label == toEditLabel) {
+          for (let j = 0; j < partialData.days.length; j++) {
+          // checks if the date the user is trying to set equals the date in the days array
+            if (partialData.days[j].date.toDate().getTime() === this.dateToSet.toDate().getTime()) {
+            // If the dates matched it checks whether the mealType was breakfast lunch or dinner
+              if (this.mealTypeToSet == 'breakfast') {
+                partialData.days[j].breakfast.splice(index, 1);
+              }
+              if (this.mealTypeToSet == 'lunch') {
+                partialData.days[j].lunch.splice(index, 1);
+              }
+              if (this.mealTypeToSet == 'dinner') {
+                partialData.days[j].dinner.splice(index, 1);
+              }
+            }
+          }
+        }
+        // Calls the update document helper function
+        this.updateDocInFireStore(mealPlanWeeks[i].label, partialData);
       }
     });
   }

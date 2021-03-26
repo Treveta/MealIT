@@ -22,11 +22,16 @@
                 </mat-card-header>
                 <mat-card-content class="center-content"> 
                   <!--BREAKFAST CARD CONTENT GOES HERE-->
-                  <mat-card *ngFor="let recipe of day.breakfast" class="mat-card-accent" name="breakfastRecipeCard">
+                  <mat-card *ngFor="let recipe of day.breakfast; let indexOfRecipe=index" class="mat-card-accent" name="breakfastRecipeCard">
                     <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
                     <mat-card-content name="breakfastRecipeCard">
                       {{recipe.uid}}
                     </mat-card-content>
+                    <mat-card-actions align="center">
+                      <button mat-icon-button (click)="setMealInfo('breakfast', day.date)" (click)="removeRecipeFromPlan(indexOfRecipe, plan.label)">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+                    </mat-card-actions>
                   </mat-card>
                   <button mat-mini-fab name="breakfastButton" (click)="setMealInfo('breakfast', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
                     <mat-icon>add</mat-icon>
@@ -39,11 +44,16 @@
                 </mat-card-header>
                 <mat-card-content class="center-content">
                   <!--LUNCH CARD CONTENT GOES HERE-->
-                  <mat-card *ngFor="let recipe of day.lunch" class="mat-card-accent" name="lunchRecipeCard">
+                  <mat-card *ngFor="let recipe of day.lunch; let indexOfRecipe=index" class="mat-card-accent" name="lunchRecipeCard">
                     <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
                     <mat-card-content>
                       {{recipe.uid}}
                     </mat-card-content>
+                    <mat-card-actions align="center">
+                      <button mat-icon-button (click)="setMealInfo('lunch', day.date)" (click)="removeRecipeFromPlan(indexOfRecipe, plan.label)">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+                    </mat-card-actions>
                   </mat-card>
                   <button mat-mini-fab name="lunchButton" (click)="setMealInfo('lunch', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
                     <mat-icon>add</mat-icon>
@@ -56,11 +66,16 @@
                 </mat-card-header>
                 <mat-card-content class="center-content">
                   <!--DINNER CARD CONTENT GOES HERE-->
-                  <mat-card *ngFor="let recipe of day.dinner" class="mat-card-accent" name="dinnerRecipeCard">
+                  <mat-card *ngFor="let recipe of day.dinner; let indexOfRecipe=index" class="mat-card-accent" name="dinnerRecipeCard">
                     <mat-card-title class="smaller-mat-card-title">{{recipe.recipeName}}</mat-card-title>
                     <mat-card-content>
                       {{recipe.uid}}
                     </mat-card-content>
+                    <mat-card-actions align="center">
+                      <button mat-icon-button (click)="setMealInfo('dinner', day.date)" (click)="removeRecipeFromPlan(indexOfRecipe, plan.label)">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+                    </mat-card-actions>
                   </mat-card>
                   <button mat-mini-fab name="dinnerButton" (click)="setMealInfo('dinner', day.date)" (click)="openDialog()" aria-label="Add a Recipe" color="primary">
                     <mat-icon>add</mat-icon>

@@ -15,7 +15,7 @@
                 {{recipe.recipeName}}
             </mat-panel-title>
             <mat-panel-description *ngIf="data.embeddedPage === 'mealPlan'">
-              <button mat-raised-button name="SelectRecipe" (click)="selectMealDialogClose(recipe.uid, recipe.recipeName)">
+              <button mat-raised-button name="SelectRecipe" (click)="selectMealDialogClose(recipe.uid, recipe.recipeName, recipe.ingredients)">
                 Select As Meal
               </button>
             </mat-panel-description>
