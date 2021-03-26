@@ -6,6 +6,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from './mealPlan.model';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
+import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
+
 
 @Component({
   selector: 'app-calender',
@@ -158,7 +160,7 @@ export class CalenderComponent implements OnInit {
    * @param {SearchRecipesComponent} search
    * @param {AuthService} authService
    */
-  constructor(public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
+  constructor(public shopListService: ShoppinglistEditService, public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -367,6 +369,8 @@ export class CalenderComponent implements OnInit {
               // Sets a component variable with the partialData, this can then be later retrieved or used for testing
               this.partialDataLastSet = partialData;
             }
+            // Ira: possilbly where to call AddToItemList?
+            // this.shopListService.addToShoppingList('Apple', 1, 'oz'); //This Works! But unless you want to be spammed with Apples everytime you add to the meal plan, leave commented
           }
         }
         // Calls the update document helper function
