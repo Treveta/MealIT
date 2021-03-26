@@ -6,6 +6,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from './mealPlan.model';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
+import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
+
 
 @Component({
   selector: 'app-calender',
@@ -158,7 +160,7 @@ export class CalenderComponent implements OnInit {
    * @param {SearchRecipesComponent} search
    * @param {AuthService} authService
    */
-  constructor(public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
+  constructor(public shopListService: ShoppinglistEditService, public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -322,6 +324,48 @@ export class CalenderComponent implements OnInit {
       if (result) {
         // Sets the recipe in the plan
         this.setRecipeInPlan(result.recipeName, result.uid);
+        // FUNCTION TO ADD TO SHOPPING LIST HERE this.service.addToItemList(result.ingredients[i].name, ...)
+        /**
+         * result.ingredients.forEach((ingredient) => {
+         *  this.service.addToItemList(ingredient.name, ...)
+         * })
+         */
+      }
+    });
+  }
+
+  /**
+   * Removes a recipe from the plan
+   * @param {string} index the index of the recipe to be deleted within the recipes array of its given day and mealType
+   * @param {string} toEditLabel the label of the currently viewed mealPlan
+   */
+  removeRecipeFromPlan(index, toEditLabel) {
+    // Gets a snapshot of the mealPlanData, includes all existing mealPlans as an array
+    this.listData('users/'+this.userInfo+'/mealplan').then((mealPlanWeeks) => {
+      // Iterates over the mealPlans
+      for (let i = 0; i < mealPlanWeeks.length; i++) {
+        // Sets the partial data to the preexisting data from the snapshot
+        const partialData = mealPlanWeeks[i];
+        // Iterates over the days in the mealPlan's days array
+        if (partialData.label == toEditLabel) {
+          for (let j = 0; j < partialData.days.length; j++) {
+          // checks if the date the user is trying to set equals the date in the days array
+            if (partialData.days[j].date.toDate().getTime() === this.dateToSet.toDate().getTime()) {
+            // If the dates matched it checks whether the mealType was breakfast lunch or dinner
+              if (this.mealTypeToSet == 'breakfast') {
+                partialData.days[j].breakfast.splice(index, 1);
+              }
+              if (this.mealTypeToSet == 'lunch') {
+                partialData.days[j].lunch.splice(index, 1);
+              }
+              if (this.mealTypeToSet == 'dinner') {
+                partialData.days[j].dinner.splice(index, 1);
+              }
+            }
+          }
+        }
+        // Calls the update document helper function
+        this.updateDocInFireStore(mealPlanWeeks[i].label, partialData);
       }
     });
   }
@@ -367,6 +411,8 @@ export class CalenderComponent implements OnInit {
               // Sets a component variable with the partialData, this can then be later retrieved or used for testing
               this.partialDataLastSet = partialData;
             }
+            // Ira: possilbly where to call AddToItemList?
+            // this.shopListService.addToShoppingList('Apple', 1, 'oz'); //This Works! But unless you want to be spammed with Apples everytime you add to the meal plan, leave commented
           }
         }
         // Calls the update document helper function

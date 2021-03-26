@@ -1,0 +1,25 @@
+Sprint 3
+Scrum 1
+
+Casey
+  Did: Handled a lot of tasks. Spent time looking at angular material for how to visually adjust HTML.
+  Plans to Do: Finish research. Probably not much testing to do. view recipe.
+  Obstacles: Nothing
+
+Daymion
+  Did: Turning everything that is not complete into complete. Might be working? 
+  Plans to Do: Testing that, and then moving on to the next task: food storage list page to display.
+  Obstacles: None. using other tests is useful
+
+Ira
+  Did: Completed Testing for ingredient removal, minor JSDoc touch-ups, Awaiting peer review.
+  Plans to Do: Import ingredients automatically story
+  Obstacles: Nothing
+
+Derek
+  Did: 
+    Fixed the adding of recipes to add ingredients to the recipe instead of a subcollection of the recipe. 
+    Retested the functions involved to make sure they are testing based on the altered code. 
+    Cleaned up some now redundant code.
+  Plans to Do: Begin working on functionality for removing recipes from a meal plan
+  Obstacles: Nothing

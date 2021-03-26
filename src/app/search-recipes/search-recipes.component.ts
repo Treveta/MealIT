@@ -88,11 +88,13 @@ export class SearchRecipesComponent implements OnDestroy, OnInit {
    * If the component is referenced as a dialog this function can close it and send variable to parent
    * @param {string} selectedMealuid the uid of the recipe to send back to parent component
    * @param {string} selectedMealName the common name of the recipe to send back to parent component
+   * @param {any} selectedMealIngredients the array of ingredients to return
    */
-  selectMealDialogClose(selectedMealuid: string, selectedMealName: string): void {
+  selectMealDialogClose(selectedMealuid: string, selectedMealName: string, selectedMealIngredients: any): void {
     const returnData = {
       recipeName: selectedMealName,
       uid: selectedMealuid,
+      ingredients: selectedMealIngredients,
     };
     this.dialogRef.close(returnData);
   }
@@ -206,36 +208,49 @@ export class SearchRecipesComponent implements OnDestroy, OnInit {
    */
   async addData() {
     // Defines a schema to be used by mocker to create random recipes
-    const recipeScheme = {
+    const recipeNameScheme = {
       recipeName: {faker: 'random.words'},
+    };
+    const recipeCalorieScheme = {
       calories: {faker: 'random.number'},
+    };
+    const recipeServingsScheme = {
       servings: {faker: 'random.number'},
     };
     // Defines a schema to be used by mocker to create random Ingredients
     const ingredientScheme = {
       ingredientName: {faker: 'random.word'},
-      calories: {faker: 'random.number'},
+      quantity: {faker: 'random.number'},
       unit: {faker: 'random.word'},
     };
     // Number of recipes to add when function runs
-    const numAdded = 100;
+    const numAdded = 10;
     // Systematically generates random data based on schemas and adds them to the database
     for (let i = 0; i < numAdded; i++) {
       // Creates a random recipe and random list of ingredients based on schema
       const data = mocker()
-          .schema('recipe', recipeScheme, 1)
+          .schema('recipeName', recipeNameScheme, 1)
+          .schema('recipeCalories', recipeCalorieScheme, 1)
+          .schema('recipeServing', recipeServingsScheme, 1)
           .schema('ingredients', ingredientScheme, 5)
           .buildSync();
       // Adds random recipe to database
-      const documentAdded = await this.afs.collection(this.collectionPath).add(data.recipe[0]);
-      // Fetches new recipes uid
+      let index = 0;
+      const unitTypes = ['lb', 'tsp', 'tbsp', 'ct', 'oz'];
+      data.ingredients.forEach((ingredient) => {
+        ingredient.unit = unitTypes[index];
+        index++;
+      });
+      const dataAdd = {
+        recipeName: data.recipeName[0].recipeName,
+        calories: data.recipeCalories[0].calories,
+        servings: data.recipeServing[0].servings,
+        ingredients: data.ingredients,
+      };
+      const documentAdded = await this.afs.collection(this.collectionPath).add(dataAdd);
       this.afs.collection(this.collectionPath).doc(documentAdded.id).update({uid: documentAdded.id});
-      // Uses new recipes uid to create a collection path to the recipe
-      this.ingredients = this.afs.collection('users/'+this.userInfo+'/recipeList/'+ documentAdded.id + '/ingredients');
-      // Adds the random ingredients to a subcollection of the newly created recipe
-      for (let i = 0; i < data.ingredients.length; i++) {
-        this.ingredients.add(data.ingredients[i]);
-      }
+      console.log(dataAdd);
+      localStorage.setItem('updatePending', 'true');
     }
   }
 

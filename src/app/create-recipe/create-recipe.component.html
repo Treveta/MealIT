@@ -1,7 +1,7 @@
 <body>
   <button (click)="openModal('custom-modal-2')">Add new recipe</button>
 
-  <app-search-recipes [embeddedPage]="'recipe'"></app-search-recipes>
+  <app-search-recipes #search [embeddedPage]="'recipe'"></app-search-recipes>
 </body>
 
 <!--The modal for adding recipes-->
@@ -27,10 +27,10 @@
 <th>Unit</th>
 <th> </th>
 </tr>
-<tr *ngFor="let x of Ingredients; let index = index;"> <!--the loop-->
-  <th>{{x}}</th>                                      <!--display name-->
-  <th>{{amount[index]}}</th>                          <!--display amount-->
-  <th>{{units[index]}}</th>                           <!--display unit-->
+<tr *ngFor="let ingredient of Ingredients; let index = index;"> <!--the loop-->
+  <th>{{ingredient.ingredientName}}</th>                                      <!--display name-->
+  <th>{{ingredient.amount}}</th>                          <!--display amount-->
+  <th>{{ingredient.unit}}</th>                           <!--display unit-->
   <th><input (click)="deleteIngredient(index)" type="button" value="x"></th><!--delete button-->
 </tr>   
 </table>

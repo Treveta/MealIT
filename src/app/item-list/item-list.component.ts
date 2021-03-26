@@ -185,14 +185,17 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * it then pushes that constant to the list and updates the collection
      */
     async addToItemList() {
+      // if the item name is blank, ignore all this
       if (this.newItem === '') {
       } else {
+        // construct a proposed item from class variables
         const addedItem = {
           isComplete: false,
           itemName: this.newItem,
           quantity: this.newQuantity,
           unit: this.newUnit,
         };
+        // run consolidateQuantity on the proposed item, and if false add it to the list and reset the class variables
         if (this.consolidateQuantity(addedItem)===false) {
           this.sortedList.push(addedItem);
           this.updateDocument('List', {Items: this.sortedList});
@@ -200,6 +203,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
           this.newQuantity = '';
           this.newUnit = '';
         } else {
+          // else, since consolidateQuantity has found a match and done its thing, just reset the class variables afterwards
           this.newItem = '';
           this.newQuantity = '';
           this.newUnit = '';
@@ -320,7 +324,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * in which case, @param itemProposed is NOT added to the list and @function consolidateQuantity returns true, as it has just been consolidated)
      * after finding a match and calling the appropriate functions,  @function updateDocument is called
      * if no match is found, proceed with adding the item as usual and return false.
-     * This function may be called by @function addToItemList \\TODO
+     * This function is called by @function addToItemList
      * @summary consolidateQuantity takes a proposed item and checks the shopping list for a match. upon finding one, the quantities are summed,
      * the item is not added ot the shopping list, the list is updated, and consolidateQuantity returns true.
      *  If no match is found, the item gets added to the list as normal and consolidateQuantity returns false.
