@@ -259,6 +259,20 @@ export class ItemListComponent implements OnDestroy, OnInit {
       this.updateDocument('List', {Items: this.sortedList});
     }
 
+    /**
+     * @name completionAll
+     * @description Sets all sortedList isComplete that are false to true.
+     * Then, it calls @function updateDocument, which updates the shoppingCollection, pushing the change to the database
+     */
+    completionAll(): void {
+      for (let i = 0; i < this.sortedList.length; i++) {
+        if (this.sortedList[i].isComplete == false) {
+          this.completionToggle(this.sortedList[i]);
+        }
+      }
+      this.updateDocument('List', {Items: this.sortedList});
+    }
+
     /** @function
      * @name updateDocument
      * @param {string} docName name of the document to update
