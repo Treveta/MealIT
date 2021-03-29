@@ -83,7 +83,12 @@ export class ItemListComponent implements OnDestroy, OnInit {
       this.shoppingCollection = this.afs.collection<shoppingList>('users/' + this.userInfo + '/shoppingList');
       this.listItems$ = this.shoppingCollection.valueChanges(); // Change to local pull similar to search-recipes, relies on listRecipes style function
       this.listItems().then((list) => {
-        this.sortedList = list.Items;
+        if (!list) {
+          this.createDocument();
+          this.sortedList = [];
+        } else {
+          this.sortedList = list.Items;
+        }
       });
     });
   }
@@ -93,6 +98,13 @@ export class ItemListComponent implements OnDestroy, OnInit {
   public editToggle: boolean = false;
   public isLarge: boolean = true;
   public screenWidth: any = window.innerWidth;
+
+  /**
+   * @function createDocument
+   */
+  createDocument():void {
+    this.shoppingCollection.doc('List').set({Items: []});
+  }
 
   /** @function
    * @name toggleEdit
@@ -260,6 +272,31 @@ export class ItemListComponent implements OnDestroy, OnInit {
      */
     completionToggle(item): void {
       item.isComplete=!item.isComplete;
+      this.updateDocument('List', {Items: this.sortedList});
+    }
+
+    allTrue = false;
+    /**
+     * @name completionAll
+     * @description Sets all sortedList isComplete that are false to true.
+     * Then, it calls @function updateDocument, which updates the shoppingCollection, pushing the change to the database
+     */
+    completionAll(): void {
+      if (this.allTrue == false) {
+        for (let i = 0; i < this.sortedList.length; i++) {
+          if (this.sortedList[i].isComplete == false) {
+            this.completionToggle(this.sortedList[i]);
+          }
+        }
+        this.allTrue = true;
+      } else {
+        for (let i = 0; i < this.sortedList.length; i++) {
+          if (this.sortedList[i].isComplete == true) {
+            this.completionToggle(this.sortedList[i]);
+          }
+        }
+        this.allTrue = false;
+      }
       this.updateDocument('List', {Items: this.sortedList});
     }
 
