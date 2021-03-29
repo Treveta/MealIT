@@ -28,7 +28,7 @@
                       {{recipe.uid}}
                     </mat-card-content>
                     <mat-card-actions align="center">
-                      <button mat-icon-button (click)="setMealInfo('breakfast', day.date)" (click)="removeRecipeFromPlan(indexOfRecipe, plan.label)">
+                      <button mat-icon-button name="deleteRecipeButton" (click)="setMealInfo('breakfast', day.date)" (click)="removeRecipeFromPlan(indexOfRecipe, plan.label)">
                         <mat-icon>clear</mat-icon>
                       </button>
                     </mat-card-actions>
@@ -50,7 +50,7 @@
                       {{recipe.uid}}
                     </mat-card-content>
                     <mat-card-actions align="center">
-                      <button mat-icon-button (click)="setMealInfo('lunch', day.date)" (click)="removeRecipeFromPlan(indexOfRecipe, plan.label)">
+                      <button mat-icon-button name="deleteRecipeButton" (click)="setMealInfo('lunch', day.date)" (click)="removeRecipeFromPlan(indexOfRecipe, plan.label)">
                         <mat-icon>clear</mat-icon>
                       </button>
                     </mat-card-actions>
@@ -72,7 +72,7 @@
                       {{recipe.uid}}
                     </mat-card-content>
                     <mat-card-actions align="center">
-                      <button mat-icon-button (click)="setMealInfo('dinner', day.date)" (click)="removeRecipeFromPlan(indexOfRecipe, plan.label)">
+                      <button mat-icon-button name="deleteRecipeButton" (click)="setMealInfo('dinner', day.date)" (click)="removeRecipeFromPlan(indexOfRecipe, plan.label)">
                         <mat-icon>clear</mat-icon>
                       </button>
                     </mat-card-actions>
