@@ -330,6 +330,10 @@ export class CalenderComponent implements OnInit {
          *  this.service.addToItemList(ingredient.name, ...)
          * })
          */
+        // console.log(result.ingredients);
+        result.ingredients.forEach((ingredient) => {
+          this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
+        });
       }
     });
   }
@@ -411,7 +415,7 @@ export class CalenderComponent implements OnInit {
               // Sets a component variable with the partialData, this can then be later retrieved or used for testing
               this.partialDataLastSet = partialData;
             }
-            // Ira: possilbly where to call AddToItemList?
+            // Ira: possilbly where to call AddToShoppingList?
             // this.shopListService.addToShoppingList('Apple', 1, 'oz'); //This Works! But unless you want to be spammed with Apples everytime you add to the meal plan, leave commented
           }
         }
