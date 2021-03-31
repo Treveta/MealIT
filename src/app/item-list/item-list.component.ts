@@ -13,6 +13,7 @@ import {
   supportsPassiveEventListeners,
   supportsScrollBehavior,
 } from '@angular/cdk/platform';
+import {storageList} from 'app/models/foodStorage.model';
 import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
 
 /** @interface
@@ -62,6 +63,9 @@ export class ItemListComponent implements OnDestroy, OnInit {
   supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
   supportsPassiveEventListeners = supportsPassiveEventListeners();
   supportsScrollBehavior = supportsScrollBehavior();
+  storageCollection: AngularFirestoreCollection<any>;
+  listStorageItems$: Observable<any[]>;
+  sortedStorageList: any[];
   // sets up the form groups for the checkboxes
 
   /** @constructor
@@ -82,6 +86,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     authService.getUid().then((uid) => {
       this.userInfo = uid;
+      this.storageCollection = this.afs.collection<storageList>('users/' + this.userInfo + '/storageList');
       this.shoppingCollection = this.afs.collection<shoppingList>('users/' + this.userInfo + '/shoppingList');
       this.listItems$ = this.shoppingCollection.valueChanges(); // Change to local pull similar to search-recipes, relies on listRecipes style function
       this.listItems().then((list) => {
@@ -90,6 +95,15 @@ export class ItemListComponent implements OnDestroy, OnInit {
           this.sortedList = [];
         } else {
           this.sortedList = list.Items;
+        }
+      });
+      this.listStorageItems$ = this.storageCollection.valueChanges();
+      this.listStorageItems().then((list) => {
+        if (!list) {
+          this.createStorageDocument();
+          this.sortedStorageList = [];
+        } else {
+          this.sortedStorageList = list.Items;
         }
       });
     });
@@ -106,6 +120,13 @@ export class ItemListComponent implements OnDestroy, OnInit {
    */
   createDocument():void {
     this.shoppingCollection.doc('List').set({Items: []});
+  }
+
+  /**
+   * @function createDocument
+   */
+  createStorageDocument():void {
+    this.storageCollection.doc('List').set({Items: []});
   }
 
   /** @function
@@ -283,6 +304,33 @@ export class ItemListComponent implements OnDestroy, OnInit {
       this.updateDocument('List', {Items: this.sortedList});
     }
 
+    /**
+     * @name toStorage
+     * @description Send completed items from sorted list to the storage list in the database, then update.
+     */
+    toStorage(): void {
+      for (let i = 0; i < this.sortedList.length; i++) {
+        if (this.sortedList[i].isComplete == true) {
+          // Send information of completed item to storage list in the database
+          this.sortedStorageList.push(this.sortedList[i]);
+          // Remove the item from the sorted list
+          this.sortedList.splice(i, 1);
+        }
+      }
+      this.updateStorageDocument('List', {Items: this.sortedStorageList});
+      this.updateDocument('List', {Items: this.sortedList});
+    }
+
+    /** @function
+     * @name updateStorageDocument
+     * @param {string} docName name of the document to update
+     * @param {any} data the data to update the document with
+     * @description helper function. API call to update the list.
+     */
+    updateStorageDocument(docName: string, data):void {
+      this.storageCollection.doc(docName).update(data);
+    }
+
     /** @function
      * @name updateDocument
      * @param {string} docName name of the document to update
@@ -331,6 +379,25 @@ export class ItemListComponent implements OnDestroy, OnInit {
         console.log('Error getting documents', err);
       }
     }
+
+    /** @function
+     * @async
+     * @name listStorageItems
+     * @constant {Promise} snapshot a constant that will contain a promise for list doc from shoppingCollection
+     * @return {Object} data inside the document promised in snapshot
+     * @description listItems tries to pull the list from shoppingcollection and return that data if it suceeds
+     * if it fails, it will send an error message to the console
+     */
+    async listStorageItems() {
+      try {
+        const snapshot = await this.storageCollection.doc('List')
+            .get().toPromise();
+        return snapshot.data();
+      } catch (err) {
+        console.log('Error getting documents', err);
+      }
+    }
+
     /** @function
      * @name drop
      * @param {CdkDragDrop<string[]>} event an interface defined in @angular\cdk\drag-drop\drag-events.d.ts for use in the drag and drop functionality

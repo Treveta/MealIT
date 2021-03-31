@@ -262,11 +262,13 @@ describe('ItemListComponent', () => {
       expect(itemt.isComplete).toEqual(true);
       expect(component.updateDocument).toHaveBeenCalledWith(docName, data);
     });
+  });
+
+  describe('completionAll and storage tests', () => {
     /**
      * Tests that all items on a list are set to complete
      */
     it(`set all items to complete`, () => {
-      // Test item list
       const itemList = [
         {
           isComplete: false,
@@ -288,6 +290,49 @@ describe('ItemListComponent', () => {
         },
         {
           isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+        },
+      ];
+      component.sortedList = itemList;
+
+      spyOn(component, 'updateDocument');
+
+      component.completionAll();
+
+      for (let i = 0; i < component.sortedList.length; i++) {
+        expect(component.sortedList[i].isComplete).toEqual(true);
+      }
+      expect(component.updateDocument).toHaveBeenCalled();
+    });
+
+    /**
+    * Tests that screenWidth gets initialized
+    */
+    it(`Send complete items to food storage`, () => {
+      // set test item list
+      const itemList = [
+        {
+          isComplete: true,
+          itemName: 'Apples',
+          quantity: 5,
+          unit: 'oz',
+        },
+        {
+          isComplete: true,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+        },
+        {
+          isComplete: true,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+        },
+        {
+          isComplete: true,
           itemName: 'ApplesbutBetter',
           quantity: 4,
           unit: 'oz',
@@ -295,59 +340,24 @@ describe('ItemListComponent', () => {
       ];
       // set the sortedlist to the item list
       component.sortedList = itemList;
+      // initalize the sortedStorageList
+      component.sortedStorageList = [];
 
-      // spy on the update document. Assume it will succeed.
+      // set the spys
+      spyOn(component.sortedStorageList, 'push');
+      spyOn(component.sortedList, 'splice');
+      spyOn(component, 'updateStorageDocument');
       spyOn(component, 'updateDocument');
 
-      // run the function
-      component.completionAll();
+      // call the function
+      component.toStorage();
 
-      // test for each item in the sorted list that the items have all been set to true
+      // test the functions are called
       for (let i = 0; i < component.sortedList.length; i++) {
-        expect(component.sortedList[i].isComplete).toEqual(true);
+        expect(component.sortedStorageList.push).toHaveBeenCalled();
+        expect(component.sortedList.splice).toHaveBeenCalled();
       }
-      // test that the updateDocument function has been called
-      expect(component.updateDocument).toHaveBeenCalled();
-    });
-    /**
-     * Tests that all items on a list are set to complete
-     */
-    it(`set all items to complete`, () => {
-      const itemList = [
-        {
-          isComplete: false,
-          itemName: 'Apples',
-          quantity: 5,
-          unit: 'oz',
-        },
-        {
-          isComplete: false,
-          itemName: 'Blueberry',
-          quantity: 5,
-          unit: 'lb',
-        },
-        {
-          isComplete: false,
-          itemName: 'Steak',
-          quantity: 2,
-          unit: 'ct',
-        },
-        {
-          isComplete: false,
-          itemName: 'ApplesbutBetter',
-          quantity: 4,
-          unit: 'oz',
-        },
-      ];
-      component.sortedList = itemList;
-
-      spyOn(component, 'updateDocument');
-
-      component.completionAll();
-
-      for (let i = 0; i < component.sortedList.length; i++) {
-        expect(component.sortedList[i].isComplete).toEqual(true);
-      }
+      expect(component.updateStorageDocument).toHaveBeenCalled();
       expect(component.updateDocument).toHaveBeenCalled();
     });
   });

@@ -25,6 +25,7 @@ export class FoodStorageComponent {
   listItems$: Observable<shoppingList[]>;
   public testSortedList: Array<any>;
   private subscription: Subscription;
+  sortedStorageList: any[];
 
   constructor(
     private authService: AuthService,
@@ -45,7 +46,22 @@ export class FoodStorageComponent {
       this.listItems().then((list) => {
         this.testSortedList = list.Items;
       });
+      this.listStorageItems().then((list) => {
+        if (!list) {
+          this.createStorageDocument();
+          this.sortedStorageList = [];
+        } else {
+          this.sortedStorageList = list.Items;
+        }
+      });
     });
+  }
+
+  /**
+   * @function createDocument
+   */
+  createStorageDocument():void {
+    this.storageCollection.doc('List').set({Items: []});
   }
 
   storageListIsBeingEdited(): void {
@@ -89,5 +105,23 @@ export class FoodStorageComponent {
 
   closeModal(id: string): void {
     this.modalService.close(id);
+  }
+
+  /** @function
+     * @async
+     * @name listStorageItems
+     * @constant {Promise} snapshot a constant that will contain a promise for list doc from shoppingCollection
+     * @return {Object} data inside the document promised in snapshot
+     * @description listItems tries to pull the list from shoppingcollection and return that data if it suceeds
+     * if it fails, it will send an error message to the console
+     */
+  async listStorageItems() {
+    try {
+      const snapshot = await this.storageCollection.doc('List')
+          .get().toPromise();
+      return snapshot.data();
+    } catch (err) {
+      console.log('Error getting documents', err);
+    }
   }
 }
