@@ -1,32 +1,43 @@
+import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {AuthService} from './auth.service';
+
 import {ShoppinglistEditService} from './shoppinglist-edit.service';
+
 
 describe('ShoppinglistEditService', () => {
   let service: ShoppinglistEditService;
-
   beforeEach(() => {
     const angularFirestoreStub = () => ({collection: (arg) => ({})});
     const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
     TestBed.configureTestingModule({
+      schemas: [NO_ERRORS_SCHEMA],
+
+      declarations: [ShoppinglistEditService],
+
       providers: [
-        ShoppinglistEditService,
         {provide: AngularFirestore, useFactory: angularFirestoreStub},
+
         {provide: AuthService, useFactory: authServiceStub},
+      ],
+      imports: [
       ],
     });
     service = TestBed.inject(ShoppinglistEditService);
   });
-
-  it('can load instance', () => {
-    expect(service).toBeTruthy();
+  /**
+   * Initializes Test Bed and test service
+   */
+  beforeEach(() => {
+    service = TestBed.inject(ShoppinglistEditService);
   });
 
+
   describe('addToShoppingList Tests', () => {
-    /**
-    * Mock of sortedList, used by several functions in item-list.service.ts
-    */
+  /**
+  * Mock of sortedList, used by several functions in item-list.service.ts
+  */
     const mockSortedList = [
       {
         isComplete: false,
@@ -58,9 +69,9 @@ describe('ShoppinglistEditService', () => {
       service.sortedList=mockSortedList;
     });
     /**
-    * Tests that addToShoppingList doesn't do anything when it's passed empty strings and that
-    * @function updateDocument and @function consolidateQuantity are not called
-    */
+  * Tests that addToShoppingList doesn't do anything when it's passed empty strings and that
+  * @function updateDocument and @function consolidateQuantity are not called
+  */
     it('addToShoppingList should do nothing when class variables are empty', async () => {
       expect(service.sortedList).toEqual(mockSortedList);
       const proposedIngredient='';
@@ -77,9 +88,9 @@ describe('ShoppinglistEditService', () => {
       expect(service.sortedList).toEqual(mockSortedList);
     });
     /**
-    * Tests that addToShoppingList adds an item to the list when it should and also that
-    * @function updateDocument and @function consolidateQuantity are called
-    */
+  * Tests that addToShoppingList adds an item to the list when it should and also that
+  * @function updateDocument and @function consolidateQuantity are called
+  */
     it('addToShoppingList should add an item to the list', async () => {
       // initializing an item to test mocks to compare
       const proposedIngredient='Peaches';
@@ -159,9 +170,9 @@ describe('ShoppinglistEditService', () => {
       expect(service.sortedList).toEqual(updatedList);
     });
     /**
-    * Tests that addToShoppingList adds doesn't add an item, but does consolidate it successfuly
-    * @function updateDocument and @function consolidateQuantity are called
-    */
+  * Tests that addToShoppingList adds doesn't add an item, but does consolidate it successfuly
+  * @function updateDocument and @function consolidateQuantity are called
+  */
     it('addToShoppingList should not add an item to the list, but should update it', async () => {
       // initializing an item to test mocks to compare
       const proposedIngredient ='Apples';
