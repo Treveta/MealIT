@@ -516,7 +516,7 @@ describe('ItemListComponent', () => {
     });
   });
 
-  describe('completionAll tests', () => {
+  describe('completionAll and storage tests', () => {
     /**
      * Tests that all items on a list are set to complete
      */
@@ -562,6 +562,60 @@ describe('ItemListComponent', () => {
         expect(component.sortedList[i].isComplete).toEqual(true);
       }
       // test that the updateDocument function has been called
+      expect(component.updateDocument).toHaveBeenCalled();
+    });
+
+    /**
+    * Tests that screenWidth gets initialized
+    */
+    it(`Send complete items to food storage`, () => {
+      // set test item list
+      const itemList = [
+        {
+          isComplete: true,
+          itemName: 'Apples',
+          quantity: 5,
+          unit: 'oz',
+        },
+        {
+          isComplete: true,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+        },
+        {
+          isComplete: true,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+        },
+        {
+          isComplete: true,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+        },
+      ];
+      // set the sortedlist to the item list
+      component.sortedList = itemList;
+      // initalize the sortedStorageList
+      component.sortedStorageList = [];
+
+      // set the spys
+      spyOn(component.sortedStorageList, 'push');
+      spyOn(component.sortedList, 'splice');
+      spyOn(component, 'updateStorageDocument');
+      spyOn(component, 'updateDocument');
+
+      // call the function
+      component.toStorage();
+
+      // test the functions are called
+      for (let i = 0; i < component.sortedList.length; i++) {
+        expect(component.sortedStorageList.push).toHaveBeenCalled();
+        expect(component.sortedList.splice).toHaveBeenCalled();
+      }
+      expect(component.updateStorageDocument).toHaveBeenCalled();
       expect(component.updateDocument).toHaveBeenCalled();
     });
   });
