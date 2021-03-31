@@ -262,54 +262,9 @@ describe('ItemListComponent', () => {
       expect(itemt.isComplete).toEqual(true);
       expect(component.updateDocument).toHaveBeenCalledWith(docName, data);
     });
-    /**
-     * Tests that all items on a list are set to complete
-     */
-    it(`set all items to complete`, () => {
-      // Test item list
-      const itemList = [
-        {
-          isComplete: false,
-          itemName: 'Apples',
-          quantity: 5,
-          unit: 'oz',
-        },
-        {
-          isComplete: false,
-          itemName: 'Blueberry',
-          quantity: 5,
-          unit: 'lb',
-        },
-        {
-          isComplete: false,
-          itemName: 'Steak',
-          quantity: 2,
-          unit: 'ct',
-        },
-        {
-          isComplete: false,
-          itemName: 'ApplesbutBetter',
-          quantity: 4,
-          unit: 'oz',
-        },
-      ];
-      // set the sortedlist to the item list
-      component.sortedList = itemList;
+  });
 
-      // spy on the update document. Assume it will succeed.
-      spyOn(component, 'updateDocument');
-
-      // run the function
-      component.completionAll();
-
-      // test for each item in the sorted list that the items have all been set to true
-      for (let i = 0; i < component.sortedList.length; i++) {
-        expect(component.sortedList[i].isComplete).toEqual(true);
-      }
-      // test that the updateDocument function has been called
-      expect(component.updateDocument).toHaveBeenCalled();
-    });
-
+  describe('completionAll and storage tests', () => {
     /**
      * Tests that all items on a list are set to complete
      */
