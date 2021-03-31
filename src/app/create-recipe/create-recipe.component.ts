@@ -125,7 +125,7 @@ export class CreateRecipeComponent {
           } else {
             this.Ingredients.push({
               ingredientName: this.newIngredient,
-              amount: amount,
+              quantity: amount,
               unit: this.newUnit,
             });
             // this.amount.push(amount);

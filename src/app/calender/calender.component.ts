@@ -153,6 +153,7 @@ export class CalenderComponent implements OnInit {
    * A promise that allows the page time to load data before displaying information to the user
    */
   pageLoaded: Promise<boolean>;
+  recipeLastRemoved: any;
 
   /**
    * The constructor for the modal service
@@ -330,6 +331,10 @@ export class CalenderComponent implements OnInit {
          *  this.service.addToItemList(ingredient.name, ...)
          * })
          */
+        // console.log(result.ingredients);
+        result.ingredients.forEach((ingredient) => {
+          this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
+        });
       }
     });
   }
@@ -346,20 +351,22 @@ export class CalenderComponent implements OnInit {
       for (let i = 0; i < mealPlanWeeks.length; i++) {
         // Sets the partial data to the preexisting data from the snapshot
         const partialData = mealPlanWeeks[i];
-        // Iterates over the days in the mealPlan's days array
+        // Checks to make sure the meal plan being edited matches the one the user requested to edit
         if (partialData.label == toEditLabel) {
+          // Iterates over the days in the mealPlan's days array
           for (let j = 0; j < partialData.days.length; j++) {
-          // checks if the date the user is trying to set equals the date in the days array
+            // checks if the date the user is trying to edit equals the date in the days array
             if (partialData.days[j].date.toDate().getTime() === this.dateToSet.toDate().getTime()) {
-            // If the dates matched it checks whether the mealType was breakfast lunch or dinner
+              // If the dates matched it checks whether the mealType was breakfast lunch or dinner
               if (this.mealTypeToSet == 'breakfast') {
-                partialData.days[j].breakfast.splice(index, 1);
+                // Removes the recipe from the array at the matching index
+                this.recipeLastRemoved = partialData.days[j].breakfast.splice(index, 1);
               }
               if (this.mealTypeToSet == 'lunch') {
-                partialData.days[j].lunch.splice(index, 1);
+                this.recipeLastRemoved = partialData.days[j].lunch.splice(index, 1);
               }
               if (this.mealTypeToSet == 'dinner') {
-                partialData.days[j].dinner.splice(index, 1);
+                this.recipeLastRemoved = partialData.days[j].dinner.splice(index, 1);
               }
             }
           }
@@ -411,7 +418,7 @@ export class CalenderComponent implements OnInit {
               // Sets a component variable with the partialData, this can then be later retrieved or used for testing
               this.partialDataLastSet = partialData;
             }
-            // Ira: possilbly where to call AddToItemList?
+            // Ira: possilbly where to call AddToShoppingList?
             // this.shopListService.addToShoppingList('Apple', 1, 'oz'); //This Works! But unless you want to be spammed with Apples everytime you add to the meal plan, leave commented
           }
         }

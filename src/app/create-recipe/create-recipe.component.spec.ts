@@ -149,6 +149,7 @@ describe('CreateRecipeComponent', () => {
     spyOn(component, 'docAndUpdate');
     spyOn(component, 'setLocalStorage');
     spyOn(component, 'addDocumentRC');
+    spyOn(component, 'searchUpdate');
 
     // Run the async functions
     await component.submitRecipe();
@@ -156,6 +157,7 @@ describe('CreateRecipeComponent', () => {
     // Check the results
     expect(component.docAndUpdate).toHaveBeenCalled();
     expect(component.setLocalStorage).toHaveBeenCalled();
+    expect(component.searchUpdate).toHaveBeenCalled();
     expect(component.Ingredients).toEqual([]);
     expect(component.amount).toEqual([]);
     expect(component.units).toEqual([]);

@@ -1,0 +1,23 @@
+Sprint 3
+Scrum 3 (Friday)
+
+Casey
+  Did: Got open recipe dialgoude set up
+  Plans to Do: get correct information. complete open recipe dialog for Monday.
+  Obstacles: not now.
+
+Daymion
+  Did: Added the button and tested it. it is calling completion all function.
+  Plans to Do: getting food storage to display stuff.
+  Obstacles: HTML. Can't add things to item list.
+
+Ira
+  Did: Can add to item list from calendar component. Successfully service-ified item-list component.
+  Plans to Do: automatically import ingredients from added meals
+    refactor item list to use new service functions
+  Obstacles: No obstacles.
+
+Derek
+  Did: Got deletion working. there's an "x" button next to meals on the meal plan for delete
+  Plans to Do: ask for a deletion confirmation? undo button? commenting and testing.
+  Obstacles: None.

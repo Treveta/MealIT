@@ -1,0 +1,34 @@
+Sprint 3
+Scrum 5 (Wednesday, Submitted as Scrum 4 on Canvas)
+
+Casey
+  Did: Nothing. Personal reasons.
+  Plans to Do: get correct information. complete open recipe dialog for Monday.
+  Obstacles: not now.
+
+Daymion
+  Did: Created a toStorage function but is unable to save things to the foodStorageList
+  Plans to Do: testing, peer review. displaying foodStorage
+  Obstacles: Bug in HTML. removes items before it sends things to foodStorageList. unable to save things to the foodStorageList
+
+Ira
+  Did:
+    Massive upheaval of item-list-component.spec.ts testing, migrated several tests to the service, changed values acccordingly.
+      Deleted consolidation tests from item list spec as they are now being done in the service.
+    AddToItemList calls the service for most of its things, but the tests still exists since item list component was built on 
+    class variables.
+    Added testing of the actual user story task inside of the openDialog testing on Calendar component.
+    General cleanup: fixing and updating faulty JSDocs on tests, moving its in the item list spec file into describes.
+  Plans to Do:
+    testing a serice and testing calls to a service is a bit unknwon, though seeing openDialog's example help some. 
+    tests or testing itself likely would fail. 
+  Obstacles:
+    Testing services
+      shoppinglistEditService tests aren't being run at all?
+      How to actually set a spy on a service? (learned something from openDialog)
+      Numerical analysis Exam is Friday, will probably not get final user story of warning dialog done before end of sprint.
+
+Derek
+  Did: Commented and tested stuff from last week. those two user stories are ready for peer review.
+  Plans to Do: moving on to meal plans respond to any day you're in
+  Obstacles: None.
