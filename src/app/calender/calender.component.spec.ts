@@ -19,6 +19,7 @@ import firebase from 'firebase';
 import {of} from 'rxjs';
 import {mealPlanWeek} from './mealPlan.model';
 import {By} from '@angular/platform-browser';
+import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
 
 
 describe('CalenderComponent', () => {
@@ -77,6 +78,8 @@ describe('CalenderComponent', () => {
       }),
 
     });
+    const shopListStub = () => ({addToShoppingList: (proposedIngredient, proposedQuantity, proposedUnit) => ({})});
+
 
     TestBed.configureTestingModule({
 
@@ -103,6 +106,8 @@ describe('CalenderComponent', () => {
         {provide: MatDialog, useFactory: matDialogStub},
 
         {provide: AngularFirestore, useFactory: angularFirestoreStub},
+
+        {provide: ShoppinglistEditService, useFactory: shopListStub},
 
       ],
 
@@ -153,9 +158,15 @@ describe('CalenderComponent', () => {
           MatDialog,
 
       );
+      const shopListStub: ShoppinglistEditService =fixture.debugElement.injector.get(
+
+          ShoppinglistEditService,
+
+      );
       // Spys for the functions called in openDialog
       spyOn(component, 'setRecipeInPlan').and.callThrough();
       spyOn(matDialogStub, 'open').and.callThrough();
+      spyOn(shopListStub, 'addToShoppingList').and.callThrough();
 
       // Runs the function
       component.openDialog();
@@ -163,6 +174,8 @@ describe('CalenderComponent', () => {
       expect(component.setRecipeInPlan).toHaveBeenCalled();
       // Expects the dialog to have been opened
       expect(matDialogStub.open).toHaveBeenCalled();
+      // Expects addToShoppingList to have been called
+      expect(shopListStub.addToShoppingList).toHaveBeenCalled();
     });
   });
 

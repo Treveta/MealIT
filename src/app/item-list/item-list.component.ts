@@ -13,6 +13,8 @@ import {
   supportsPassiveEventListeners,
   supportsScrollBehavior,
 } from '@angular/cdk/platform';
+import {storageList} from 'app/models/foodStorage.model';
+import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
 
 /** @interface
  * @name Item
@@ -61,6 +63,9 @@ export class ItemListComponent implements OnDestroy, OnInit {
   supportedInputTypes = Array.from(getSupportedInputTypes()).join(', ');
   supportsPassiveEventListeners = supportsPassiveEventListeners();
   supportsScrollBehavior = supportsScrollBehavior();
+  storageCollection: AngularFirestoreCollection<any>;
+  listStorageItems$: Observable<any[]>;
+  sortedStorageList: any[];
   // sets up the form groups for the checkboxes
 
   /** @constructor
@@ -73,6 +78,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
         private authService: AuthService,
         public platform: Platform,
         public afs: AngularFirestore,
+        public shopList: ShoppinglistEditService,
   ) {
     this.form = this.fb.group({
       checkArray: this.fb.array([]),
@@ -80,6 +86,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     authService.getUid().then((uid) => {
       this.userInfo = uid;
+      this.storageCollection = this.afs.collection<storageList>('users/' + this.userInfo + '/storageList');
       this.shoppingCollection = this.afs.collection<shoppingList>('users/' + this.userInfo + '/shoppingList');
       this.listItems$ = this.shoppingCollection.valueChanges(); // Change to local pull similar to search-recipes, relies on listRecipes style function
       this.listItems().then((list) => {
@@ -88,6 +95,15 @@ export class ItemListComponent implements OnDestroy, OnInit {
           this.sortedList = [];
         } else {
           this.sortedList = list.Items;
+        }
+      });
+      this.listStorageItems$ = this.storageCollection.valueChanges();
+      this.listStorageItems().then((list) => {
+        if (!list) {
+          this.createStorageDocument();
+          this.sortedStorageList = [];
+        } else {
+          this.sortedStorageList = list.Items;
         }
       });
     });
@@ -104,6 +120,13 @@ export class ItemListComponent implements OnDestroy, OnInit {
    */
   createDocument():void {
     this.shoppingCollection.doc('List').set({Items: []});
+  }
+
+  /**
+   * @function createDocument
+   */
+  createStorageDocument():void {
+    this.storageCollection.doc('List').set({Items: []});
   }
 
   /** @function
@@ -197,30 +220,11 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * it then pushes that constant to the list and updates the collection
      */
     async addToItemList() {
-      // if the item name is blank, ignore all this
-      if (this.newItem === '') {
-      } else {
-        // construct a proposed item from class variables
-        const addedItem = {
-          isComplete: false,
-          itemName: this.newItem,
-          quantity: this.newQuantity,
-          unit: this.newUnit,
-        };
-        // run consolidateQuantity on the proposed item, and if false add it to the list and reset the class variables
-        if (this.consolidateQuantity(addedItem)===false) {
-          this.sortedList.push(addedItem);
-          this.updateDocument('List', {Items: this.sortedList});
-          this.newItem = '';
-          this.newQuantity = '';
-          this.newUnit = '';
-        } else {
-          // else, since consolidateQuantity has found a match and done its thing, just reset the class variables afterwards
-          this.newItem = '';
-          this.newQuantity = '';
-          this.newUnit = '';
-        }
-      }
+      this.shopList.addToShoppingList(this.newItem, this.newQuantity, this.newUnit);
+      this.sortedList = this.shopList.sortedList;
+      this.newItem = '';
+      this.newQuantity = '';
+      this.newUnit = '';
     }
 
     /** @function
@@ -300,6 +304,33 @@ export class ItemListComponent implements OnDestroy, OnInit {
       this.updateDocument('List', {Items: this.sortedList});
     }
 
+    /**
+     * @name toStorage
+     * @description Send completed items from sorted list to the storage list in the database, then update.
+     */
+    toStorage(): void {
+      for (let i = 0; i < this.sortedList.length; i++) {
+        if (this.sortedList[i].isComplete == true) {
+          // Send information of completed item to storage list in the database
+          this.sortedStorageList.push(this.sortedList[i]);
+          // Remove the item from the sorted list
+          this.sortedList.splice(i, 1);
+        }
+      }
+      this.updateStorageDocument('List', {Items: this.sortedStorageList});
+      this.updateDocument('List', {Items: this.sortedList});
+    }
+
+    /** @function
+     * @name updateStorageDocument
+     * @param {string} docName name of the document to update
+     * @param {any} data the data to update the document with
+     * @description helper function. API call to update the list.
+     */
+    updateStorageDocument(docName: string, data):void {
+      this.storageCollection.doc(docName).update(data);
+    }
+
     /** @function
      * @name updateDocument
      * @param {string} docName name of the document to update
@@ -308,61 +339,6 @@ export class ItemListComponent implements OnDestroy, OnInit {
      */
     updateDocument(docName: string, data):void {
       this.shoppingCollection.doc(docName).update(data);
-    }
-    // Below are three functions for item consolidation: 2 sub-helper functions, and 1 large helper function of addToItemList
-    /** @function
-     * @name sumQuantity
-     * @param {any} itemExist the item whose quantity will be updated with the quantity value from @param itemProposed
-     * @param {any} itemProposed the item proposed to be added which will have its quantity used to update @param itemExist
-     * @description sumQuantity combines two item's quantity. param names are for clarity, but this can technically be used between any two items
-     * this is a helper function for @function compareNameUnit
-     */
-    sumQuantity(itemExist, itemProposed): void {
-      itemExist.quantity+=itemProposed.quantity;
-    }
-
-    /** @function
-     * @name compareNameUnit
-     * @param {any} itemExist the item that exists in the list to have its name and units compared
-     * @param {any} itemProposed the item proposed to be added which will have its name and unit compared to @param itemExist
-     * @return {boolean} returns true if there is a match and false if not
-     * @description compareNameUnit will test the name and unit values of two items and call @function sumQuantity
-     * on the items if both fields are the same in each item
-     * this is a helper function for consolidateQuantity
-     */
-    compareNameUnit(itemExist, itemProposed): boolean {
-      if (itemExist.itemName.trim().toLowerCase()===itemProposed.itemName.trim().toLowerCase()&&itemExist.unit===itemProposed.unit) {
-        this.sumQuantity(itemExist, itemProposed);
-        return true;
-      } else return false;
-    }
-
-    /** @function
-     * @name consolidateQuantity
-     * @param {any} itemProposed the item proposed to be added
-     * @return {boolean} true if a match was found and the functions run. false if no match was found
-     * @description consolidateQuantity is the function that is called whenever a new item is added to the shopping list
-     * It looks through the existing shopping list and calls @function compareNameUnit on every item in the list.
-     * (If @function compareNameUnit finds an item that matches, it calls @function sumQuantity that performs the adding of quantity values
-     * in which case, @param itemProposed is NOT added to the list and @function consolidateQuantity returns true, as it has just been consolidated)
-     * after finding a match and calling the appropriate functions,  @function updateDocument is called
-     * if no match is found, proceed with adding the item as usual and return false.
-     * This function is called by @function addToItemList
-     * @summary consolidateQuantity takes a proposed item and checks the shopping list for a match. upon finding one, the quantities are summed,
-     * the item is not added ot the shopping list, the list is updated, and consolidateQuantity returns true.
-     *  If no match is found, the item gets added to the list as normal and consolidateQuantity returns false.
-     */
-    consolidateQuantity(itemProposed): boolean {
-      let consolidated: boolean;
-      const n = this.sortedList.length;
-      for (let i =0; i<n; i++) {
-        consolidated = this.compareNameUnit(this.sortedList[i], itemProposed);
-        if (consolidated===true) {
-          this.updateDocument('List', {Items: this.sortedList});
-          return true;
-        }
-      }
-      return false;
     }
     // these functions are all that is needed to show and hide a modal view
 
@@ -403,6 +379,25 @@ export class ItemListComponent implements OnDestroy, OnInit {
         console.log('Error getting documents', err);
       }
     }
+
+    /** @function
+     * @async
+     * @name listStorageItems
+     * @constant {Promise} snapshot a constant that will contain a promise for list doc from shoppingCollection
+     * @return {Object} data inside the document promised in snapshot
+     * @description listItems tries to pull the list from shoppingcollection and return that data if it suceeds
+     * if it fails, it will send an error message to the console
+     */
+    async listStorageItems() {
+      try {
+        const snapshot = await this.storageCollection.doc('List')
+            .get().toPromise();
+        return snapshot.data();
+      } catch (err) {
+        console.log('Error getting documents', err);
+      }
+    }
+
     /** @function
      * @name drop
      * @param {CdkDragDrop<string[]>} event an interface defined in @angular\cdk\drag-drop\drag-events.d.ts for use in the drag and drop functionality

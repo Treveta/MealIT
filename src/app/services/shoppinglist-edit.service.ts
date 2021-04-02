@@ -47,6 +47,10 @@ export class ShoppinglistEditService {
    * Then calls consolidate quantity with negative quantity
    */
 
+  /** @function
+    * @name printANumber
+    * @description merely exists to test connectivity to a component.
+    */
   printANumber() {
     console.log(6);
   }
