@@ -7,6 +7,7 @@ import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from './mealPlan.model';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
+import {DisplayRecipesComponent} from 'app/display-recipes/display-recipes.component';
 
 
 @Component({
@@ -568,5 +569,20 @@ export class CalenderComponent implements OnInit {
     } catch (err) {
       console.log('Error getting documents', err);
     }
+  }
+
+  /**
+   * A function to open material dialog
+   * @param {any} uid
+   */
+  openRecipeDialog(uid) {
+    console.log(uid);
+    // Creates a reference to the dialog and declares the component to open and its options
+    // eslint-disable-next-line no-unused-vars
+    const dialogRef = this.dialog.open(DisplayRecipesComponent, {
+      width: '25%',
+      height: '50%',
+      data: {uid: uid},
+    });
   }
 }
