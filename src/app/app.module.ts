@@ -33,6 +33,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {AngularFireAnalyticsModule} from '@angular/fire/analytics';
 import {PlatformModule} from '@angular/cdk/platform';
+import {DisplayRecipesComponent} from './display-recipes/display-recipes.component';
 
 const config = {
   apiKey: environment.apiKey,
@@ -52,6 +53,7 @@ const config = {
     UserProfileComponent,
     DatabaseHelperComponent,
     SearchRecipesComponent,
+    DisplayRecipesComponent,
   ],
   imports: [
     BrowserModule,
@@ -85,6 +87,7 @@ const config = {
   ],
   entryComponents: [
     SearchRecipesComponent,
+    DisplayRecipesComponent,
   ],
   providers: [AuthGuard,
     {provide: MAT_DIALOG_DATA, useValue: {}},
