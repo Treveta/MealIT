@@ -1,5 +1,4 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {DisplayRecipesComponent} from './display-recipes.component';
 
 describe('DisplayRecipesComponent', () => {
@@ -19,7 +18,10 @@ describe('DisplayRecipesComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  /**
+   * Checks the component works
+   */
+  it('can load instance', () => {
     expect(component).toBeTruthy();
   });
 });

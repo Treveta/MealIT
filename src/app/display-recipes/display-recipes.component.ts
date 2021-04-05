@@ -14,7 +14,7 @@ import {AuthService} from '../services/auth.service';
 
 })
 /**
- * a
+ * Component that displays the information of a recipe
  */
 export class DisplayRecipesComponent implements OnInit {
   @Input()
@@ -24,16 +24,15 @@ export class DisplayRecipesComponent implements OnInit {
   fetchedRecipe: any;
   displayRecipe: any;
   pageLoaded: Promise<boolean>;
-  // eslint-disable-next-line valid-jsdoc
   /**
-   * a
+   * Creates the display component
    */
   constructor(@Inject(MAT_DIALOG_DATA) public data: {uid: string}, private afs: AngularFirestore, public auth: AuthService) {
 
   }
 
   /**
-   * a
+   * Fetches the information of the recipe that was selected
    */
   ngOnInit(): void {
     this.auth.getUid().then((uid) => {
