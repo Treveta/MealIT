@@ -2,14 +2,14 @@ Sprint 3
 Scrum 5 (Wednesday, Submitted as Scrum 4 on Canvas)
 
 Casey
-  Did: Nothing. Personal reasons.
-  Plans to Do: get correct information. complete open recipe dialog for Monday.
+  Did: Replaced calendar component uid with clickable button that opens recipe dialog.
+  Plans to Do: actually getting the information to display.
   Obstacles: not now.
 
 Daymion
-  Did: Created a toStorage function but is unable to save things to the foodStorageList
-  Plans to Do: testing, peer review. displaying foodStorage
-  Obstacles: Bug in HTML. removes items before it sends things to foodStorageList. unable to save things to the foodStorageList
+  Did: JSDocs and tested function for moving things to food storage. Came up with idea for Reserved List.
+  Plans to Do: cleanup on foodStorage?
+  Obstacles: none.
 
 Ira
   Did:
@@ -20,15 +20,14 @@ Ira
     Added testing of the actual user story task inside of the openDialog testing on Calendar component.
     General cleanup: fixing and updating faulty JSDocs on tests, moving its in the item list spec file into describes.
   Plans to Do:
-    testing a serice and testing calls to a service is a bit unknwon, though seeing openDialog's example help some. 
+    testing a service and testing calls to a service is a bit unknwon, though seeing openDialog's example help some. 
     tests or testing itself likely would fail. 
   Obstacles:
     Testing services
-      shoppinglistEditService tests aren't being run at all?
       How to actually set a spy on a service? (learned something from openDialog)
       Numerical analysis Exam is Friday, will probably not get final user story of warning dialog done before end of sprint.
 
 Derek
-  Did: Commented and tested stuff from last week. those two user stories are ready for peer review.
-  Plans to Do: moving on to meal plans respond to any day you're in
-  Obstacles: None.
+  Did: not a ton. General cleanup of tests and documentation.
+  Plans to Do: moving on to meal plans respond to any day you're in.
+  Obstacles: Work.

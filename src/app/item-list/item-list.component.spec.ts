@@ -50,6 +50,13 @@ describe('ItemListComponent', () => {
       unit: 'oz',
     },
   ];
+
+  const mockSortedListProvider = [
+    ({isComplete: false, itemName: 'Apples', quantity: 3, unit: 'oz'}),
+    ({isComplete: false, itemName: 'Blueberry', quantity: 5, unit: 'lb'}),
+    ({isComplete: false, itemName: 'Steak', quantity: 2, unit: 'ct'}),
+    ({isComplete: false, itemName: 'ApplesbutBetter', quantity: 4, unit: 'oz'}),
+  ];
   let debugCompletionCheck;
   let debugOnChangeCheck;
 
@@ -396,20 +403,18 @@ describe('ItemListComponent', () => {
 
     beforeEach(() => {
       component.sortedList=mockSortedList;
+      component.shopList.sortedList=mockSortedList;
       component.newItem='';
       component.newQuantity ='';
       component.newUnit = '';
     });
     /**
-    * Tests that addToItemList doesn't do anything when the class variables are empty
+    * Tests that addToItemList doesn't call addToShoppingList when the class variables are empty
     * @function updateDocument and @function consolidateQuantity are not called
     */
     it('addToItemList should do nothing when class variables are empty', async () => {
-      expect(component.sortedList).toEqual(mockSortedList);
-      // delcaring a spy to check if consolidateQuantity is called
-      await component.addToItemList();
-      // expect the list to equal the initial list and return false
-      expect(component.sortedList).toEqual(mockSortedList);
+      spyOn(component.shopList, 'addToShoppingList');
+      expect(component.shopList.addToShoppingList).not.toHaveBeenCalled();
     });
     /**
     * Tests that addToItemList adds an item to the list when it should
@@ -447,6 +452,7 @@ describe('ItemListComponent', () => {
         },
       ];
       component.sortedList=mockSortedList1;
+      component.shopList.sortedList=mockSortedList1;
       // initializing a mock updated list to compare to
       const updatedList = [
         {
@@ -480,10 +486,13 @@ describe('ItemListComponent', () => {
           unit: 'ct',
         },
       ];
+      // declaring a spy on addToShoppingList
+      spyOn(component.shopList, 'addToShoppingList');
       expect(component.sortedList).toEqual(mockSortedList1);
       await component.addToItemList();
       // expect the list to equal the updated list
       // console.log(component.sortedList);
+      expect(component.shopList.updateDocument).toHaveBeenCalled;
       expect(component.sortedList).toEqual(updatedList);
       // expecting the class variables to be reset to empty
       expect(component.newItem).toEqual('');
@@ -527,6 +536,7 @@ describe('ItemListComponent', () => {
         },
       ];
       component.sortedList=mockSortedList2;
+      component.shopList.sortedList=mockSortedList2;
       const updatedList = [
         {
           isComplete: false,
@@ -553,9 +563,12 @@ describe('ItemListComponent', () => {
           unit: 'oz',
         },
       ];
+      // spyOn(component, 'shopList.sortedList').andCallThrough();
       expect(component.sortedList).toEqual(mockSortedList2);
 
       await component.addToItemList();
+      // console.log(component.sortedList);
+      expect(component.shopList.updateDocument).toHaveBeenCalled;
       // expect the list to equal the updated list
       expect(component.sortedList).toEqual(updatedList);
       // expecting the class variables to be reset to empty
