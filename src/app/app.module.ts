@@ -30,6 +30,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatDialogModule, MatDialogRef, MAT_DIALOG_DATA, MAT_DIALOG_DEFAULT_OPTIONS} from '@angular/material/dialog';
 import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {AngularFireAnalyticsModule} from '@angular/fire/analytics';
 import {PlatformModule} from '@angular/cdk/platform';
@@ -79,6 +80,7 @@ const config = {
     MatCheckboxModule,
     MatDialogModule,
     MatToolbarModule,
+    MatSnackBarModule,
     DragDropModule,
     AngularFireAnalyticsModule,
     PlatformModule,
