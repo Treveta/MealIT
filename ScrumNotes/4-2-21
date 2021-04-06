@@ -1,0 +1,27 @@
+Sprint 3
+Scrum 6 (Friday)
+
+Casey
+  Did:
+    get onClick functionality working for the calendar page. it will display name ingredients quantity of recipes.
+    Got started working on Navbar
+  Plans to Do: JSDOC , continue on Navbar
+  Obstacles: none, math exam
+
+Daymion
+  Did: working on sequence diagram. 
+  Plans to Do: working on sequence diagram and cleanup on foodStorage.
+  Obstacles: none.
+
+Ira
+  Did: Not much, some exploring of testing errors in addToItemList
+  Plans to Do: 
+    All tests passing for Monday, peer review and story completion, more specifically, look at providers in item list spec
+    and the forEach error in openDialog
+  Obstacles: None, exam's over
+  
+
+Derek
+  Did: Got third user story done, needs peer review. MealPlan now updates properly? 
+  Plans to Do: confirm that that works. JSDocs and commenting done.
+  Obstacles: Work.

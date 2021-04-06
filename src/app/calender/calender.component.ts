@@ -8,6 +8,7 @@ import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from './mealPlan.model';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
+import {DisplayRecipesComponent} from 'app/display-recipes/display-recipes.component';
 
 
 @Component({
@@ -393,7 +394,19 @@ export class CalenderComponent implements OnInit {
   closeModal(id: string) {
     this.modalService.close(id);
   }
-
+  /**
+   * @function dialogCallEditService
+   * @param {any} result the subscribe. It is a map that contains 2 maps and an array of maps
+   * @description helper function to openDialog that just runs addToShoppingList on each ingredient from result.ingredient,
+   * if result.ingredients is defined, that is. This function is a pain to test so thats why it exists alone here.
+   */
+  dialogCallEditService(result) {
+    if (result.ingredients) {
+      result.ingredients.forEach((ingredient) => {
+        this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
+      });
+    }
+  }
   /**
    * Opens the dialog on click
    */
@@ -410,19 +423,12 @@ export class CalenderComponent implements OnInit {
       if (result) {
         // Sets the recipe in the plan
         this.setRecipeInPlan(result.recipeName, result.uid);
-        // FUNCTION TO ADD TO SHOPPING LIST HERE this.service.addToItemList(result.ingredients[i].name, ...)
-        /**
-         * result.ingredients.forEach((ingredient) => {
-         *  this.service.addToItemList(ingredient.name, ...)
-         * })
-         */
-        // console.log(result.ingredients);
-        result.ingredients.forEach((ingredient) => {
-          this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
-        });
+        // calls the helper function to actually call addToShoppingList on each element in the ingredients array
+        this.dialogCallEditService(result);
       }
     });
   }
+
 
   /**
    * Removes a recipe from the plan
@@ -677,5 +683,20 @@ export class CalenderComponent implements OnInit {
     } catch (err) {
       console.log('Error getting documents', err);
     }
+  }
+
+  /**
+   * A function to open material dialog
+   * @param {any} uid
+   */
+  openRecipeDialog(uid) {
+    console.log(uid);
+    // Creates a reference to the dialog and declares the component to open and its options
+    // eslint-disable-next-line no-unused-vars
+    const dialogRef = this.dialog.open(DisplayRecipesComponent, {
+      width: '25%',
+      height: '50%',
+      data: {uid: uid},
+    });
   }
 }
