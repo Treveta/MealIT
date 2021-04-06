@@ -309,7 +309,19 @@ export class CalenderComponent implements OnInit {
   closeModal(id: string) {
     this.modalService.close(id);
   }
-
+  /**
+   * @function dialogCallEditService
+   * @param {any} result the subscribe. It is a map that contains 2 maps and an array of maps
+   * @description helper function to openDialog that just runs addToShoppingList on each ingredient from result.ingredient,
+   * if result.ingredients is defined, that is. This function is a pain to test so thats why it exists alone here.
+   */
+  dialogCallEditService(result) {
+    if (result.ingredients) {
+      result.ingredients.forEach((ingredient) => {
+        this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
+      });
+    }
+  }
   /**
    * Opens the dialog on click
    */
@@ -326,19 +338,12 @@ export class CalenderComponent implements OnInit {
       if (result) {
         // Sets the recipe in the plan
         this.setRecipeInPlan(result.recipeName, result.uid);
-        // FUNCTION TO ADD TO SHOPPING LIST HERE this.service.addToItemList(result.ingredients[i].name, ...)
-        /**
-         * result.ingredients.forEach((ingredient) => {
-         *  this.service.addToItemList(ingredient.name, ...)
-         * })
-         */
-        // console.log(result.ingredients);
-        result.ingredients.forEach((ingredient) => {
-          this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
-        });
+        // calls the helper function to actually call addToShoppingList on each element in the ingredients array
+        this.dialogCallEditService(result);
       }
     });
   }
+
 
   /**
    * Removes a recipe from the plan

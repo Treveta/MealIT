@@ -158,25 +158,50 @@ describe('CalenderComponent', () => {
           MatDialog,
 
       );
-      const shopListStub: ShoppinglistEditService =fixture.debugElement.injector.get(
-
-          ShoppinglistEditService,
-
-      );
       // Spys for the functions called in openDialog
       spyOn(component, 'setRecipeInPlan').and.callThrough();
       spyOn(matDialogStub, 'open').and.callThrough();
-      spyOn(shopListStub, 'addToShoppingList').and.callThrough();
-
+      spyOn(component, 'dialogCallEditService');
       // Runs the function
       component.openDialog();
       // Expects setRecipeInPlan to have been called
       expect(component.setRecipeInPlan).toHaveBeenCalled();
       // Expects the dialog to have been opened
       expect(matDialogStub.open).toHaveBeenCalled();
-      // Expects addToShoppingList to have been called
-      expect(shopListStub.addToShoppingList).toHaveBeenCalled();
+      expect(component.dialogCallEditService).toHaveBeenCalled();
     });
+    /* One day, we may learn how to use this in a test. Today was not that day.
+    it('calls addToShoppingList when result has information', () => {
+      // Spys for the functions called in openDialog
+      spyOn(component, 'setRecipeInPlan').and.callThrough();
+
+      const mockResultMap = {
+        recipeName: 'Apple Pie',
+        uid: 'XwQkXVEAF8gOeqN6dNrx',
+        ingredients: [{
+          ingredientName: 'Apple',
+          quantity: 2,
+          unit: 'lb',
+        },
+        {
+          ingredientName: 'Orange',
+          quantity: 1,
+          unit: 'ct',
+        }],
+      };
+
+      console.log(mockResultMap);
+      spyOn(component.dialog, 'open').and.returnValue({afterClosed: () => of({ mockResultMap})});
+
+      spyOn(component, 'dialogCallEditService');
+      // Runs the function
+      component.openDialog();
+      // Expects setRecipeInPlan to have been called
+      expect(component.setRecipeInPlan).toHaveBeenCalled();
+      // Expects dialogCallEditService to have been called
+      expect(component.dialogCallEditService).toHaveBeenCalled();
+    });
+    */
   });
 
   describe('Tests For getWeek Function', () => {

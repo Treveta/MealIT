@@ -78,7 +78,7 @@ describe('ItemListComponent', () => {
 
     const platformStub = () => ({});
 
-    const shopListStub = () => ({addToShoppingList: (proposedIngredient, proposedQuantity, proposedUnit) => ({})});
+    const shopListStub = () => ({addToShoppingList: () =>({})});
 
     TestBed.configureTestingModule({
 
@@ -419,164 +419,21 @@ describe('ItemListComponent', () => {
     /**
     * Tests that addToItemList adds an item to the list when it should
     */
-    it('addToItemList should add an item to the list', async () => {
+    it('addToItemList should call addToShoppingList when it has valid class variables', async () => {
     // initializing an item to test mocks to compare
       component.newItem='Peaches';
       component.newQuantity = 4;
       component.newUnit = 'ct';
-      // initializing a control array to test with and setting sortedList to it
-      const mockSortedList1 = [
-        {
-          isComplete: false,
-          itemName: 'Apples',
-          quantity: 3,
-          unit: 'oz',
-        },
-        {
-          isComplete: false,
-          itemName: 'Blueberry',
-          quantity: 5,
-          unit: 'lb',
-        },
-        {
-          isComplete: false,
-          itemName: 'Steak',
-          quantity: 2,
-          unit: 'ct',
-        },
-        {
-          isComplete: false,
-          itemName: 'ApplesbutBetter',
-          quantity: 4,
-          unit: 'oz',
-        },
-      ];
-      component.sortedList=mockSortedList1;
-      component.shopList.sortedList=mockSortedList1;
-      // initializing a mock updated list to compare to
-      const updatedList = [
-        {
-          isComplete: false,
-          itemName: 'Apples',
-          quantity: 3,
-          unit: 'oz',
-        },
-        {
-          isComplete: false,
-          itemName: 'Blueberry',
-          quantity: 5,
-          unit: 'lb',
-        },
-        {
-          isComplete: false,
-          itemName: 'Steak',
-          quantity: 2,
-          unit: 'ct',
-        },
-        {
-          isComplete: false,
-          itemName: 'ApplesbutBetter',
-          quantity: 4,
-          unit: 'oz',
-        },
-        {
-          isComplete: false,
-          itemName: 'Peaches',
-          quantity: 4,
-          unit: 'ct',
-        },
-      ];
       // declaring a spy on addToShoppingList
       spyOn(component.shopList, 'addToShoppingList');
-      expect(component.sortedList).toEqual(mockSortedList1);
       await component.addToItemList();
-      // expect the list to equal the updated list
       // console.log(component.sortedList);
-      expect(component.shopList.updateDocument).toHaveBeenCalled;
-      expect(component.sortedList).toEqual(updatedList);
+      expect(component.shopList.addToShoppingList).toHaveBeenCalledWith('Peaches', 4, 'ct');
       // expecting the class variables to be reset to empty
       expect(component.newItem).toEqual('');
       expect(component.newQuantity).toEqual('');
       expect(component.newUnit).toEqual('');
     });
-    /**
-    * Tests that addToItemList adds doesn't add an item, but does consolidate it successfuly
-    * @function updateDocument and @function consolidateQuantity are called
-    */
-    it('addToItemList should not add an item to the list, but should update it', async () => {
-    // initializing an item to test mocks to compare
-      component.newItem='Apples';
-      component.newQuantity = 2;
-      component.newUnit = 'oz';
-      // initializing a control array to test with and setting sortedList to it
-      const mockSortedList2 = [
-        {
-          isComplete: false,
-          itemName: 'Apples',
-          quantity: 3,
-          unit: 'oz',
-        },
-        {
-          isComplete: false,
-          itemName: 'Blueberry',
-          quantity: 5,
-          unit: 'lb',
-        },
-        {
-          isComplete: false,
-          itemName: 'Steak',
-          quantity: 2,
-          unit: 'ct',
-        },
-        {
-          isComplete: false,
-          itemName: 'ApplesbutBetter',
-          quantity: 4,
-          unit: 'oz',
-        },
-      ];
-      component.sortedList=mockSortedList2;
-      component.shopList.sortedList=mockSortedList2;
-      const updatedList = [
-        {
-          isComplete: false,
-          itemName: 'Apples',
-          quantity: 5,
-          unit: 'oz',
-        },
-        {
-          isComplete: false,
-          itemName: 'Blueberry',
-          quantity: 5,
-          unit: 'lb',
-        },
-        {
-          isComplete: false,
-          itemName: 'Steak',
-          quantity: 2,
-          unit: 'ct',
-        },
-        {
-          isComplete: false,
-          itemName: 'ApplesbutBetter',
-          quantity: 4,
-          unit: 'oz',
-        },
-      ];
-      // spyOn(component, 'shopList.sortedList').andCallThrough();
-      expect(component.sortedList).toEqual(mockSortedList2);
-
-      await component.addToItemList();
-      // console.log(component.sortedList);
-      expect(component.shopList.updateDocument).toHaveBeenCalled;
-      // expect the list to equal the updated list
-      expect(component.sortedList).toEqual(updatedList);
-      // expecting the class variables to be reset to empty
-      expect(component.newItem).toEqual('');
-      expect(component.newQuantity).toEqual('');
-      expect(component.newUnit).toEqual('');
-    });
-
 
     describe('item Removal Tests', () => {
     /**

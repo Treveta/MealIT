@@ -205,19 +205,12 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     ];
 
-    /** @function
+    /**
+     * @function
      * @async
      * @name addToItemList
-     * @constant addedItem a constant that contains the boolean isComplete as well as fields to accept the class variables
-     * itemName to store newItem, quantity to store newQuantity, and unit to store newUnit
-     * @description addToItemList is a void function that first tests if new item is empty.
-     * If it is not empty, it creates the constant addedItem that has 4 elements.
-     * isComplete is set to false, while itemName, quantity, and unit are all set to previously declared variables.
-     * Then, @function consolidateQuantity is run on @constant addedItem. if a match was found, stop. But if no match was found,
-     * addedItem gets pushed to the sortedList and update is called on the shoppingCollection.
-     * Finally, the class variables are reset to empty
-     * @summary addToItemList pulls information from class variables and packages it into a constant
-     * it then pushes that constant to the list and updates the collection
+     * @description addToItemList is a void function that calls the addToShoppingList
+     * sets the sortedList to the newly updated sortedList from the service, and resets the class variables to empty
      */
     async addToItemList() {
       this.shopList.addToShoppingList(this.newItem, this.newQuantity, this.newUnit);
@@ -282,7 +275,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
     allTrue = false;
     /**
      * @name completionAll
-     * @description Sets all sortedList isComplete that are false to true.
+     * @description Sets all sortedList isComplete that are false to true. If all items are completed, it will set all sortedList isComplete back to false
      * Then, it calls @function updateDocument, which updates the shoppingCollection, pushing the change to the database
      */
     completionAll(): void {
