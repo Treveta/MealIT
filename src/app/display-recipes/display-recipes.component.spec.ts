@@ -9,6 +9,9 @@ describe('DisplayRecipesComponent', () => {
   let component: DisplayRecipesComponent;
   let fixture: ComponentFixture<DisplayRecipesComponent>;
 
+  /**
+   * Initializes testing components
+   */
   beforeEach(() => {
     const angularFirestoreStub = () => ({
       collection: (arg) => ({}),
@@ -28,6 +31,9 @@ describe('DisplayRecipesComponent', () => {
     component = fixture.componentInstance;
   });
 
+  /**
+   * Tests the component loads
+   */
   it('can load instance', () => {
     expect(component).toBeTruthy();
   });
