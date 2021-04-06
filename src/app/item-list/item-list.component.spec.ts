@@ -475,7 +475,7 @@ describe('ItemListComponent', () => {
       /**
     * Tests that the material checkbox should call onCheckBoxChange upon change
     */
-      it('mat checkBox should call call completionToggle on change', async () => {
+      it('mat checkBox should call call onCheckBoxChange on change', async () => {
         spyOn(component, 'onCheckBoxChange');
         console.log(debugOnChangeCheck);
         const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
