@@ -36,14 +36,18 @@ export class DisplayRecipesComponent implements OnInit {
    */
   ngOnInit(): void {
     this.auth.getUid().then((uid) => {
+      // fetches user id
       this.userInfo = uid;
+      // fetches the recipe list of the user
       this.recipeListCollection = this.afs.collection('users/'+uid+'/recipeList');
+      // compares the user ids of the clicked recipe and user to match
       if (this.data.uid) {
         this.uid = this.data.uid;
       }
       this.fetchedRecipe = this.afs.doc('users/'+uid+'/recipeList/'+this.data.uid);
+      // displays the data of recipe
       this.displayRecipe = this.fetchedRecipe.valueChanges();
-      console.log(this.displayRecipe);
+      // loads the page
       this.pageLoaded = Promise.resolve(true);
     });
   }
