@@ -281,11 +281,25 @@ export class ItemListComponent implements OnDestroy, OnInit {
 
     allTrue = false;
     /**
+     * @name setAllTrue
+     * @description Determine if a list is all complete or not
+     */
+    setAllTrue(): void {
+      this.allTrue = true;
+      for (let i = 0; i < this.sortedList.length; i++) {
+        if (this.sortedList[i].isComplete == false) {
+          this.allTrue = false;
+        }
+      }
+    }
+
+    /**
      * @name completionAll
      * @description Sets all sortedList isComplete that are false to true.
      * Then, it calls @function updateDocument, which updates the shoppingCollection, pushing the change to the database
      */
     completionAll(): void {
+      this.setAllTrue();
       if (this.allTrue == false) {
         for (let i = 0; i < this.sortedList.length; i++) {
           if (this.sortedList[i].isComplete == false) {
@@ -315,6 +329,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
           this.sortedStorageList.push(this.sortedList[i]);
           // Remove the item from the sorted list
           this.sortedList.splice(i, 1);
+          i = 0;
         }
       }
       this.updateStorageDocument('List', {Items: this.sortedStorageList});
