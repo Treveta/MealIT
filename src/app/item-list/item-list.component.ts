@@ -302,12 +302,21 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * @description Send completed items from sorted list to the storage list in the database, then update.
      */
     toStorage(): void {
-      for (let i = 0; i < this.sortedList.length; i++) {
+      for (let i = this.sortedList.length - 1; i >= 0; i--) {
         if (this.sortedList[i].isComplete == true) {
           // Send information of completed item to storage list in the database
           this.sortedStorageList.push(this.sortedList[i]);
           // Remove the item from the sorted list
           this.sortedList.splice(i, 1);
+          i = this.sortedList.length - 1;
+        }
+      }
+      if (this.sortedList.length == 1) {
+        if (this.sortedList[0].isComplete == true) {
+          // Send information of completed item to storage list in the database
+          this.sortedStorageList.push(this.sortedList[0]);
+          // Remove the item from the sorted list
+          this.sortedList.splice(0, 1);
         }
       }
       this.updateStorageDocument('List', {Items: this.sortedStorageList});
