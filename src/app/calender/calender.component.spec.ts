@@ -292,7 +292,7 @@ describe('CalenderComponent', () => {
       return true;
     }
   }
-  fdescribe('Tests for updating the database', () => {
+  describe('Tests for updating the database', () => {
     /**
      * A set of dates in our components format, {string name of the week, the date in firebase timestampformat}
      */
