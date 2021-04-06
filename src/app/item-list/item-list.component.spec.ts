@@ -352,18 +352,15 @@ describe('ItemListComponent', () => {
 
       // set the spys
       spyOn(component.sortedStorageList, 'push');
-      spyOn(component.sortedList, 'splice');
+      spyOn(component.sortedList, 'splice').and.callThrough();
       spyOn(component, 'updateStorageDocument');
       spyOn(component, 'updateDocument');
-
+      const timesCalled = component.sortedList.length;
       // call the function
       component.toStorage();
-
       // test the functions are called
-      for (let i = 0; i < component.sortedList.length; i++) {
-        expect(component.sortedStorageList.push).toHaveBeenCalled();
-        expect(component.sortedList.splice).toHaveBeenCalled();
-      }
+      expect(component.sortedStorageList.push).toHaveBeenCalledTimes(timesCalled);
+      expect(component.sortedList.splice).toHaveBeenCalledTimes(timesCalled);
       expect(component.updateStorageDocument).toHaveBeenCalled();
       expect(component.updateDocument).toHaveBeenCalled();
     });
