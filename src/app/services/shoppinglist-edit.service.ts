@@ -94,7 +94,6 @@ export class ShoppinglistEditService {
   /** @function
      * @name consolidateQuantity
      * @param {any} itemProposed the item proposed to be added
-     * @param {any[]} listArray the array to call updateDocumeent with. For example, sortedList. //Currently not used
      * @return {boolean} true if a match was found and the functions run. false if no match was found
      * @description consolidateQuantity is the function that is called whenever a new item is added to the shopping list
      * It looks through the existing shopping list and calls @function compareNameUnit on every item in the list.
@@ -126,17 +125,15 @@ export class ShoppinglistEditService {
      * @param {any} proposedIngredient the name of the ingredient to be added or consolidated
      * @param {any} proposedQuantity the quantity of the ingredient to be added or consolidated
      * @param {any} proposedUnit the unit name of the ingredient to be added or consolidated
-     * @param {any[]} listArray the array to add the ingredient to. For example, sortedList. //Currently not used
      * @constant addedItem a constant that contains the boolean isComplete as well as fields to accept the class variables
      * itemName to store newItem, quantity to store newQuantity, and unit to store newUnit
-     * @description addToItemList is a void function that first tests if new item is empty.
+     * @description addToShoppingList is a void function that first tests if new item is empty.
      * If it is not empty, it creates the constant addedItem that has 4 elements.
-     * isComplete is set to false, while itemName, quantity, and unit are all set to previously declared variables.
+     * isComplete is set to false, while itemName, quantity, and unit are all set to the parameters.
      * Then, @function consolidateQuantity is run on @constant addedItem. if a match was found, stop. But if no match was found,
      * addedItem gets pushed to the sortedList and update is called on the shoppingCollection.
-     * Finally, the class variables are reset to empty
-     * @summary addToItemList takes info from the parameters and packages it into a constant.
-     * It then pushes that constant to the list and updates the collection.
+     * @summary addToShoppinhList takes info from the parameters and packages it into a constant.
+     * It then either pushes that constant to the list or updates the list before updating the list.
      */
   async addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit) {
     // if the item name is blank, ignore all this

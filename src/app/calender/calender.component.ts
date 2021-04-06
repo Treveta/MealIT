@@ -3,10 +3,12 @@ import {AuthService} from '../services/auth.service';
 import {ModalService} from '../modal-functionality';
 import {SearchRecipesComponent} from '../search-recipes/search-recipes.component';
 import {MatDialog} from '@angular/material/dialog';
+import {MatSnackBar} from '@angular/material/snack-bar';
 import {mealPlanWeek, mealPlanDay, mealPlanRecipe} from './mealPlan.model';
 import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
+import {DisplayRecipesComponent} from 'app/display-recipes/display-recipes.component';
 
 
 @Component({
@@ -161,7 +163,7 @@ export class CalenderComponent implements OnInit {
    * @param {SearchRecipesComponent} search
    * @param {AuthService} authService
    */
-  constructor(public shopListService: ShoppinglistEditService, public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
+  constructor(private snackBar: MatSnackBar, public shopListService: ShoppinglistEditService, public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -174,6 +176,7 @@ export class CalenderComponent implements OnInit {
         // Checks to ensure 3 documents are created, if not marks a boolean to display the Start Your Meal Plan Button
         if (docs.length == 3) {
           this.plansExist = true;
+          this.checkPlanDates(docs, new Date());
         }
         // Lets the html know that the data has loaded and the page can display
         this.pageLoaded = Promise.resolve(true);
@@ -185,6 +188,89 @@ export class CalenderComponent implements OnInit {
    */
   ngOnInit(): void {
 
+  }
+
+  /**
+   * Checks the plans dates and determines if remediation needs to occur to make new plans with up to date dates
+   * @param {Array} docs The array of mealPlan snapshots
+   * @param {Date} currentDay the currentDay
+   */
+  checkPlanDates(docs, currentDay) {
+    const orderedPlans = [{}, {}, {}];
+    docs.forEach((plan) => {
+      if (plan.label == 'previousWeek') {
+        orderedPlans[0] = plan;
+      }
+      if (plan.label == 'nextWeek') {
+        orderedPlans[2] = plan;
+      }
+      if (plan.label == 'currentWeek') {
+        orderedPlans[1] = plan;
+      }
+    });
+    docs.forEach((plan) => {
+      if (plan.label == 'currentWeek') {
+        const currentStartDay = plan.startDate.toDate();
+        const currentLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 6);
+        const currentNextWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 13);
+        const currentTwoWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 20);
+        console.log(currentStartDay);
+        console.log(currentLastDay);
+        console.log(currentNextWeekLastDay);
+        console.log(currentDay);
+        if (currentDay.getTime() < currentLastDay.getTime()) {
+          // Do nothing, the week is still correct
+          console.log('This shouldnt run');
+        }
+        if (currentDay.getTime() > currentLastDay.getTime() && currentDay.getTime() <= currentNextWeekLastDay.getTime()) {
+          // Shift Week Over by One
+          console.log('Shift Week by One');
+          console.log(orderedPlans);
+          this.shiftWeek(1, orderedPlans);
+        }
+        if (currentDay.getTime() > currentNextWeekLastDay.getTime() && currentDay.getTime() <= currentTwoWeekLastDay.getTime()) {
+          // Shift Week Over by Two
+          console.log('Shift Week by Two');
+          this.shiftWeek(2, orderedPlans);
+        }
+        if (currentDay.getTime() > currentTwoWeekLastDay.getTime()) {
+          console.log('Shift Week by Three');
+          this.shiftWeek(3, orderedPlans);
+        }
+      }
+    });
+  }
+
+  /**
+   * Remediates the dates in the meal plan and shifts the plans over based on the results of checkPlanDates
+   * @param {number} weeksToShift The number of weeks to shift the plan over by
+   * @param {Array} orderedPlans The array of mealPlan snapshots
+   */
+  async shiftWeek(weeksToShift, orderedPlans) {
+    if (weeksToShift == 1) {
+      const nextWeekFirstDay = orderedPlans[2].startDate.toDate();
+      const newNextFirstDay = new Date(nextWeekFirstDay.getFullYear(), nextWeekFirstDay.getMonth(), nextWeekFirstDay.getDate() + 7);
+      const nextWeekDates = this.getWeek(newNextFirstDay);
+      orderedPlans[1].label = 'previousWeek';
+      orderedPlans[2].label = 'currentWeek';
+      await this.updateDocInFireStore('previousWeek', orderedPlans[1]);
+      await this.updateDocInFireStore('currentWeek', orderedPlans[2]);
+      await this.addBlankPlan('nextWeek', nextWeekDates);
+    }
+    if (weeksToShift == 2) {
+      const nextWeekFirstDay = orderedPlans[2].startDate.toDate();
+      const newCurrentWeekFirstDay = new Date(nextWeekFirstDay.getFullYear(), nextWeekFirstDay.getMonth(), nextWeekFirstDay.getDate() + 7);
+      const newNextWeekFirstDay = new Date(nextWeekFirstDay.getFullYear(), nextWeekFirstDay.getMonth(), nextWeekFirstDay.getDate() + 14);
+      const currentWeekDays = this.getWeek(newCurrentWeekFirstDay);
+      const nextWeekDates = this.getWeek(newNextWeekFirstDay);
+      orderedPlans[2].label = 'previousWeek';
+      await this.updateDocInFireStore('previousWeek', orderedPlans[2]);
+      await this.addBlankPlan('currentWeek', currentWeekDays);
+      await this.addBlankPlan('nextWeek', nextWeekDates);
+    }
+    if (weeksToShift == 3) {
+      this.ensureMealPlansCreated();
+    }
   }
 
   /**
@@ -308,7 +394,19 @@ export class CalenderComponent implements OnInit {
   closeModal(id: string) {
     this.modalService.close(id);
   }
-
+  /**
+   * @function dialogCallEditService
+   * @param {any} result the subscribe. It is a map that contains 2 maps and an array of maps
+   * @description helper function to openDialog that just runs addToShoppingList on each ingredient from result.ingredient,
+   * if result.ingredients is defined, that is. This function is a pain to test so thats why it exists alone here.
+   */
+  dialogCallEditService(result) {
+    if (result.ingredients) {
+      result.ingredients.forEach((ingredient) => {
+        this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
+      });
+    }
+  }
   /**
    * Opens the dialog on click
    */
@@ -325,19 +423,12 @@ export class CalenderComponent implements OnInit {
       if (result) {
         // Sets the recipe in the plan
         this.setRecipeInPlan(result.recipeName, result.uid);
-        // FUNCTION TO ADD TO SHOPPING LIST HERE this.service.addToItemList(result.ingredients[i].name, ...)
-        /**
-         * result.ingredients.forEach((ingredient) => {
-         *  this.service.addToItemList(ingredient.name, ...)
-         * })
-         */
-        // console.log(result.ingredients);
-        result.ingredients.forEach((ingredient) => {
-          this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
-        });
+        // calls the helper function to actually call addToShoppingList on each element in the ingredients array
+        this.dialogCallEditService(result);
       }
     });
   }
+
 
   /**
    * Removes a recipe from the plan
@@ -345,6 +436,11 @@ export class CalenderComponent implements OnInit {
    * @param {string} toEditLabel the label of the currently viewed mealPlan
    */
   removeRecipeFromPlan(index, toEditLabel) {
+    this.recipeLastRemoved = {
+      recipe: {},
+      mealTypeToSet: this.mealTypeToSet,
+      dateToSet: this.dateToSet,
+    };
     // Gets a snapshot of the mealPlanData, includes all existing mealPlans as an array
     this.listData('users/'+this.userInfo+'/mealplan').then((mealPlanWeeks) => {
       // Iterates over the mealPlans
@@ -360,20 +456,39 @@ export class CalenderComponent implements OnInit {
               // If the dates matched it checks whether the mealType was breakfast lunch or dinner
               if (this.mealTypeToSet == 'breakfast') {
                 // Removes the recipe from the array at the matching index
-                this.recipeLastRemoved = partialData.days[j].breakfast.splice(index, 1);
+                this.recipeLastRemoved.recipe = partialData.days[j].breakfast.splice(index, 1);
               }
               if (this.mealTypeToSet == 'lunch') {
-                this.recipeLastRemoved = partialData.days[j].lunch.splice(index, 1);
+                this.recipeLastRemoved.recipe = partialData.days[j].lunch.splice(index, 1);
               }
               if (this.mealTypeToSet == 'dinner') {
-                this.recipeLastRemoved = partialData.days[j].dinner.splice(index, 1);
+                this.recipeLastRemoved.recipe = partialData.days[j].dinner.splice(index, 1);
               }
             }
           }
         }
         // Calls the update document helper function
+        this.openSnackBar('Recipe has been removed', 'Undo');
         this.updateDocInFireStore(mealPlanWeeks[i].label, partialData);
       }
+    });
+  }
+
+  /**
+   * Opens a snackBar, a little short term notification from the botton
+   * @param {string} message The main content of the snackBar
+   * @param {string} action The string for the action
+   */
+  openSnackBar(message: string, action: string) {
+    const snackBarRef = this.snackBar.open(message, action, {
+      duration: 2000,
+      panelClass: ['mat-app-background'],
+    });
+    snackBarRef.onAction().subscribe(() => {
+      this.dateToSet = this.recipeLastRemoved.dateToSet;
+      this.mealTypeToSet = this.recipeLastRemoved.mealTypeToSet;
+      console.log(this.recipeLastRemoved);
+      this.setRecipeInPlan(this.recipeLastRemoved.recipe[0].recipeName, this.recipeLastRemoved.recipe[0].uid);
     });
   }
 
@@ -568,5 +683,20 @@ export class CalenderComponent implements OnInit {
     } catch (err) {
       console.log('Error getting documents', err);
     }
+  }
+
+  /**
+   * A function to open material dialog
+   * @param {any} uid
+   */
+  openRecipeDialog(uid) {
+    console.log(uid);
+    // Creates a reference to the dialog and declares the component to open and its options
+    // eslint-disable-next-line no-unused-vars
+    const dialogRef = this.dialog.open(DisplayRecipesComponent, {
+      width: '25%',
+      height: '50%',
+      data: {uid: uid},
+    });
   }
 }

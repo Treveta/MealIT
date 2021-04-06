@@ -96,7 +96,7 @@ describe('CreateRecipeComponent', () => {
     component.addToList();
 
     // Checking the results
-    expect(component.Ingredients.push).toHaveBeenCalledWith({ingredientName: ingredient, amount: amount, unit: unit});
+    expect(component.Ingredients.push).toHaveBeenCalledWith({ingredientName: ingredient, quantity: amount, unit: unit});
     expect(component.newIngredient).toBe('');
     expect(component.newUnit).toBe('');
     expect(component.newAmount).toBe('');
