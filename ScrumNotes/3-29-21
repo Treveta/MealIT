@@ -1,0 +1,22 @@
+Sprint 3
+Scrum 4 (Monday, Submitted as Scrum 3 on Canvas)
+
+Casey
+  Did: Nothing. Personal reasons.
+  Plans to Do: get correct information. complete open recipe dialog for Monday.
+  Obstacles: not now.
+
+Daymion
+  Did: Created a toStorage function but is unable to save things to the foodStorageList
+  Plans to Do: testing, peer review. displaying foodStorage
+  Obstacles: Bug in HTML. removes items before it sends things to foodStorageList. unable to save things to the foodStorageList
+
+Ira
+  Did: Can add ingredients from recipes on the meal plan!, refactored item list with service functions
+  Plans to Do: a lot of retesting to do, as well as addressing this obstacle
+  Obstacles:recipe items don't have a quantity? or aren't recieving one? its not showing on show recipe nor in theshopping List (NaN)
+
+Derek
+  Did: Commented and tested stuff from last week. those two user stories are ready for peer review.
+  Plans to Do: moving on to meal plans respond to any day you're in
+  Obstacles: None.

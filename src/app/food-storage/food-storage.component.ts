@@ -1,6 +1,6 @@
 /* eslint-disable require-jsdoc */
 import {Component} from '@angular/core';
-import {FormBuilder, FormGroup, FormArray, FormControl} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {AuthService} from '../services/auth.service';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {Observable, Subscription} from 'rxjs';
@@ -25,6 +25,7 @@ export class FoodStorageComponent {
   listItems$: Observable<shoppingList[]>;
   public testSortedList: Array<any>;
   private subscription: Subscription;
+  sortedStorageList: any[];
 
   constructor(
     private authService: AuthService,
@@ -45,28 +46,35 @@ export class FoodStorageComponent {
       this.listItems().then((list) => {
         this.testSortedList = list.Items;
       });
+      this.listStorageItems().then((list) => {
+        if (!list) {
+          this.createStorageDocument();
+          this.sortedStorageList = [];
+        } else {
+          this.sortedStorageList = list.Items;
+        }
+      });
     });
   }
 
+  /**
+   * @function createDocument
+   */
+  createStorageDocument():void {
+    this.storageCollection.doc('List').set({Items: []});
+  }
+
+  /**
+   * Shows that the storage list is being edited
+   */
   storageListIsBeingEdited(): void {
     this.editStorageList = !this.editStorageList;
   }
 
-  onCheckBoxChange(event): void {
-    const checkArray: FormArray = this.form.get('checkArray') as FormArray;
-    if (event.target.checked) {
-      checkArray.push(new FormControl(event.target.value));
-    } else {
-      const i = 0;
-      checkArray.controls.forEach((uncheckedItem: FormControl) => {
-        if (uncheckedItem.value === event.target.value) {
-          checkArray.removeAt(i);
-          return;
-        }
-      });
-    }
-  }
-
+  /**
+   * Displays the items in the food storage list
+   * @return {snapshot} snapshot of the data
+   */
   async listItems() {
     try {
       const snapshot = await this.afs
@@ -83,11 +91,37 @@ export class FoodStorageComponent {
     this.afs.collection('items').doc('Test').update({Items: this.testSortedList});
   }
 
+  /**
+   * Opens a modal
+   * @param {string} id
+   */
   openModal(id: string): void {
     this.modalService.open(id);
   }
 
+  /**
+   * Closes a modal
+   * @param {string} id
+   */
   closeModal(id: string): void {
     this.modalService.close(id);
+  }
+
+  /** @function
+     * @async
+     * @name listStorageItems
+     * @constant {Promise} snapshot a constant that will contain a promise for list doc from shoppingCollection
+     * @return {Object} data inside the document promised in snapshot
+     * @description listItems tries to pull the list from shoppingcollection and return that data if it suceeds
+     * if it fails, it will send an error message to the console
+     */
+  async listStorageItems() {
+    try {
+      const snapshot = await this.storageCollection.doc('List')
+          .get().toPromise();
+      return snapshot.data();
+    } catch (err) {
+      console.log('Error getting documents', err);
+    }
   }
 }

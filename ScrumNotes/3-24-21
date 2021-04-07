@@ -1,0 +1,28 @@
+Sprint 3
+Scrum 2
+
+Casey
+  Did: 
+    Misunderstood task, didn't get as much done as would have liked. Dependant on Ira's import items task. Put that aside and began
+    working on the view recipe user story. 
+  Plans to Do: convert the dropdown into a modal to be imported into different aspects of the app. Angular Dialouge stuff.
+  Obstacles: Information -dialgouge Angular Material
+
+Daymion
+  Did: Tests pass for function made. Marks non complete items as complete.
+  Plans to Do: Testing functionality outside of formal testing.
+  Obstacles: HTML. Some time restraints.
+
+Ira
+  Did: Started work on importing items from meal plan
+  Plans to Do: 
+    figure out component interactions with inputs and outputs, get infrastructure 
+    set up to be able to import and add at least a single item from a component outside of item-list
+  Obstacles: inter component interaction was a much more involved task than I was imagining.
+
+Derek
+  Did: 
+    Fixed the addData. Changed from service to an embedded component. now it updates automatically again. 
+    Began work on getting recipe deletion working. issue now of view+1 which is weird.
+  Plans to Do: Figure out why the view isnt't working. Recipe Deletion Story.
+  Obstacles: Nothing

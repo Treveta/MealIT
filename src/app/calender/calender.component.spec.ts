@@ -19,6 +19,8 @@ import firebase from 'firebase';
 import {of} from 'rxjs';
 import {mealPlanWeek} from './mealPlan.model';
 import {By} from '@angular/platform-browser';
+import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 
 describe('CalenderComponent', () => {
@@ -40,8 +42,12 @@ describe('CalenderComponent', () => {
 
   let debugLoadNewButton;
 
+  let debugDeleteRecipeButton;
+
 
   beforeEach(() => {
+    const matSnackBarStub = () => ({});
+
     const authServiceStub = () => ({getUid: () => ({then: () => ({})})});
 
     const modalServiceStub = () => ({open: (id) => ({}), close: (id) => ({})});
@@ -75,6 +81,8 @@ describe('CalenderComponent', () => {
       }),
 
     });
+    const shopListStub = () => ({addToShoppingList: (proposedIngredient, proposedQuantity, proposedUnit) => ({})});
+
 
     TestBed.configureTestingModule({
 
@@ -85,6 +93,7 @@ describe('CalenderComponent', () => {
       declarations: [CalenderComponent],
 
       providers: [
+        {provide: MatSnackBar, useFactory: matSnackBarStub},
 
         {provide: AuthService, useFactory: authServiceStub},
 
@@ -101,6 +110,8 @@ describe('CalenderComponent', () => {
         {provide: MatDialog, useFactory: matDialogStub},
 
         {provide: AngularFirestore, useFactory: angularFirestoreStub},
+
+        {provide: ShoppinglistEditService, useFactory: shopListStub},
 
       ],
 
@@ -154,14 +165,47 @@ describe('CalenderComponent', () => {
       // Spys for the functions called in openDialog
       spyOn(component, 'setRecipeInPlan').and.callThrough();
       spyOn(matDialogStub, 'open').and.callThrough();
-
+      spyOn(component, 'dialogCallEditService');
       // Runs the function
       component.openDialog();
       // Expects setRecipeInPlan to have been called
       expect(component.setRecipeInPlan).toHaveBeenCalled();
       // Expects the dialog to have been opened
       expect(matDialogStub.open).toHaveBeenCalled();
+      expect(component.dialogCallEditService).toHaveBeenCalled();
     });
+    /* One day, we may learn how to use this in a test. Today was not that day.
+    it('calls addToShoppingList when result has information', () => {
+      // Spys for the functions called in openDialog
+      spyOn(component, 'setRecipeInPlan').and.callThrough();
+
+      const mockResultMap = {
+        recipeName: 'Apple Pie',
+        uid: 'XwQkXVEAF8gOeqN6dNrx',
+        ingredients: [{
+          ingredientName: 'Apple',
+          quantity: 2,
+          unit: 'lb',
+        },
+        {
+          ingredientName: 'Orange',
+          quantity: 1,
+          unit: 'ct',
+        }],
+      };
+
+      console.log(mockResultMap);
+      spyOn(component.dialog, 'open').and.returnValue({afterClosed: () => of({ mockResultMap})});
+
+      spyOn(component, 'dialogCallEditService');
+      // Runs the function
+      component.openDialog();
+      // Expects setRecipeInPlan to have been called
+      expect(component.setRecipeInPlan).toHaveBeenCalled();
+      // Expects dialogCallEditService to have been called
+      expect(component.dialogCallEditService).toHaveBeenCalled();
+    });
+    */
   });
 
   describe('Tests For getWeek Function', () => {
@@ -237,7 +281,17 @@ describe('CalenderComponent', () => {
       expect(week[6]).toEqual({weekDayName: weekDayName, date: expectedDate});
     });
   });
-
+  /**
+   * A custom equality checker for checking if two recipes are equal to each other in the meal plan
+   * @param {any} first
+   * @param {any} second
+   * @return {boolean}
+   */
+  function recipeEquality(first, second) {
+    if (first.recipeName == second.recipeName && first.uid == second.uid) {
+      return true;
+    }
+  }
   describe('Tests for updating the database', () => {
     /**
      * A set of dates in our components format, {string name of the week, the date in firebase timestampformat}
@@ -255,7 +309,7 @@ describe('CalenderComponent', () => {
      * A mock of a black meal plan object. Has no data in it.
      */
     const mockBlankMealPlan: mealPlanWeek = {
-      label: 'docPath', // This should equal the parameter docPath
+      label: 'currentWeek', // This should equal the parameter docPath
       defined: false,
       startDate: mockWeekDates[0].date,
       days: [
@@ -314,7 +368,119 @@ describe('CalenderComponent', () => {
      * A mock of a partial data object to use to update meal plan. Has a recipe added to sunday breakfast.
      */
     const mockPartialData = {
-      label: 'docPath', // This should equal the parameter docPath
+      label: 'currentWeek', // This should equal the parameter docPath
+      defined: false,
+      startDate: mockWeekDates[0].date,
+      days: [
+        {
+          date: mockWeekDates[0].date,
+          weekDayName: mockWeekDates[0].weekDayName,
+          breakfast: [{recipeName: 'Test Recipe', uid: '12345'}],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[1].date,
+          weekDayName: mockWeekDates[1].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[2].date,
+          weekDayName: mockWeekDates[2].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[3].date,
+          weekDayName: mockWeekDates[3].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[4].date,
+          weekDayName: mockWeekDates[4].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[5].date,
+          weekDayName: mockWeekDates[5].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[6].date,
+          weekDayName: mockWeekDates[6].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+      ],
+    };
+    const mockPartialDataPreviousWeek = {
+      label: 'previousWeek', // This should equal the parameter docPath
+      defined: false,
+      startDate: mockWeekDates[0].date,
+      days: [
+        {
+          date: mockWeekDates[0].date,
+          weekDayName: mockWeekDates[0].weekDayName,
+          breakfast: [{recipeName: 'Test Recipe', uid: '12345'}],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[1].date,
+          weekDayName: mockWeekDates[1].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[2].date,
+          weekDayName: mockWeekDates[2].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[3].date,
+          weekDayName: mockWeekDates[3].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[4].date,
+          weekDayName: mockWeekDates[4].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[5].date,
+          weekDayName: mockWeekDates[5].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[6].date,
+          weekDayName: mockWeekDates[6].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+      ],
+    };
+    const mockPartialDataNextWeek = {
+      label: 'nextWeek', // This should equal the parameter docPath
       defined: false,
       startDate: mockWeekDates[0].date,
       days: [
@@ -370,11 +536,118 @@ describe('CalenderComponent', () => {
       ],
     };
     /**
+     * A mock of a partial data object to use to update meal plan on deletion. Has a recipe added to sunday breakfast.
+     */
+    const mockPartialDataToDelete = {
+      label: 'currentWeek', // This should equal the parameter docPath
+      defined: false,
+      startDate: mockWeekDates[0].date,
+      days: [
+        {
+          date: mockWeekDates[0].date,
+          weekDayName: mockWeekDates[0].weekDayName,
+          breakfast: [{recipeName: 'Test Recipe', uid: '12345'}],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[1].date,
+          weekDayName: mockWeekDates[1].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[2].date,
+          weekDayName: mockWeekDates[2].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[3].date,
+          weekDayName: mockWeekDates[3].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[4].date,
+          weekDayName: mockWeekDates[4].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[5].date,
+          weekDayName: mockWeekDates[5].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+        {
+          date: mockWeekDates[6].date,
+          weekDayName: mockWeekDates[6].weekDayName,
+          breakfast: [],
+          lunch: [],
+          dinner: [],
+        },
+      ],
+    };
+    beforeEach(function() {
+      jasmine.addCustomEqualityTester(recipeEquality);
+    });
+    /**
+     * Tests that if the currentDay is later than the last day of the currentWeek but earlier than the last day of the nextWeek the mealPlan shifts by 1
+     */
+    it('Should shift 1 week when current date is in currentNextWeek', () => {
+      spyOn(component, 'shiftWeek');
+      component.checkPlanDates([mockPartialDataPreviousWeek, mockPartialData, mockPartialDataNextWeek], new Date(2021, 2, 14));
+      expect(component.shiftWeek).toHaveBeenCalledWith(1, [mockPartialDataPreviousWeek, mockPartialData, mockPartialDataNextWeek]);
+    });
+    /**
+     * Tests that if the currentDay is later than the last day of nextWeek and earlier than the last day of the week two weeks away the mealPlan shifts by 2
+     */
+    it('Should shift 2 week when current date is in currentNextWeek', () => {
+      spyOn(component, 'shiftWeek');
+      component.checkPlanDates([mockPartialDataPreviousWeek, mockPartialData, mockPartialDataNextWeek], new Date(2021, 2, 21));
+      expect(component.shiftWeek).toHaveBeenCalledWith(2, [mockPartialDataPreviousWeek, mockPartialData, mockPartialDataNextWeek]);
+    });
+    /**
+     * Tests that if the currentDay is later than the last day of the week two weeks away the mealPlan shifts by 3
+     */
+    it('Should shift 3 week when current date is in currentNextWeek', () => {
+      spyOn(component, 'shiftWeek');
+      component.checkPlanDates([mockPartialDataPreviousWeek, mockPartialData, mockPartialDataNextWeek], new Date(2021, 2, 28));
+      expect(component.shiftWeek).toHaveBeenCalledWith(3, [mockPartialDataPreviousWeek, mockPartialData, mockPartialDataNextWeek]);
+    });
+
+    it('Should update doc correctly when shifting 1', async () => {
+      spyOn(component, 'updateDocInFireStore');
+      spyOn(component, 'addBlankPlan');
+      await component.shiftWeek(1, [mockPartialDataPreviousWeek, mockPartialData, mockPartialDataNextWeek]);
+      expect(component.updateDocInFireStore).toHaveBeenCalledWith('previousWeek', mockPartialData);
+      expect(component.updateDocInFireStore).toHaveBeenCalledWith('currentWeek', mockPartialDataNextWeek);
+      expect(component.addBlankPlan).toHaveBeenCalledTimes(1);
+    });
+    it('Should update doc correctly when shifting 2', async () => {
+      spyOn(component, 'updateDocInFireStore');
+      spyOn(component, 'addBlankPlan');
+      await component.shiftWeek(2, [mockPartialDataPreviousWeek, mockPartialData, mockPartialDataNextWeek]);
+      expect(component.updateDocInFireStore).toHaveBeenCalledWith('previousWeek', mockPartialDataNextWeek);
+      expect(component.addBlankPlan).toHaveBeenCalledTimes(2);
+    });
+    it('Should update doc correctly when shifting 3', async () => {
+      spyOn(component, 'ensureMealPlansCreated');
+      await component.shiftWeek(3, [mockPartialDataPreviousWeek, mockPartialData, mockPartialDataNextWeek]);
+      expect(component.ensureMealPlansCreated).toHaveBeenCalledTimes(1);
+    });
+    /**
      * Tests that adding blank meal plan calls the setDocInFirestore helper function with the proper parameters
      */
     it('addBlankPlan should call setDocInFirestore', () => {
       spyOn(component, 'setDocInFireStore');
-      component.addBlankPlan('docPath', mockWeekDates);
+      component.addBlankPlan('currentWeek', mockWeekDates);
       expect(component.setDocInFireStore).toHaveBeenCalled();
     });
     /**
@@ -397,6 +670,17 @@ describe('CalenderComponent', () => {
       // ToHaveBeenCalledWith doesn't do a great job of checking equality of Objects so the function sets a component variable with the last PartialData and
       //  test checks to make sure that equals the expected value
       expect(component.partialDataLastSet).toEqual(mockPartialData);
+    });
+    it('Should call updateDocInFirestore with proper parameters', async () => {
+      spyOn(component, 'openSnackBar');
+      spyOn(component, 'listData').and.returnValue(Promise.resolve([mockPartialDataToDelete]));
+      spyOn(component, 'updateDocInFireStore');
+      component.mealTypeToSet = 'breakfast';
+      component.dateToSet = mockPartialDataToDelete.days[0].date;
+      await component.removeRecipeFromPlan(0, mockPartialDataToDelete.label);
+      expect(component.openSnackBar).toHaveBeenCalled();
+      expect(component.updateDocInFireStore).toHaveBeenCalled();
+      expect(component.recipeLastRemoved).toBeTruthy();
     });
   });
   /**
@@ -627,7 +911,7 @@ describe('CalenderComponent', () => {
      * A mock of a partial data object to use to update meal plan. Has a recipe added to sunday breakfast.
      */
       const mockPartialData = {
-        label: 'docPath', // This should equal the parameter docPath
+        label: 'currentWeek', // This should equal the parameter docPath
         defined: false,
         startDate: mockWeekDates[0].date,
         days: [
@@ -715,6 +999,7 @@ describe('CalenderComponent', () => {
         debugBreakfastRecipeCard = fixture.debugElement.queryAll(By.css('mat-card[name=\'breakfastRecipeCard\']'));
         debugLunchRecipeCard = fixture.debugElement.queryAll(By.css('mat-card[name=\'lunchRecipeCard\']'));
         debugDinnerRecipeCard = fixture.debugElement.queryAll(By.css('mat-card[name=\'dinnerRecipeCard\']'));
+        debugDeleteRecipeButton = fixture.debugElement.queryAll(By.css('button[name=\'deleteRecipeButton\']'));
       });
     });
     /**
@@ -728,6 +1013,7 @@ describe('CalenderComponent', () => {
       expect(debugLunchCard.length).toBeGreaterThan(0);
       expect(debugDinnerCard.length).toBeGreaterThan(0);
       expect(debugBreakfastRecipeCard.length).toBeGreaterThan(0);
+      expect(debugDeleteRecipeButton.length).toBeGreaterThan(0);
       // These expects are commented out because the partial data being tested with does not include lunch and dinner data
       // thus these arrays will be empty, they are further tested in the Should display correct recipe cards based on data test
       // expect(debugLunchRecipeCard.length).toBeGreaterThan(0);
@@ -828,6 +1114,25 @@ describe('CalenderComponent', () => {
       fixture.detectChanges();
       tick();
       expect(component.setMealInfo).toHaveBeenCalledOnceWith('dinner', dateToExpect);
+    }));
+
+    it('Should run setMealInfo with proper params when deleteRecipeButton is clicked', fakeAsync(() => {
+      const dateToExpect = firebase.firestore.Timestamp.fromDate(new Date(2021, 2, 7)); // Should match mockWeekDates[0]
+      spyOn(component, 'setMealInfo');
+      spyOn(component, 'removeRecipeFromPlan');
+      debugDeleteRecipeButton[0].nativeElement.click();
+      fixture.detectChanges();
+      tick();
+      expect(component.setMealInfo).toHaveBeenCalledWith('breakfast', dateToExpect);
+    }));
+
+    it('Should run removeRecipeFromPlan with proper params when deleteRecipeButton is clicked', fakeAsync(() => {
+      spyOn(component, 'setMealInfo');
+      spyOn(component, 'removeRecipeFromPlan');
+      debugDeleteRecipeButton[0].nativeElement.click();
+      fixture.detectChanges();
+      tick();
+      expect(component.removeRecipeFromPlan).toHaveBeenCalledWith(0, 'currentWeek');
     }));
   });
 });

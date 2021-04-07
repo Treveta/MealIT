@@ -15,7 +15,7 @@
                 {{recipe.recipeName}}
             </mat-panel-title>
             <mat-panel-description *ngIf="data.embeddedPage === 'mealPlan'">
-              <button mat-raised-button name="SelectRecipe" (click)="selectMealDialogClose(recipe.uid, recipe.recipeName)">
+              <button mat-raised-button name="SelectRecipe" (click)="selectMealDialogClose(recipe.uid, recipe.recipeName, recipe.ingredients)">
                 Select As Meal
               </button>
             </mat-panel-description>
@@ -28,9 +28,8 @@
               </button>
             </mat-panel-description>
         </mat-expansion-panel-header>
-        <div *ngFor="let ingredient of ingredientList">
-            <p *ngIf="ingredientList.Loading == true">LOADING...</p>
-            {{ingredient.ingredientName}}
+        <div *ngFor="let ingredient of recipe.ingredients">
+          {{ingredient.ingredientName}} {{ingredient.quantity}} {{ingredient.unit}}
         </div>
     </mat-expansion-panel>
 </mat-accordion>

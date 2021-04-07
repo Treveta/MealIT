@@ -1,0 +1,33 @@
+Sprint 3
+Scrum 5 (Wednesday, Submitted as Scrum 4 on Canvas)
+
+Casey
+  Did: Replaced calendar component uid with clickable button that opens recipe dialog.
+  Plans to Do: actually getting the information to display.
+  Obstacles: not now.
+
+Daymion
+  Did: JSDocs and tested function for moving things to food storage. Came up with idea for Reserved List.
+  Plans to Do: cleanup on foodStorage?
+  Obstacles: none.
+
+Ira
+  Did:
+    Massive upheaval of item-list-component.spec.ts testing, migrated several tests to the service, changed values acccordingly.
+      Deleted consolidation tests from item list spec as they are now being done in the service.
+    AddToItemList calls the service for most of its things, but the tests still exists since item list component was built on 
+    class variables.
+    Added testing of the actual user story task inside of the openDialog testing on Calendar component.
+    General cleanup: fixing and updating faulty JSDocs on tests, moving its in the item list spec file into describes.
+  Plans to Do:
+    testing a service and testing calls to a service is a bit unknwon, though seeing openDialog's example help some. 
+    tests or testing itself likely would fail. 
+  Obstacles:
+    Testing services
+      How to actually set a spy on a service? (learned something from openDialog)
+      Numerical analysis Exam is Friday, will probably not get final user story of warning dialog done before end of sprint.
+
+Derek
+  Did: not a ton. General cleanup of tests and documentation.
+  Plans to Do: moving on to meal plans respond to any day you're in.
+  Obstacles: Work.

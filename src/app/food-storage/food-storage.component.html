@@ -11,7 +11,7 @@
     <button (click)="openModal('getting-started-modal');">Find your items</button>
   </div>
   <div id="stored-items-list">
-    <div *ngFor="let storageItem of storageItems$ | async">
+    <div *ngFor="let storageItem of sortedStorageList">
       <li *ngIf="storageItem.itemName">
         <input *ngIf="editBool" type="checkbox" [value]="storageItem.itemName" (change)="onCheckBoxChange($event)" />
         {{ storageItem.itemName }}

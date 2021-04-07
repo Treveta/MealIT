@@ -1,5 +1,4 @@
 <div class = "itemList-body">
-  <h3>Item List!</h3>
   <mat-card class = "center">
     <div>
       <div *ngIf="this.isLarge; then widescreen else thinscreen">
@@ -10,6 +9,12 @@
         <button mat-button (click) = "addToItemList()"> 
           Add Item
           <!--TODO: add input validation(see login-page example)-->
+        </button>
+        <button mat-button (click) = "completionAll()"> 
+          Check All Complete
+        </button> 
+        <button mat-button (click) = "toStorage()"> 
+          Send To Storage
         </button> 
       </div>
     </div>

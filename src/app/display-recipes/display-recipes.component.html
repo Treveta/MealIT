@@ -1,0 +1,9 @@
+<div *ngIf="pageLoaded | async">
+  <div *ngIf="displayRecipe | async as recipe">
+    <h1>{{recipe.recipeName}}<br></h1>
+    <h2>Ingredient list:</h2>
+    <div *ngFor="let ingredient of recipe.ingredients">
+      {{ingredient.quantity}} {{ingredient.unit}} of {{ingredient.ingredientName}}
+    </div>
+  </div>
+</div>
