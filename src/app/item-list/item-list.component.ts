@@ -258,6 +258,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
     onCheckBoxChange(item): void {
       const index = this.sortedList.indexOf(item);
       this.sortedList.splice(index, 1);
+      this.shopList.sortedList = this.sortedList;
       this.updateDocument('List', {Items: this.sortedList});
     }
 
