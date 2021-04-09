@@ -302,12 +302,16 @@ describe('ItemListComponent', () => {
           unit: 'oz',
         },
       ];
+      // Set up the item list for testing
       component.sortedList = itemList;
 
+      // Set spies on the functions to check for
       spyOn(component, 'updateDocument');
 
+      // Run the function being tested
       component.completionAll();
 
+      // Check that the function worked properly
       for (let i = 0; i < component.sortedList.length; i++) {
         expect(component.sortedList[i].isComplete).toEqual(true);
       }

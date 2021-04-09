@@ -292,7 +292,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * Then, it calls @function updateDocument, which updates the shoppingCollection, pushing the change to the database
      */
     completionAll(): void {
-      this.setAllTrue();
+      this.setAllTrue(); // Check to see if all items are complete or not
+      // If all of them are not complete, turn all incomplete to complete
       if (this.allTrue == false) {
         for (let i = 0; i < this.sortedList.length; i++) {
           if (this.sortedList[i].isComplete == false) {
@@ -300,6 +301,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
           }
         }
         this.allTrue = true;
+      // If all of them are complete, turn all complete to incomplete
       } else {
         for (let i = 0; i < this.sortedList.length; i++) {
           if (this.sortedList[i].isComplete == true) {
@@ -308,6 +310,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
         }
         this.allTrue = false;
       }
+      // Update the database
       this.updateDocument('List', {Items: this.sortedList});
     }
 
