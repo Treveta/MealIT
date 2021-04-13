@@ -33,24 +33,28 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Apples',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       },
       {
         isComplete: false,
         itemName: 'Blueberry',
         quantity: 5,
         unit: 'lb',
+        quantityReserved: 0,
       },
       {
         isComplete: false,
         itemName: 'Steak',
         quantity: 2,
         unit: 'ct',
+        quantityReserved: 0,
       },
       {
         isComplete: false,
         itemName: 'ApplesbutBetter',
         quantity: 4,
         unit: 'oz',
+        quantityReserved: 0,
       },
     ];
 
@@ -61,7 +65,7 @@ describe('ShoppinglistEditService', () => {
     * Tests that addToShoppingList doesn't do anything when it's passed empty strings and that
     * @function updateDocument and @function consolidateQuantity are not called
     */
-    it('addToShoppingList should do nothing when class variables are empty', async () => {
+    it('addToShoppingList should do nothing when parameters are empty', async () => {
       expect(service.sortedList).toEqual(mockSortedList);
       const proposedIngredient='';
       const proposedQuantity='';
@@ -70,7 +74,7 @@ describe('ShoppinglistEditService', () => {
       spyOn(service, 'consolidateQuantity').and.callThrough();
       // delcaring a spy to check that updateDocument is called
       spyOn(service, 'updateDocument');
-      await service.addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit);
+      await service.addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit, false);
       expect(service.consolidateQuantity).not.toHaveBeenCalled();
       expect(service.updateDocument).not.toHaveBeenCalled();
       // expect the list to equal the initial list and return false
@@ -92,24 +96,28 @@ describe('ShoppinglistEditService', () => {
           itemName: 'Apples',
           quantity: 3,
           unit: 'oz',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Blueberry',
           quantity: 5,
           unit: 'lb',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Steak',
           quantity: 2,
           unit: 'ct',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'ApplesbutBetter',
           quantity: 4,
           unit: 'oz',
+          quantityReserved: 0,
         },
       ];
       service.sortedList=mockSortedList1;
@@ -120,30 +128,35 @@ describe('ShoppinglistEditService', () => {
           itemName: 'Apples',
           quantity: 3,
           unit: 'oz',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Blueberry',
           quantity: 5,
           unit: 'lb',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Steak',
           quantity: 2,
           unit: 'ct',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'ApplesbutBetter',
           quantity: 4,
           unit: 'oz',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Peaches',
           quantity: 4,
           unit: 'ct',
+          quantityReserved: 0,
         },
       ];
       expect(service.sortedList).toEqual(mockSortedList1);
@@ -151,11 +164,102 @@ describe('ShoppinglistEditService', () => {
       spyOn(service, 'consolidateQuantity').and.callThrough();
       // delcaring a spy to check that updateDocument is called
       spyOn(service, 'updateDocument');
-      await service.addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit);
+      // call the function
+      await service.addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit, false);
       expect(service.consolidateQuantity).toHaveBeenCalled();
       expect(service.updateDocument).toHaveBeenCalled();
-      // expect the list to equal the updated list and return true
-      // console.log(service.sortedList);
+      // expect the list to equal the updated list
+      expect(service.sortedList).toEqual(updatedList);
+    });
+    /**
+    * Tests that addToShoppingList adds an item to the list correctly when an item is from a service
+    * @function updateDocument and @function consolidateQuantity are called
+    */
+    it('From a recipe, addToShoppingList should add an item to the list', async () => {
+      // initializing an item to test mocks to compare
+      const proposedIngredient='Peaches';
+      const proposedQuantity = 4;
+      const proposedUnit = 'ct';
+      // initializing a control array to test with and setting sortedList to it
+      const mockSortedList2 = [
+        {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 3,
+          unit: 'oz',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+          quantityReserved: 0,
+        },
+      ];
+      service.sortedList=mockSortedList2;
+      // initializing a mock updated list to compare to
+      const updatedList = [
+        {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 3,
+          unit: 'oz',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'Peaches',
+          quantity: 4,
+          unit: 'ct',
+          quantityReserved: 4,
+        },
+      ];
+      expect(service.sortedList).toEqual(mockSortedList2);
+      // delcaring a spy to check if consolidateQuantity is called
+      spyOn(service, 'consolidateQuantity').and.callThrough();
+      // delcaring a spy to check that updateDocument is called
+      spyOn(service, 'updateDocument');
+      // call the function
+      await service.addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit, true);
+      expect(service.consolidateQuantity).toHaveBeenCalled();
+      expect(service.updateDocument).toHaveBeenCalled();
+      // expect the list to equal the updated list
       expect(service.sortedList).toEqual(updatedList);
     });
     /**
@@ -168,65 +272,73 @@ describe('ShoppinglistEditService', () => {
       const proposedQuantity = 2;
       const proposedUnit = 'oz';
       // initializing a control array to test with and setting sortedList to it
-      const mockSortedList2 = [
+      const mockSortedList3 = [
         {
           isComplete: false,
           itemName: 'Apples',
           quantity: 3,
           unit: 'oz',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Blueberry',
           quantity: 5,
           unit: 'lb',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Steak',
           quantity: 2,
           unit: 'ct',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'ApplesbutBetter',
           quantity: 4,
           unit: 'oz',
+          quantityReserved: 0,
         },
       ];
-      service.sortedList=mockSortedList2;
+      service.sortedList=mockSortedList3;
       const updatedList = [
         {
           isComplete: false,
           itemName: 'Apples',
           quantity: 5,
           unit: 'oz',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Blueberry',
           quantity: 5,
           unit: 'lb',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Steak',
           quantity: 2,
           unit: 'ct',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'ApplesbutBetter',
           quantity: 4,
           unit: 'oz',
+          quantityReserved: 0,
         },
       ];
-      expect(service.sortedList).toEqual(mockSortedList2);
+      expect(service.sortedList).toEqual(mockSortedList3);
       // delcaring a spy to check if consolidateQuantity is called
       spyOn(service, 'consolidateQuantity').and.callThrough();
       // delcaring a spy to check that updateDocument is called
       spyOn(service, 'updateDocument');
-      await service.addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit);
+      await service.addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit, false);
       expect(service.consolidateQuantity).toHaveBeenCalled();
       expect(service.updateDocument).toHaveBeenCalled();
       // expect the list to equal the updated list and return false
@@ -243,24 +355,28 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Apples',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       },
       {
         isComplete: false,
         itemName: 'Blueberry',
         quantity: 5,
         unit: 'lb',
+        quantityReserved: 0,
       },
       {
         isComplete: false,
         itemName: 'Steak',
         quantity: 2,
         unit: 'ct',
+        quantityReserved: 0,
       },
       {
         isComplete: false,
         itemName: 'ApplesbutBetter',
         quantity: 4,
         unit: 'oz',
+        quantityReserved: 0,
       },
     ];
 
@@ -278,18 +394,21 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Apples',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 1,
       };
       const itemProposed = {
         isComplete: false,
         itemName: 'Apples',
         quantity: 2,
         unit: 'oz',
+        quantityReserved: 2,
       };
       const itemResult= {
         isComplete: false,
         itemName: 'Apples',
         quantity: 5,
         unit: 'oz',
+        quantityReserved: 3,
       };
 
       service.sumQuantity(itemExist, itemProposed);
@@ -305,12 +424,14 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Apples',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       };
       const itemProposed = {
         isComplete: false,
         itemName: 'Apples',
         quantity: 2,
         unit: 'oz',
+        quantityReserved: 0,
       };
 
       // delcaring a spy to check that sumQuantity is called
@@ -330,12 +451,14 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Apples ',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       };
       const itemProposed = {
         isComplete: false,
         itemName: ' apples',
         quantity: 2,
         unit: 'oz',
+        quantityReserved: 0,
       };
 
       // delcaring a spy to check that sumQuantity is called
@@ -355,12 +478,14 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Apples ',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       };
       const itemProposed = {
         isComplete: false,
         itemName: 'Oranges',
         quantity: 2,
         unit: 'tsp',
+        quantityReserved: 0,
       };
 
       // delcaring a spy to check if sumQuantity is called
@@ -380,12 +505,14 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Apples ',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       };
       const itemProposed = {
         isComplete: false,
         itemName: 'Apples',
         quantity: 2,
         unit: 'tsp',
+        quantityReserved: 0,
       };
 
       // delcaring a spy to check if sumQuantity is called
@@ -405,12 +532,14 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Apples ',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       };
       const itemProposed = {
         isComplete: false,
         itemName: 'Oranges',
         quantity: 2,
         unit: 'oz',
+        quantityReserved: 0,
       };
 
       // delcaring a spy to check if sumQuantity is called
@@ -432,6 +561,7 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Apples',
         quantity: 2,
         unit: 'oz',
+        quantityReserved: 2,
       };
       const updatedList = [
         {
@@ -439,24 +569,28 @@ describe('ShoppinglistEditService', () => {
           itemName: 'Apples',
           quantity: 5,
           unit: 'oz',
+          quantityReserved: 2,
         },
         {
           isComplete: false,
           itemName: 'Blueberry',
           quantity: 5,
           unit: 'lb',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Steak',
           quantity: 2,
           unit: 'ct',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'ApplesbutBetter',
           quantity: 4,
           unit: 'oz',
+          quantityReserved: 0,
         },
       ];
       expect(service.sortedList).toEqual(mockSortedList);
@@ -483,6 +617,7 @@ describe('ShoppinglistEditService', () => {
         itemName: 'Funnel Cakes',
         quantity: 2,
         unit: 'L',
+        quantityReserved: 0,
       };
 
       expect(service.sortedList).toEqual(mockSortedList);

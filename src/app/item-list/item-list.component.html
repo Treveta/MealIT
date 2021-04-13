@@ -118,9 +118,11 @@
               <p>
               {{item.quantity}}
               {{item.unit}}
-              {{item.isComplete}}
-              <!--isComplete will be removed from showing here once a more elegant visual represntation happens-->
-              </p>
+            </p>
+              <div *ngIf = "item.quantityReserved > 0">
+                {{item.quantityReserved}} reserved
+              </div>
+              
             </div> 
     
           </mat-card>
@@ -140,9 +142,10 @@
           <p>
           {{item.quantity}}
           {{item.unit}}
-          {{item.isComplete}}
-          <!--isComplete will be removed from showing here once a more elegant visual represntation happens-->
-          </p>
+        </p>
+        <div *ngIf = "item.quantityReserved > 0">
+          {{item.quantityReserved}} reserved
+        </div>
             </div> 
     
           </div>

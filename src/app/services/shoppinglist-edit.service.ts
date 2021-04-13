@@ -67,13 +67,15 @@ export class ShoppinglistEditService {
   // Below are three functions for item consolidation: 2 sub-helper functions, and 1 large helper function of addToItemList
   /** @function
      * @name sumQuantity
-     * @param {any} itemExist the item whose quantity will be updated with the quantity value from @param itemProposed
-     * @param {any} itemProposed the item proposed to be added which will have its quantity used to update @param itemExist
-     * @description sumQuantity combines two item's quantity. param names are for clarity, but this can technically be used between any two items
+     * @param {any} itemExist the item whose quantity will be updated with the quantity values from @param itemProposed
+     * @param {any} itemProposed the item proposed to be added which will have its quantities used to update @param itemExist
+     * @description sumQuantity combines two item's quantity and reserved Quantity. param names are for clarity,
+     * but this can technically be used between any two items
      * this is a helper function for @function compareNameUnit
      */
   sumQuantity(itemExist, itemProposed): void {
     itemExist.quantity+=itemProposed.quantity;
+    itemExist.quantityReserved+=itemProposed.quantityReserved;
   }
 
   /** @function
@@ -125,7 +127,8 @@ export class ShoppinglistEditService {
      * @param {any} proposedIngredient the name of the ingredient to be added or consolidated
      * @param {any} proposedQuantity the quantity of the ingredient to be added or consolidated
      * @param {any} proposedUnit the unit name of the ingredient to be added or consolidated
-     * @constant addedItem a constant that contains the boolean isComplete as well as fields to accept the class variables
+     * @param {boolean} fromRecipe boolean that when true indicates that the ingredient was added from a recipe
+     * @constant addedItem a constant that contains the boolean isComplete as well as fields to accept the data parameters
      * itemName to store newItem, quantity to store newQuantity, and unit to store newUnit
      * @description addToShoppingList is a void function that first tests if new item is empty.
      * If it is not empty, it creates the constant addedItem that has 4 elements.
@@ -135,17 +138,31 @@ export class ShoppinglistEditService {
      * @summary addToShoppinhList takes info from the parameters and packages it into a constant.
      * It then either pushes that constant to the list or updates the list before updating the list.
      */
-  async addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit) {
+  async addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit, fromRecipe:boolean) {
     // if the item name is blank, ignore all this
     if (proposedIngredient === '') {
     } else {
       // construct a proposed item from class variables
-      const addedItem = {
-        isComplete: false,
-        itemName: proposedIngredient,
-        quantity: proposedQuantity,
-        unit: proposedUnit,
-      };
+      let addedItem;
+      // if it's  from a recipe, the reservedQuantity is just the quantity
+      if (fromRecipe === true) {
+        addedItem = {
+          isComplete: false,
+          itemName: proposedIngredient,
+          quantity: proposedQuantity,
+          unit: proposedUnit,
+          quantityReserved: proposedQuantity,
+        };
+      } else {
+        // if it's  not from a recipe, the reservedQuantity is 0
+        addedItem = {
+          isComplete: false,
+          itemName: proposedIngredient,
+          quantity: proposedQuantity,
+          unit: proposedUnit,
+          quantityReserved: 0,
+        };
+      }
       // run consolidateQuantity on the proposed item, and if false add it to the list
       if (this.consolidateQuantity(addedItem)===false) {
         this.sortedList.push(addedItem);

@@ -398,12 +398,13 @@ export class CalenderComponent implements OnInit {
    * @function dialogCallEditService
    * @param {any} result the subscribe. It is a map that contains 2 maps and an array of maps
    * @description helper function to openDialog that just runs addToShoppingList on each ingredient from result.ingredient,
-   * if result.ingredients is defined, that is. This function is a pain to test so thats why it exists alone here.
+   * if result.ingredients is defined, that is. PPassing in true means that this is from a recipe and is thus "reserved"
+   * This function is a pain to test so thats why it exists alone here.
    */
   dialogCallEditService(result) {
     if (result.ingredients) {
       result.ingredients.forEach((ingredient) => {
-        this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
+        this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit, true);
       });
     }
   }
