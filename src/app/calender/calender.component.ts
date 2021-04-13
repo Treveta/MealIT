@@ -9,6 +9,7 @@ import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
 import {DisplayRecipesComponent} from 'app/display-recipes/display-recipes.component';
+import { ArbiterService } from 'app/services/arbiter-service/arbiter.service';
 
 
 @Component({
@@ -163,7 +164,7 @@ export class CalenderComponent implements OnInit {
    * @param {SearchRecipesComponent} search
    * @param {AuthService} authService
    */
-  constructor(private snackBar: MatSnackBar, public shopListService: ShoppinglistEditService, public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
+  constructor(private arbiter: ArbiterService, private snackBar: MatSnackBar, public shopListService: ShoppinglistEditService, public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -187,7 +188,7 @@ export class CalenderComponent implements OnInit {
    * Angular Lifecycle hook
    */
   ngOnInit(): void {
-
+    
   }
 
   /**
@@ -196,7 +197,9 @@ export class CalenderComponent implements OnInit {
    * @param {Date} currentDay the currentDay
    */
   checkPlanDates(docs, currentDay) {
-    const orderedPlans = [{}, {}, {}];
+    // Initializes a new array to sort the meal plans into
+    const orderedPlans = new Array<mealPlanWeek>(3);
+    // Sorts the meal plans based on their label
     docs.forEach((plan) => {
       if (plan.label == 'previousWeek') {
         orderedPlans[0] = plan;
@@ -208,37 +211,29 @@ export class CalenderComponent implements OnInit {
         orderedPlans[1] = plan;
       }
     });
-    docs.forEach((plan) => {
-      if (plan.label == 'currentWeek') {
-        const currentStartDay = plan.startDate.toDate();
-        const currentLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 6);
-        const currentNextWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 13);
-        const currentTwoWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 20);
-        console.log(currentStartDay);
-        console.log(currentLastDay);
-        console.log(currentNextWeekLastDay);
-        console.log(currentDay);
-        if (currentDay.getTime() < currentLastDay.getTime()) {
-          // Do nothing, the week is still correct
-          console.log('This shouldnt run');
-        }
-        if (currentDay.getTime() > currentLastDay.getTime() && currentDay.getTime() <= currentNextWeekLastDay.getTime()) {
-          // Shift Week Over by One
-          console.log('Shift Week by One');
-          console.log(orderedPlans);
-          this.shiftWeek(1, orderedPlans);
-        }
-        if (currentDay.getTime() > currentNextWeekLastDay.getTime() && currentDay.getTime() <= currentTwoWeekLastDay.getTime()) {
-          // Shift Week Over by Two
-          console.log('Shift Week by Two');
-          this.shiftWeek(2, orderedPlans);
-        }
-        if (currentDay.getTime() > currentTwoWeekLastDay.getTime()) {
-          console.log('Shift Week by Three');
-          this.shiftWeek(3, orderedPlans);
-        }
+    // Double checks that the plan exists and has been properly sorted before continueing
+    if (orderedPlans[1].label == 'currentWeek') {
+      // Creates all the necessary dates needed to check against based off the current currentWeek startDate
+      const currentStartDay = orderedPlans[1].startDate.toDate();
+      const currentLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 6);
+      const currentNextWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 13);
+      const currentTwoWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 20);
+      // Determines how many weeks to shift the plans by based on where the currentDay falls compared to the previously set check dates
+      if (currentDay.getTime() < currentLastDay.getTime()) {
+        // Do nothing, the week is still correct
       }
-    });
+      if (currentDay.getTime() > currentLastDay.getTime() && currentDay.getTime() <= currentNextWeekLastDay.getTime()) {
+        // Shift Week Over by One
+        this.shiftWeek(1, orderedPlans);
+      }
+      if (currentDay.getTime() > currentNextWeekLastDay.getTime() && currentDay.getTime() <= currentTwoWeekLastDay.getTime()) {
+        // Shift Week Over by Two
+        this.shiftWeek(2, orderedPlans);
+      }
+      if (currentDay.getTime() > currentTwoWeekLastDay.getTime()) {
+        this.shiftWeek(3, orderedPlans);
+      }
+    }
   }
 
   /**
@@ -423,6 +418,7 @@ export class CalenderComponent implements OnInit {
       if (result) {
         // Sets the recipe in the plan
         this.setRecipeInPlan(result.recipeName, result.uid);
+        this.arbiter.determineStorage('Optimization', 'oz');
         // calls the helper function to actually call addToShoppingList on each element in the ingredients array
         this.dialogCallEditService(result);
       }
