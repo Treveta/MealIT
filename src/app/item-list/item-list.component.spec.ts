@@ -30,24 +30,28 @@ describe('ItemListComponent', () => {
       itemName: 'Apples',
       quantity: 3,
       unit: 'oz',
+      quantityReserved: 0,
     },
     {
       isComplete: false,
       itemName: 'Blueberry',
       quantity: 5,
       unit: 'lb',
+      quantityReserved: 0,
     },
     {
       isComplete: false,
       itemName: 'Steak',
       quantity: 2,
       unit: 'ct',
+      quantityReserved: 0,
     },
     {
       isComplete: false,
       itemName: 'ApplesbutBetter',
       quantity: 4,
       unit: 'oz',
+      quantityReserved: 0,
     },
   ];
 
@@ -239,12 +243,14 @@ describe('ItemListComponent', () => {
         itemName: 'Apples',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       };
       const itemt = {
         isComplete: true,
         itemName: 'Apples',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       };
       const docName: string = 'List';
       const data: any = {Items: component.sortedList};
@@ -282,24 +288,28 @@ describe('ItemListComponent', () => {
           itemName: 'Apples',
           quantity: 5,
           unit: 'oz',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Blueberry',
           quantity: 5,
           unit: 'lb',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'Steak',
           quantity: 2,
           unit: 'ct',
+          quantityReserved: 0,
         },
         {
           isComplete: false,
           itemName: 'ApplesbutBetter',
           quantity: 4,
           unit: 'oz',
+          quantityReserved: 0,
         },
       ];
       component.sortedList = itemList;
@@ -325,24 +335,28 @@ describe('ItemListComponent', () => {
           itemName: 'Apples',
           quantity: 5,
           unit: 'oz',
+          quantityReserved: 0,
         },
         {
           isComplete: true,
           itemName: 'Blueberry',
           quantity: 5,
           unit: 'lb',
+          quantityReserved: 0,
         },
         {
           isComplete: true,
           itemName: 'Steak',
           quantity: 2,
           unit: 'ct',
+          quantityReserved: 0,
         },
         {
           isComplete: true,
           itemName: 'ApplesbutBetter',
           quantity: 4,
           unit: 'oz',
+          quantityReserved: 0,
         },
       ];
       // set the sortedlist to the item list
@@ -377,24 +391,28 @@ describe('ItemListComponent', () => {
         itemName: 'Apples',
         quantity: 3,
         unit: 'oz',
+        quantityReserved: 0,
       },
       {
         isComplete: false,
         itemName: 'Blueberry',
         quantity: 5,
         unit: 'lb',
+        quantityReserved: 0,
       },
       {
         isComplete: false,
         itemName: 'Steak',
         quantity: 2,
         unit: 'ct',
+        quantityReserved: 0,
       },
       {
         isComplete: false,
         itemName: 'ApplesbutBetter',
         quantity: 4,
         unit: 'oz',
+        quantityReserved: 0,
       },
     ];
 
@@ -425,7 +443,7 @@ describe('ItemListComponent', () => {
       spyOn(component.shopList, 'addToShoppingList');
       await component.addToItemList();
       // console.log(component.sortedList);
-      expect(component.shopList.addToShoppingList).toHaveBeenCalledWith('Peaches', 4, 'ct');
+      expect(component.shopList.addToShoppingList).toHaveBeenCalledWith('Peaches', 4, 'ct', false);
       // expecting the class variables to be reset to empty
       expect(component.newItem).toEqual('');
       expect(component.newQuantity).toEqual('');
@@ -443,18 +461,21 @@ describe('ItemListComponent', () => {
             itemName: 'Blueberry',
             quantity: 5,
             unit: 'lb',
+            quantityReserved: 0,
           },
           {
             isComplete: false,
             itemName: 'Steak',
             quantity: 2,
             unit: 'ct',
+            quantityReserved: 0,
           },
           {
             isComplete: false,
             itemName: 'ApplesbutBetter',
             quantity: 4,
             unit: 'oz',
+            quantityReserved: 0,
           },
         ];
         // delcaring a spy to check that updateDocument is called

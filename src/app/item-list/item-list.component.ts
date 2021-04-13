@@ -213,7 +213,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * sets the sortedList to the newly updated sortedList from the service, and resets the class variables to empty
      */
     async addToItemList() {
-      this.shopList.addToShoppingList(this.newItem, this.newQuantity, this.newUnit);
+      this.shopList.addToShoppingList(this.newItem, this.newQuantity, this.newUnit, false);
       this.sortedList = this.shopList.sortedList;
       this.newItem = '';
       this.newQuantity = '';
@@ -258,6 +258,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
     onCheckBoxChange(item): void {
       const index = this.sortedList.indexOf(item);
       this.sortedList.splice(index, 1);
+      this.shopList.sortedList = this.sortedList;
       this.updateDocument('List', {Items: this.sortedList});
     }
 
