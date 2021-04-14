@@ -172,6 +172,7 @@ describe('CalenderComponent', () => {
       expect(component.setRecipeInPlan).toHaveBeenCalled();
       // Expects the dialog to have been opened
       expect(matDialogStub.open).toHaveBeenCalled();
+      // Expects dialogCallEditService to have been called
       expect(component.dialogCallEditService).toHaveBeenCalled();
     });
     /* One day, we may learn how to use this in a test. Today was not that day.
