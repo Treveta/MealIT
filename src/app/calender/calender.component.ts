@@ -399,7 +399,8 @@ export class CalenderComponent implements OnInit {
   dialogCallEditService(result) {
     if (result.ingredients) {
       result.ingredients.forEach((ingredient) => {
-        this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit, true);
+        this.arbiter.arbiter(ingredient.ingredientName, ingredient.unit, ingredient.quantity);
+        // this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit, true);
       });
     }
   }
@@ -419,7 +420,6 @@ export class CalenderComponent implements OnInit {
       if (result) {
         // Sets the recipe in the plan
         this.setRecipeInPlan(result.recipeName, result.uid);
-        this.arbiter.determineStorage('Optimization', 'oz');
         // calls the helper function to actually call addToShoppingList on each element in the ingredients array
         this.dialogCallEditService(result);
       }
@@ -486,6 +486,10 @@ export class CalenderComponent implements OnInit {
       this.mealTypeToSet = this.recipeLastRemoved.mealTypeToSet;
       console.log(this.recipeLastRemoved);
       this.setRecipeInPlan(this.recipeLastRemoved.recipe[0].recipeName, this.recipeLastRemoved.recipe[0].uid);
+      this.listSpecificData('users/' + this.userInfo + '/recipeList', this.recipeLastRemoved.recipe[0].uid).then((recipes) => {
+        console.table(recipes[0].ingredients);
+        this.dialogCallEditService(recipes[0]);
+      });
     });
   }
 
@@ -667,6 +671,31 @@ export class CalenderComponent implements OnInit {
       // collects a snapshot of a Firestore collection base on parameter path
       const snapshot = await this.afs
           .collection(path)
+          .get().toPromise();
+      // Creates an empty list to populate collection data into
+      const list = [];
+      // Loops through snapshot and pushes document data to list
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        list.push(data);
+      });
+      // Returns the now populated list
+      return list;
+    } catch (err) {
+      console.log('Error getting documents', err);
+    }
+  }
+
+  /**
+   * Retrieves the mealPlan from the path specified as a list
+   * @param {string} path - The Firestore collection path to retrieve recipes from
+   * @param {string} uidToSearch
+   */
+  async listSpecificData(path: string, uidToSearch) {
+    try {
+      // collects a snapshot of a Firestore collection base on parameter path
+      const snapshot = await this.afs
+          .collection(path, (ref) => ref.where('uid', '==', uidToSearch))
           .get().toPromise();
       // Creates an empty list to populate collection data into
       const list = [];
