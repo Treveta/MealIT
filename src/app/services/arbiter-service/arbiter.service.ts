@@ -32,14 +32,46 @@ export class ArbiterService {
   /**
    * Determines how many of an item (quantity) with a given name and unit
    */
-  determineStorage(nameToMatch, unitToMatch) {
-    this.listStorage().then((list) => {
+  async determineStorage(nameToMatch, unitToMatch, amountRequested): Promise<ingredientStatusModel> {
+    let returnData: ingredientStatusModel;
+    await this.listStorage().then((list) => {
       console.table(list);
       for (let i = 0; i < list.length; i++) {
         if (list[i].itemName == nameToMatch && list[i].unit == unitToMatch) {
-          console.log(list[i]);
+          const amountToAdd = (amountRequested + list[i].quantityReserved) - list[i].quantity;
+          returnData = {amountToAdd: amountToAdd, amountRequested: amountRequested, currentUnreserved: list[i].quantity - list[i].reservedQuantity};
         }
       }
+    });
+    returnData = {amountToAdd: amountRequested, amountRequested: amountRequested, currentUnreserved: 0};
+    return returnData;
+  }
+
+  /**
+   * Add or Reserve
+   * @param amountToAdd 
+   * @param amountRequested 
+   * @param itemName 
+   * @param unit 
+   */
+  addOrReserve(amountToAdd, amountRequested, itemName, unit) {
+    if (amountToAdd > 0) {
+      this.shopList.addToShoppingList(itemName, amountToAdd, unit, true);
+      // Reserve all of ingredient in foodStorage
+    } else {
+      // Add the amountRequested to quantityReserved in foodStorage
+    }
+  }
+
+  /**
+   * 
+   * @param nameToMatch 
+   * @param unitToMatch 
+   * @param amountRequested 
+   */
+  arbiter(nameToMatch, unitToMatch, amountRequested) {
+    this.determineStorage(nameToMatch, unitToMatch, amountRequested).then((ingredientStatus) => {
+      this.addOrReserve(ingredientStatus.amountToAdd, ingredientStatus.amountRequested, nameToMatch, unitToMatch);
     });
   }
 
@@ -102,4 +134,10 @@ export class ArbiterService {
       console.log('Error getting documents', err);
     }
   }
+}
+
+export interface ingredientStatusModel {
+  amountToAdd: any,
+  amountRequested: any,
+  currentUnreserved: any,
 }
