@@ -82,7 +82,7 @@ describe('ItemListComponent', () => {
 
     const platformStub = () => ({});
 
-    const shopListStub = () => ({addToShoppingList: () =>({})});
+    const shopListStub = () => ({addToShoppingList: () =>({}), compareNameUnit: () =>({})});
 
     TestBed.configureTestingModule({
 
@@ -506,6 +506,187 @@ describe('ItemListComponent', () => {
         expect(await checkbox.isChecked()).toBe(true);
         expect(await checkbox.getName()).toBe('checkboxChange');
         expect(component.onCheckBoxChange).toHaveBeenCalled();
+      });
+    });
+    describe('addToItemList Tests', () => {
+      /**
+        * Mock of sortedList, used by several functions in item-list.component.ts
+        */
+      const mockSortedList = [
+        {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 3,
+          unit: 'oz',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'Blueberry',
+          quantity: 5,
+          unit: 'lb',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'Steak',
+          quantity: 2,
+          unit: 'ct',
+          quantityReserved: 0,
+        },
+        {
+          isComplete: false,
+          itemName: 'ApplesbutBetter',
+          quantity: 4,
+          unit: 'oz',
+          quantityReserved: 0,
+        },
+      ];
+
+      beforeEach(() => {
+        component.sortedList=mockSortedList;
+        component.shopList.sortedList=mockSortedList;
+        component.newItem='';
+        component.newQuantity ='';
+        component.newUnit = '';
+      });
+      /**
+        * Tests that addToItemList doesn't call addToShoppingList when the class variables are empty
+        * @function updateDocument and @function consolidateQuantity are not called
+        */
+      it('addToItemList should do nothing when class variables are empty', async () => {
+        spyOn(component.shopList, 'addToShoppingList');
+        expect(component.shopList.addToShoppingList).not.toHaveBeenCalled();
+      });
+      /**
+        * Tests that addToItemList adds an item to the list when it should
+        */
+      it('addToItemList should call addToShoppingList when it has valid class variables', async () => {
+        // initializing an item to test mocks to compare
+        component.newItem='Peaches';
+        component.newQuantity = 4;
+        component.newUnit = 'ct';
+        // declaring a spy on addToShoppingList
+        spyOn(component.shopList, 'addToShoppingList');
+        await component.addToItemList();
+        // console.log(component.sortedList);
+        expect(component.shopList.addToShoppingList).toHaveBeenCalledWith('Peaches', 4, 'ct', false);
+        // expecting the class variables to be reset to empty
+        expect(component.newItem).toEqual('');
+        expect(component.newQuantity).toEqual('');
+        expect(component.newUnit).toEqual('');
+      });
+
+      describe('item Removal Tests', () => {
+        /**
+        * Tests that onCheckBoxChange successfully removes a designated item from sortedlList
+        */
+        it('onCheckBoxChange successfully removes an item from sortedList', () => {
+          const noItemList = [
+            {
+              isComplete: false,
+              itemName: 'Blueberry',
+              quantity: 5,
+              unit: 'lb',
+              quantityReserved: 0,
+            },
+            {
+              isComplete: false,
+              itemName: 'Steak',
+              quantity: 2,
+              unit: 'ct',
+              quantityReserved: 0,
+            },
+            {
+              isComplete: false,
+              itemName: 'ApplesbutBetter',
+              quantity: 4,
+              unit: 'oz',
+              quantityReserved: 0,
+            },
+          ];
+            // delcaring a spy to check that updateDocument is called
+          spyOn(component, 'updateDocument');
+          expect(component.sortedList).toEqual(mockSortedList);
+          component.onCheckBoxChange(component.sortedList[0]);
+          expect(component.sortedList).toEqual(noItemList);
+          expect(component.updateDocument).toHaveBeenCalled();
+        });
+
+        /**
+        * Tests that the mat checkbox will initialize and show up on the page
+        */
+        it('mat checkBox should appear on the page', async () => {
+          const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
+          expect(checkbox).toBeTruthy();
+        });
+        /**
+        * Tests that the material checkbox should call onCheckBoxChange upon change
+        */
+        it('mat checkBox should call call onCheckBoxChange on change', async () => {
+          spyOn(component, 'onCheckBoxChange');
+          console.log(debugOnChangeCheck);
+          const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
+          console.log(checkbox);
+          expect(await checkbox.isChecked()).toBe(false);
+          await checkbox.check();
+          expect(await checkbox.isChecked()).toBe(true);
+          expect(await checkbox.getName()).toBe('checkboxChange');
+          expect(component.onCheckBoxChange).toHaveBeenCalled();
+        });
+      });
+      describe('food Storage Consolidation tests', () => {
+        it('addToStorage should call consolidateStorage', () =>{
+          const item = {
+            isComplete: false,
+            itemName: 'Apples',
+            quantity: 3,
+            unit: 'oz',
+            quantityReserved: 0,
+          };
+          spyOn(component, 'consolidateStorage');
+          component.addToStorage(item);
+          expect(component.consolidateStorage).toHaveBeenCalled();
+        });
+      });
+      it('consolidateStorage should call the service compareNameUnit when thats true, return true and call updateDocument ', () => {
+        // Defining mocks to compare
+        const itemProposed = {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 2,
+          unit: 'oz',
+          quantityReserved: 2,
+        };
+        component.sortedStorageList = mockSortedList;
+
+        // delcaring a spy to check if compareNameUnit is called
+        spyOn(component.shopList, 'compareNameUnit').and.returnValue(true);
+        spyOn(component, 'updateDocument');
+        component.consolidateStorage(itemProposed);
+        expect(component.shopList.compareNameUnit).toHaveBeenCalled();
+        expect(component.updateDocument).toHaveBeenCalled;
+        // expect return true
+        expect(component.consolidateStorage(itemProposed)).toEqual(true);
+      });
+      it('consolidateStorage should call the service compareNameUnit when thats false, return false and dont call updateDocument ', () => {
+        // Defining mocks to compare
+        const itemProposed = {
+          isComplete: false,
+          itemName: 'Apples',
+          quantity: 2,
+          unit: 'oz',
+          quantityReserved: 2,
+        };
+        component.sortedStorageList = mockSortedList;
+        // delcaring a spy to check if compareNameUnit is called
+        spyOn(component.shopList, 'compareNameUnit').and.returnValue(false);
+        spyOn(component, 'updateDocument');
+        component.consolidateStorage(itemProposed);
+        expect(component.shopList.compareNameUnit).toHaveBeenCalled();
+        expect(component.updateDocument).not.toHaveBeenCalled;
+        // expect return true
+        expect(component.consolidateStorage(itemProposed)).toEqual(false);
       });
     });
   });
