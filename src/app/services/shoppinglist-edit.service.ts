@@ -15,6 +15,7 @@ import {shoppingList} from './shoppingList.model';
 
 
 export class ShoppinglistEditService {
+  shoppingListCreated: boolean;
   // need to imort and use authservice and firestore
   /** @constructor
    * @name constructor
@@ -29,7 +30,14 @@ export class ShoppinglistEditService {
       this.shoppingCollection = this.afs.collection<shoppingList>('users/' + this.userInfo + '/shoppingList');
       this.listItems$ = this.shoppingCollection.valueChanges(); // Change to local pull similar to search-recipes, relies on listRecipes style function
       this.listItems().then((list) => {
-        this.sortedList = list.Items;
+        if (!list) {
+          console.log('List Not Defined');
+          this.shoppingListCreated = false;
+          this.sortedList = [];
+        } else {
+          this.shoppingListCreated = true;
+          this.sortedList = list.Items;
+        }
       });
     });
   }
@@ -53,6 +61,12 @@ export class ShoppinglistEditService {
     */
   printANumber() {
     console.log(6);
+  }
+  /**
+   * @function createDocument
+   */
+  async createShoppingListDocument() {
+    await this.shoppingCollection.doc('List').set({Items: []});
   }
   /** @function
      * @name updateDocument
@@ -139,6 +153,10 @@ export class ShoppinglistEditService {
      * It then either pushes that constant to the list or updates the list before updating the list.
      */
   async addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit, fromRecipe:boolean) {
+    // Checks to ensure the shopping list collection and document are created before attempting to add to them
+    if (!this.shoppingListCreated) {
+      await this.createShoppingListDocument();
+    }
     // if the item name is blank, ignore all this
     if (proposedIngredient === '') {
     } else {

@@ -344,15 +344,54 @@ export class ItemListComponent implements OnDestroy, OnInit {
       this.updateDocument('List', {Items: this.sortedList});
     }
 
-    /**
-     * @name toStorage
-     * @description Send completed items from sorted list to the storage list in the database, then update.
+    /** @function
+     * @name consolidateStorage
+     * @param {any} itemProposed the item proposed to be added
+     * @return {boolean} true if a match was found and the functions run. false if no match was found
+     * @description consolidateStorage  is the function that is called whenever a new item is added to the shopping list
+     * It looks through the existing shopping list and calls @function compareNameUnit on every item in the list. Note that it is calling the service function here
+     * (If @function compareNameUnit finds an item that matches, it calls @function sumQuantity that performs the adding of quantity values
+     * in which case, @param itemProposed is NOT added to the list and @function consolidateStorage  returns true, as it has just been consolidated)
+     * after finding a match and calling the appropriate functions,  @function updateDocument is called
+     * if no match is found, proceed with adding the item as usual and return false.
+     * This function is called by @function addToStorage
+     * @summary consolidateStorage  takes a proposed item and checks the shopping list for a match. upon finding one, the quantities are summed,
+     * the item is not added ot the shopping list, the list is updated, and consolidateStorage returns true.
+     *  If no match is found, the item gets added to the list as normal and consolidateStorage  returns false.
      */
+    consolidateStorage(itemProposed): boolean {
+      let consolidated: boolean;
+      const n = this.sortedStorageList.length;
+      for (let i =0; i<n; i++) {
+        consolidated = this.shopList.compareNameUnit(this.sortedStorageList[i], itemProposed);
+        if (consolidated===true) {
+          this.updateDocument('List', {Items: this.sortedStorageList});
+          return true;
+        }
+      }
+      return false;
+    }
+    /**
+   * @name addToStorage
+   * @param {any} ingredient the ingredient to either push or consolidate to the list
+   * @description helper function of toStorage calls consolidateStorageQuantity, If false pushes the item to the array
+   * if true, then considation already happened, no need to add anything
+   */
+    addToStorage(ingredient): void {
+      if (this.consolidateStorage(ingredient)===false) {
+        this.sortedStorageList.push(ingredient);
+      }
+    }
+
+    /**
+   * @name toStorage
+   * @description Send completed items from sorted list to the storage list in the database, then update.
+   */
     toStorage(): void {
       for (let i = this.sortedList.length - 1; i >= 0; i--) {
         if (this.sortedList[i].isComplete == true) {
-          // Send information of completed item to storage list in the database
-          this.sortedStorageList.push(this.sortedList[i]);
+        // Send information of completed item to storage list in the database
+          this.addToStorage(this.sortedList[i]);
           // Remove the item from the sorted list
           this.sortedList.splice(i, 1);
           i = this.sortedList.length - 1;
@@ -360,13 +399,14 @@ export class ItemListComponent implements OnDestroy, OnInit {
       }
       if (this.sortedList.length == 1) {
         if (this.sortedList[0].isComplete == true) {
-          // Send information of completed item to storage list in the database
-          this.sortedStorageList.push(this.sortedList[0]);
+        // Send information of completed item to storage list in the database
+          this.addToStorage(this.sortedList[0]);
           // Remove the item from the sorted list
           this.sortedList.splice(0, 1);
         }
       }
       this.updateStorageDocument('List', {Items: this.sortedStorageList});
+      this.shopList.sortedList = this.sortedList;
       this.updateDocument('List', {Items: this.sortedList});
     }
 
