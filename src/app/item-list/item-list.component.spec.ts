@@ -312,12 +312,16 @@ describe('ItemListComponent', () => {
           quantityReserved: 0,
         },
       ];
+      // Set up the item list for testing
       component.sortedList = itemList;
 
+      // Set spies on the functions to check for
       spyOn(component, 'updateDocument');
 
+      // Run the function being tested
       component.completionAll();
 
+      // Check that the function worked properly
       for (let i = 0; i < component.sortedList.length; i++) {
         expect(component.sortedList[i].isComplete).toEqual(true);
       }
@@ -480,11 +484,25 @@ describe('ItemListComponent', () => {
         ];
         // delcaring a spy to check that updateDocument is called
         spyOn(component, 'updateDocument');
+        // spy on confirm action
+        spyOn(component, 'confirmAction');
+
         expect(component.sortedList).toEqual(mockSortedList);
         component.onCheckBoxChange(component.sortedList[0]);
+        expect(component.confirmAction).toHaveBeenCalled();
         expect(component.sortedList).toEqual(noItemList);
         expect(component.updateDocument).toHaveBeenCalled();
       });
+
+      /**
+      * Tests that the mat checkbox will initialize and show up on the page
+      */
+      it('check for confirmation', async () => {
+        spyOn(component, 'confirmAction');
+        component.confirmAction('Test Message');
+        expect(component.confirmAction).toHaveBeenCalledWith('Test Message');
+      });
+
 
       /**
     * Tests that the mat checkbox will initialize and show up on the page
