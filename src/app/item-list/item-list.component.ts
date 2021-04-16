@@ -248,6 +248,20 @@ export class ItemListComponent implements OnDestroy, OnInit {
       }
     }
 
+    /**
+     * Create a confirm option with a message
+     * @param {string} message
+     * @return {boolean}
+     */
+    confirmAction(message): boolean {
+      if (confirm(message)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    onProceed = false; // Boolean to keep track if the fucntion should proceed
     /** @function
      * @name onCheckBoxChange
      * @param {any} item the item to be deleted
@@ -256,10 +270,25 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * Then, it calls @function updateDocument , which updates the shoppingCollection, pushing the change to the database.
      */
     onCheckBoxChange(item): void {
-      const index = this.sortedList.indexOf(item);
-      this.sortedList.splice(index, 1);
-      this.shopList.sortedList = this.sortedList;
-      this.updateDocument('List', {Items: this.sortedList});
+      // In the case of reserved food
+      if (item.quantityReserved > 0) {
+        this.onProceed = this.confirmAction('Are you sure you want to delete this item? The item is reserved.');
+      // In the case of no reserved food
+      } else {
+        this.onProceed = this.confirmAction('Are you sure you want to delete this item?');
+      }
+      // In the case of null, proceed (Mainly here for testing purposes)
+      if (this.onProceed == null) {
+        this.onProceed = true;
+      }
+      // If the confirmation is true
+      if (this.onProceed == true) {
+        const index = this.sortedList.indexOf(item);
+        this.sortedList.splice(index, 1);
+        this.shopList.sortedList = this.sortedList;
+        this.updateDocument('List', {Items: this.sortedList});
+        this.onProceed = false;
+      }
     }
 
     /** @function
