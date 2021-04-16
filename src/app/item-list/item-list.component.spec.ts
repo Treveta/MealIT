@@ -485,7 +485,7 @@ describe('ItemListComponent', () => {
         // delcaring a spy to check that updateDocument is called
         spyOn(component, 'updateDocument');
         // spy on confirm action
-        spyOn(component, 'confirmAction');
+        spyOn(component, 'confirmAction').and.returnValue(true);
 
         expect(component.sortedList).toEqual(mockSortedList);
         component.onCheckBoxChange(component.sortedList[0]);
@@ -654,6 +654,9 @@ describe('ItemListComponent', () => {
         });
       });
       describe('food Storage Consolidation tests', () => {
+      /**
+      * Tests that addToStorage calls consolidateStorage
+      */
         it('addToStorage should call consolidateStorage', () =>{
           const item = {
             isComplete: false,
@@ -667,6 +670,9 @@ describe('ItemListComponent', () => {
           expect(component.consolidateStorage).toHaveBeenCalled();
         });
       });
+      /**
+      * Tests that the consolidateStorage is making the proper calls when true
+      */
       it('consolidateStorage should call the service compareNameUnit when thats true, return true and call updateDocument ', () => {
         // Defining mocks to compare
         const itemProposed = {
@@ -687,6 +693,9 @@ describe('ItemListComponent', () => {
         // expect return true
         expect(component.consolidateStorage(itemProposed)).toEqual(true);
       });
+      /**
+      * Tests that the consolidateStorage is making the proper calls when false
+      */
       it('consolidateStorage should call the service compareNameUnit when thats false, return false and dont call updateDocument ', () => {
         // Defining mocks to compare
         const itemProposed = {
