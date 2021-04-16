@@ -17,12 +17,12 @@ describe('ShoppinglistEditService', () => {
       ],
     });
     service = TestBed.inject(ShoppinglistEditService);
-    spyOn(service, 'createShoppingListDocument');
   });
 
   it('can load instance', () => {
     expect(service).toBeTruthy();
   });
+
   describe('addToShoppingList Tests', () => {
     /**
     * Mock of sortedList, used by several functions in item-list.service.ts
