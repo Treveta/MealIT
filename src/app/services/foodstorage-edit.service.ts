@@ -55,5 +55,14 @@ export class FoodstorageEditService {
         quantityReserved+=changeQuantity;
       }
     }
+    this.updateDocument('List', {Items: this.sortedList});
+  }
+  /**
+   * @param {string} docName name of document to update
+   * @param {any} data the data to update the document with
+   * function to update the food storage with new data
+   */
+  updateDocument(docName: string, data):void {
+    this.storageCollection.doc(docName).update(data);
   }
 }
