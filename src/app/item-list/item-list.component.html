@@ -122,7 +122,22 @@
               <div *ngIf = "item.quantityReserved > 0">
                 {{item.quantityReserved}} {{item.unit}} reserved
               </div>
-              
+              <div>
+              <button mat-mini-fab color="accent">
+                <mat-icon>edit</mat-icon>
+              </button> 
+              <button mat-mini-fab color="primary">
+                <mat-icon>done</mat-icon>
+              </button> 
+              <button mat-mini-fab color="warn">
+                <mat-icon>close</mat-icon>
+              </button> 
+            </div>
+              <div>
+              <mat-form-field>
+              <input matInput type="number" min = "0" max = "1000000" color="warn">
+              </mat-form-field> 
+            </div>
             </div> 
     
           </mat-card>
@@ -145,6 +160,22 @@
         </p>
         <div *ngIf = "item.quantityReserved > 0">
           {{item.quantityReserved}} reserved
+        </div>
+        <div>
+          <button mat-mini-fab color="accent">
+            <mat-icon>edit</mat-icon>
+          </button> 
+          <button mat-mini-fab color="primary">
+            <mat-icon>done</mat-icon>
+          </button> 
+          <button mat-mini-fab color="warn">
+            <mat-icon>close</mat-icon>
+          </button> 
+        </div>
+        <div>
+          <mat-form-field>
+          <input matInput type="number" min = "0" max = "1000000" color="warn">
+          </mat-form-field> 
         </div>
             </div> 
     
