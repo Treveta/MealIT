@@ -1,7 +1,8 @@
 // Imports
 import {Injectable} from '@angular/core';
-import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
+import {AngularFirestore} from '@angular/fire/firestore';
 import {AuthService} from '../auth.service';
+import {FoodstorageEditService} from '../foodstorage-edit.service';
 import {ShoppinglistEditService} from '../shoppinglist-edit.service';
 
 @Injectable({
@@ -21,6 +22,7 @@ export class ArbiterService {
     private authService: AuthService,
     public afs: AngularFirestore,
     public shopList: ShoppinglistEditService,
+    public storageList: FoodstorageEditService,
   ) {
     authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -31,7 +33,7 @@ export class ArbiterService {
 
   /**
    * Determines the amountToAdd to shopping list
-   * Also returns amountRequested and currentUnreserved for possible use in visualizations 
+   * Also returns amountRequested and currentUnreserved for possible use in visualizations
    * @param {string} nameToMatch the name of the ingredient to determine the storage of
    * @param {string} unitToMatch the unit of the ingredient to determine the storage of
    * @param {number} amountRequested the amount the recipe is requesting
@@ -40,15 +42,17 @@ export class ArbiterService {
   async determineStorage(nameToMatch, unitToMatch, amountRequested): Promise<ingredientStatusModel> {
     let returnData: ingredientStatusModel;
     await this.listStorage().then((list) => {
-      console.table(list);
       for (let i = 0; i < list.length; i++) {
         if (list[i].itemName == nameToMatch && list[i].unit == unitToMatch) {
           const amountToAdd = (amountRequested + list[i].quantityReserved) - list[i].quantity;
-          returnData = {amountToAdd: amountToAdd, amountRequested: amountRequested, currentUnreserved: list[i].quantity - list[i].reservedQuantity};
+          returnData = {amountToAdd: amountToAdd, amountRequested: amountRequested, currentUnreserved: list[i].quantity - list[i].quantityReserved, currentReserved: list[i].quantityReserved};
+          console.table(returnData);
+          break;
+        } else {
+          returnData = {amountToAdd: amountRequested, amountRequested: amountRequested, currentUnreserved: 0, currentReserved: 0};
         }
       }
     });
-    returnData = {amountToAdd: amountRequested, amountRequested: amountRequested, currentUnreserved: 0};
     return returnData;
   }
 
@@ -56,27 +60,31 @@ export class ArbiterService {
    * Add or Reserve based on amountToAdd
    * @param {number} amountToAdd the quantity of the ingredient to add to shopping list
    * @param {number} amountRequested the quantity the recipe requests
-   * @param {string} itemName the name of the ingredient
-   * @param {string} unit the unit of the ingredient
+   * @param {number} currentUnreserved the amount of the ingredient in food storage that has yet to be reserved
+   * @param {number} currentReserved
+   * @param {string} ingredient the ingredient to add or reserve
    */
-  addOrReserve(amountToAdd, amountRequested, itemName, unit) {
+  addOrReserve(amountToAdd, amountRequested, currentUnreserved, currentReserved, ingredient) {
     if (amountToAdd > 0) {
-      this.shopList.addToShoppingList(itemName, amountToAdd, unit, true);
+      this.shopList.addToShoppingList(ingredient.ingredientName, amountToAdd, ingredient.unit, true);
       // Reserve all of ingredient in foodStorage
+      if (amountToAdd != amountRequested) {
+        this.storageList.editReserved(currentUnreserved, currentReserved, ingredient);
+      }
     } else {
       // Add the amountRequested to quantityReserved in foodStorage
+      this.storageList.editReserved(amountRequested, currentReserved, ingredient);
     }
   }
 
   /**
    * function handles determining the storage status of the ingredient and then running addOrReserve accordingly
-   * @param {string} nameToMatch the name of the ingredient to determine the storage of
-   * @param {string} unitToMatch the unit of the ingredient to determine the storage of
-   * @param {number} amountRequested the total quanity of the ingredient the recipe needs
+   * @param {string} ingredientToMatch the ingredient to determine the storage of
    */
-  arbiter(nameToMatch, unitToMatch, amountRequested) {
-    this.determineStorage(nameToMatch, unitToMatch, amountRequested).then((ingredientStatus) => {
-      this.addOrReserve(ingredientStatus.amountToAdd, ingredientStatus.amountRequested, nameToMatch, unitToMatch);
+  arbiter(ingredientToMatch) {
+    this.determineStorage(ingredientToMatch.ingredientName, ingredientToMatch.unit, ingredientToMatch.quantity).then((ingredientStatus) => {
+      console.table(ingredientStatus);
+      this.addOrReserve(ingredientStatus.amountToAdd, ingredientStatus.amountRequested, ingredientStatus.currentUnreserved, ingredientStatus.currentReserved, ingredientToMatch);
     });
   }
 
@@ -145,4 +153,5 @@ export interface ingredientStatusModel {
   amountToAdd: any,
   amountRequested: any,
   currentUnreserved: any,
+  currentReserved: any,
 }

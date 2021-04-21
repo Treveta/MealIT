@@ -45,28 +45,53 @@ export class FoodstorageEditService {
   private subscription: Subscription;
 
   /**
-   * @param {any} itemQuantity the quantity of the item the user wants to change
-   * @param {any} changeQuantity quantity the user wants to change reserved by
-   * @param {any} quantityReserved quantity the has already has reserved
    * Function to edit reserved amount in food storage
+   * @param {number} changeQuantity the amount to change the quantity reserved by
+   * @param {number} currentReserved the current reserved value in food storage
+   * @param {any} ingredient the ingredient that is having is being reserved
    */
-  editReserved(itemQuantity: any, changeQuantity: any, quantityReserved): void {
-    // changeQuantity is positive if user wishes to add to the amount reserved
-    if (changeQuantity > 0) {
-      if ((quantityReserved+changeQuantity) > itemQuantity) {
-        // do nothing if addition results in more reserved than currently available
-      } else {
-        quantityReserved+=changeQuantity;
-      }
-    // changeQuantity is negative if user wishes to reduce the amount reserved
-    } else if (changeQuantity < 0) {
-      if ((quantityReserved+changeQuantity) < 0) {
-        // do nothing if reduction results in less than zero
-      } else {
-        quantityReserved+=changeQuantity;
+  editReserved(changeQuantity: number, currentReserved: number, ingredient): void {
+    console.log(ingredient.quantityReserved);
+    const foundItem = this.findIngredientInStorage(ingredient);
+    const addedItem = foundItem.info;
+    addedItem.quantityReserved = currentReserved + changeQuantity;
+    console.table(addedItem);
+    this.sortedList.splice(foundItem.index, 1, addedItem);
+    this.updateDocument('List', {Items: this.sortedList});
+  }
+
+  /**
+   * Finds an ingredient in foodStorage and returns the ingredients info and index in the list
+   * @param {any} ingredientToFind the ingredient to find in storage
+   * @return {Object}
+   */
+  findIngredientInStorage(ingredientToFind) {
+    const foundIngredient = {
+      index: undefined,
+      info: undefined,
+    };
+    for (let i = 0; i < this.sortedList.length; i++) {
+      if (this.compareNameUnit(this.sortedList[i], ingredientToFind)) {
+        foundIngredient.index = i;
+        foundIngredient.info = this.sortedList[i];
       }
     }
-    this.updateDocument('List', {Items: this.sortedList});
+    return foundIngredient;
+  }
+
+  /** @function
+     * @name compareNameUnit
+     * @param {any} itemExist the item that exists in the list to have its name and units compared
+     * @param {any} itemProposed the item proposed to be added which will have its name and unit compared to @param itemExist
+     * @return {boolean} returns true if there is a match and false if not
+     * @description compareNameUnit will test the name and unit values of two items and call @function sumQuantity
+     * on the items if both fields are the same in each item
+     * this is a helper function for consolidateQuantity
+     */
+  compareNameUnit(itemExist, itemProposed): boolean {
+    if (itemExist.itemName.trim().toLowerCase()===itemProposed.ingredientName.trim().toLowerCase()&&itemExist.unit===itemProposed.unit) {
+      return true;
+    } else return false;
   }
   /**
    * @param {string} docName name of document to update
