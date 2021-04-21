@@ -48,7 +48,7 @@ export class FoodstorageEditService {
    * Function to edit reserved amount in food storage
    * @param {number} changeQuantity the amount to change the quantity reserved by
    * @param {number} currentReserved the current reserved value in food storage
-   * @param {any} ingredient the ingredient that is having is being reserved
+   * @param {any} ingredient the ingredient that is being reserved
    */
   editReserved(changeQuantity: number, currentReserved: number, ingredient): void {
     console.log(ingredient.quantityReserved);
