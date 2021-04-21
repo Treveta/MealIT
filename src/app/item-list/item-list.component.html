@@ -111,35 +111,27 @@
           <mat-card cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
     
     
-            <div class="example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="25" cdkDrag>
-              <mat-checkbox (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
-              <mat-checkbox (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
-              <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
-              <p>
+            <div class="example-box" *ngFor="let item of sortedList; let indexOfElement=index; " [cdkDragStartDelay]="25" cdkDrag>
+              <mat-checkbox class="col" (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
+              <mat-checkbox class="col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
+              <mat-chip-list class="col" selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
+              <div class="col">
               {{item.quantity}}
               {{item.unit}}
-            </p>
-              <div *ngIf = "item.quantityReserved > 0">
+              </div>
+              <div *ngIf = "item.quantityReserved > 0" class="col">
                 {{item.quantityReserved}} {{item.unit}} reserved
               </div>
-              <div>
-              <button mat-mini-fab color="accent">
-                <mat-icon>edit</mat-icon>
-              </button> 
-              <button mat-mini-fab color="primary">
-                <mat-icon>done</mat-icon>
-              </button> 
-              <button mat-mini-fab color="warn">
-                <mat-icon>close</mat-icon>
-              </button> 
-            </div>
-              <div>
-              <mat-form-field>
-              <input matInput type="number" min = "0" max = "1000000" color="warn">
-              </mat-form-field> 
-            </div>
-            </div> 
-    
+              <div *ngIf = "item.quantityReserved <= 0" class="col">
+                <!--Empty Spacer-->
+              </div>
+              <div *ngIf="indexEdit == indexOfElement;" class="col">
+                <ng-container *ngTemplateOutlet="editOptions;context:{indexOfElement: indexOfElement}"></ng-container>
+              </div> 
+              <div *ngIf="indexEdit != indexOfElement;" class="col">
+                <ng-container *ngTemplateOutlet="justEdit; context:{indexOfElement: indexOfElement}"></ng-container>
+              </div> 
+            </div>    
           </mat-card>
         </div>
       </ng-template>
@@ -147,43 +139,60 @@
       <!--longer drag time for mobile, to allow for scrolling-->
       <ng-template #mobileDrag>
         <div class="center">
-          <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+          <mat-card cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
     
     
-             <div class = "example-box" *ngFor="let item of sortedList" [cdkDragStartDelay]="700" cdkDrag>
-              <mat-checkbox (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
-              <mat-checkbox (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
-              <mat-chip-list selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
-          <p>
-          {{item.quantity}}
-          {{item.unit}}
-        </p>
-        <div *ngIf = "item.quantityReserved > 0">
-          {{item.quantityReserved}} reserved
+            <div class="example-box" *ngFor="let item of sortedList; let indexOfElement=index; " [cdkDragStartDelay]="700" cdkDrag>
+              <mat-checkbox class="col" (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
+              <mat-checkbox class="col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
+              <mat-chip-list class="col" selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
+              <div class="col">
+              {{item.quantity}}
+              {{item.unit}}
+              </div>
+              <div *ngIf = "item.quantityReserved > 0" class="col">
+                {{item.quantityReserved}} {{item.unit}} reserved
+              </div>
+              <div *ngIf = "item.quantityReserved <= 0" class="col">
+                <!--Empty Spacer-->
+              </div>
+              <div *ngIf="indexEdit == indexOfElement;" class="col">
+                <ng-container *ngTemplateOutlet="editOptions;context:{indexOfElement: indexOfElement}"></ng-container>
+              </div> 
+              <div *ngIf="indexEdit != indexOfElement;" class="col">
+                <ng-container *ngTemplateOutlet="justEdit; context:{indexOfElement: indexOfElement}"></ng-container>
+              </div> 
+            </div>    
+          </mat-card>
         </div>
-        <div>
-          <button mat-mini-fab color="accent">
-            <mat-icon>edit</mat-icon>
-          </button> 
-          <button mat-mini-fab color="primary">
-            <mat-icon>done</mat-icon>
-          </button> 
-          <button mat-mini-fab color="warn">
-            <mat-icon>close</mat-icon>
-          </button> 
-        </div>
-        <div>
-          <mat-form-field>
-          <input matInput type="number" min = "0" max = "1000000" color="warn">
-          </mat-form-field> 
-        </div>
-            </div> 
-    
-          </div>
-          </div>
       </ng-template>
 
+<ng-template #justEdit let-indexOfElement="indexOfElement">
+      <div>
+        <button mat-mini-fab color="accent" (click)="setEditIndex(indexOfElement);setQuantityEdit(indexOfElement);">
+          <mat-icon>edit</mat-icon>
+        </button> 
+      </div>
+</ng-template>
 
+<ng-template #editOptions let-indexOfElement="indexOfElement">
+  <div>
+    <mat-form-field class="quantityEditField">
+      <input matInput
+      type="number" 
+      min = "0" 
+      max = "1000000" 
+      color="warn" 
+      [(ngModel)] = "quantityEdit">
+      </mat-form-field> 
+    <button mat-mini-fab color="primary" (click)="confirmEdit(indexOfElement)">
+      <mat-icon>done</mat-icon>
+    </button> 
+    <button mat-mini-fab color="warn" (click)="setEditIndex(-1)">
+      <mat-icon>close</mat-icon>
+    </button> 
+  </div>
+</ng-template>
 
   <!-- opens the modal -->
   <button mat-raised-button (click)="openModal('custom-modal-1')">Open Modal 1</button>
