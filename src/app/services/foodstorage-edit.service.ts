@@ -55,7 +55,6 @@ export class FoodstorageEditService {
     const foundItem = this.findIngredientInStorage(ingredient);
     const addedItem = foundItem.info;
     addedItem.quantityReserved = currentReserved + changeQuantity;
-    console.table(addedItem);
     this.sortedList.splice(foundItem.index, 1, addedItem);
     this.updateDocument('List', {Items: this.sortedList});
   }
