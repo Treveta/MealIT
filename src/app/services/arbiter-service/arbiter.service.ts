@@ -83,7 +83,6 @@ export class ArbiterService {
    */
   arbiter(ingredientToMatch) {
     this.determineStorage(ingredientToMatch.ingredientName, ingredientToMatch.unit, ingredientToMatch.quantity).then((ingredientStatus) => {
-      console.table(ingredientStatus);
       this.addOrReserve(ingredientStatus.amountToAdd, ingredientStatus.amountRequested, ingredientStatus.currentUnreserved, ingredientStatus.currentReserved, ingredientToMatch);
     });
   }
