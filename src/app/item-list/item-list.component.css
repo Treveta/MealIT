@@ -33,6 +33,14 @@ table {
   font-size: 14px;
 }
 
+.col {
+  width: 100%;
+}
+
+.quantityEditField {
+  width: 25%;
+}
+
 .cdk-drag-preview {
   box-sizing: border-box;
   border-radius: 4px;

@@ -113,6 +113,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
   displayedColumns: string[] = ['name', 'quantity', 'unit'];
   public editToggle: boolean = false;
   public isLarge: boolean = true;
+  public indexEdit: number = -1; // for determining what mat card to swap templates
+  public quantityEdit: number; // when taking the input of a user's edit
   public screenWidth: any = window.innerWidth;
 
   /**
@@ -496,5 +498,50 @@ export class ItemListComponent implements OnDestroy, OnInit {
     drop(event: CdkDragDrop<string[]>) {
       moveItemInArray(this.sortedList, event.previousIndex, event.currentIndex);
       this.shoppingCollection.doc('List').update({Items: this.sortedList});
+      this.indexEdit =-1;
+    }
+    /**
+     * @function setEditIndex
+     * @param {number} htmlIndex the number gotten from the ngFor
+     * @description setEditIndex will set the public index value to the number.
+     * currently used to make sure templates switch properly and to cancel edit
+     */
+    setEditIndex(htmlIndex: number) {
+      this.indexEdit = htmlIndex;
+      // console.log(this.indexEdit);
+    }
+    /**
+     * @function setQuantityEdit
+     * @param {number} index the index of the sortedList whose
+     * quantity quantityEdit will set itself to
+     */
+    setQuantityEdit(index: number) {
+      this.quantityEdit = this.sortedList[index].quantity;
+      console.log(this.quantityEdit);
+    }
+    /**
+     * @function confirmEdit
+     * @param {number} index the nuumber to alter in the sortedList
+     * @description runs when a user accepts the changes made (clicking the checkmark)
+     */
+    confirmEdit(index: number) {
+      if (this.sortedList[index].quantityReserved <= this.quantityEdit) {
+        this.sortedList[index].quantity = this.quantityEdit;
+        this.shopList.sortedList = this.sortedList;
+        this.updateDocument('List', {Items: this.sortedList});
+        this.setEditIndex(-1);
+        this.quantityEdit = undefined;
+      } else if (this.sortedList[index].quantityReserved > this.quantityEdit) {
+        this.onProceed = this.confirmAction('The remaining quantity would be less than what was reserved. Continue?');
+      }
+      if (this.onProceed == true) {
+        this.sortedList[index].quantity = this.quantityEdit;
+        this.sortedList[index].quantityReserved = this.quantityEdit;
+        this.shopList.sortedList = this.sortedList;
+        this.updateDocument('List', {Items: this.sortedList});
+        this.onProceed = false;
+        this.setEditIndex(-1);
+        this.quantityEdit = undefined;
+      }
     }
 }
