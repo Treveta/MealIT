@@ -13,6 +13,7 @@ import {AuthService} from './auth.service';
 * Service to edit the food storage page
 */
 export class FoodstorageEditService {
+  foodStorageListCreated: boolean;
   /**
    * Constructor for foodstorage-edit.service
    */
@@ -24,6 +25,16 @@ export class FoodstorageEditService {
       this.userInfo = uid;
       this.storageCollection = this.afs.collection<storageList>('users/' + this.userInfo + '/storageList');
       this.storageItems$ = this.storageCollection.valueChanges();
+      this.storageItems().then((list) => {
+        if (!list) {
+          console.log('List Not Defined');
+          this.foodStorageListCreated = false;
+          this.sortedList = [];
+        } else {
+          this.foodStorageListCreated = true;
+          this.sortedList = list.Items;
+        }
+      });
     });
   }
 
@@ -54,6 +65,29 @@ export class FoodstorageEditService {
       } else {
         quantityReserved+=changeQuantity;
       }
+    }
+    this.updateDocument('List', {Items: this.sortedList});
+  }
+  /**
+   * @param {string} docName name of document to update
+   * @param {any} data the data to update the document with
+   * function to update the food storage with new data
+   */
+  updateDocument(docName: string, data):void {
+    this.storageCollection.doc(docName).update(data);
+  }
+  /**
+   * @constant {Promise} snapshot a constant promise for list doc from the foodstorage
+   * @return {Object} data inside the document
+   * function to pull the list of items in food storage
+   */
+  async storageItems() {
+    try {
+      const snapshot = await this.storageCollection.doc('List')
+          .get().toPromise();
+      return snapshot.data();
+    } catch (err) {
+      console.log('Error getting documents', err);
     }
   }
 }
