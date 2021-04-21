@@ -485,10 +485,13 @@ describe('ItemListComponent', () => {
         // delcaring a spy to check that updateDocument is called
         spyOn(component, 'updateDocument');
         // spy on confirm action
-        spyOn(component, 'confirmAction').and.returnValue(true);
+        spyOn(component, 'confirmAction').and.callFake(function() {
+          return true;
+        });
 
         expect(component.sortedList).toEqual(mockSortedList);
         component.onCheckBoxChange(component.sortedList[0]);
+        expect(component.confirmAction).toHaveBeenCalled();
         expect(component.confirmAction).toHaveBeenCalled();
         expect(component.sortedList).toEqual(noItemList);
         expect(component.updateDocument).toHaveBeenCalled();
@@ -516,6 +519,9 @@ describe('ItemListComponent', () => {
     */
       it('mat checkBox should call call onCheckBoxChange on change', async () => {
         spyOn(component, 'onCheckBoxChange');
+        spyOn(component, 'confirmAction').and.callFake(function() {
+          return true;
+        });
         console.log(debugOnChangeCheck);
         const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
         console.log(checkbox);
@@ -625,6 +631,9 @@ describe('ItemListComponent', () => {
           ];
             // delcaring a spy to check that updateDocument is called
           spyOn(component, 'updateDocument');
+          spyOn(component, 'confirmAction').and.callFake(function() {
+            return true;
+          });
           expect(component.sortedList).toEqual(mockSortedList);
           component.onCheckBoxChange(component.sortedList[0]);
           expect(component.sortedList).toEqual(noItemList);
@@ -643,6 +652,9 @@ describe('ItemListComponent', () => {
         */
         it('mat checkBox should call call onCheckBoxChange on change', async () => {
           spyOn(component, 'onCheckBoxChange');
+          spyOn(component, 'confirmAction').and.callFake(function() {
+            return true;
+          });
           console.log(debugOnChangeCheck);
           const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
           console.log(checkbox);
