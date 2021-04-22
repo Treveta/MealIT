@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, HostListener, OnInit} from '@angular/core';
 import {ThemeService} from 'app/theme-service/theme.service';
 import {AuthService} from '../services/auth.service';
 
@@ -12,6 +12,8 @@ import {AuthService} from '../services/auth.service';
  * Creates the navigation bar component
  */
 export class TopBarComponent implements OnInit {
+  screenWidth: number;
+  isLarge: boolean;
   /**
    * The constructor for the nav bar functions
    * @param {AuthService} auth Authentication vairiable for authenticating user
@@ -20,6 +22,21 @@ export class TopBarComponent implements OnInit {
   constructor(public auth: AuthService, private themeService: ThemeService) {
     this.themeService.initTheme();
     this.isDarkMode = this.themeService.isDarkMode();
+  }
+  /** @function
+   * @name checkWidth
+   * @listens window:resize
+   * @hostListener
+   * @description checkWidth listens to window resize and adjusts the isLarge Boolean.
+   */
+@HostListener('window:resize') checkWidth() {
+  //  alert('it works!');
+    this.screenWidth = window.innerWidth;
+    if (this.screenWidth <= 600) {
+      this.isLarge = false;
+    } else {
+      this.isLarge = true;
+    }
   }
   /**
    * Holds a boolean value to toggle dark mode on the page
@@ -37,5 +54,12 @@ export class TopBarComponent implements OnInit {
   /**
    * A function from the auth service that only is called when a user accesses the site for the first time
    */
-  ngOnInit() { }
+  ngOnInit() {
+    this.screenWidth = window.innerWidth;
+    if (this.screenWidth <= 600) {
+      this.isLarge = false;
+    } else {
+      this.isLarge = true;
+    }
+  }
 }

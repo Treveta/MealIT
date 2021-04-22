@@ -4,179 +4,202 @@
       <div *ngIf="this.isLarge; then widescreen else thinscreen">
         <!-- template will replace this div -->
       </div>
-      <br>
+    </div>
+  </mat-card>
+  <br>
+  <div *ngIf="platform.ANDROID || platform.IOS; then mobileDrag else pcDrag">
+  <!-- template will replace this div -->
+
+  </div>
+</div>
+
+
+<ng-template #widescreen>
+  <div class = "center">
+    <mat-form-field>
+      <mat-label>Item Name</mat-label>
+      <input matInput 
+        required
+        [(ngModel)] = "newItem" 
+        type = "text" 
+      /> 
+      <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Number</mat-label>
+      <!--oninput line is input validation, does not allow the entry of any number below 0-->
+      <input matInput
+        required
+        [(ngModel)] = "newQuantity" 
+        type = "number" 
+        min = "0" 
+        max = "1000000" 
+        oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+      /> 
+      <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
+    </mat-form-field>   
+
+    <mat-form-field>
+      <mat-label>Unit</mat-label>
+      <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
+        <mat-option>-- None --</mat-option>
+        <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
+          <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
+            {{unit.viewValue}}
+          </mat-option>
+        </mat-optgroup>
+      </mat-select>
+      <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
+    </mat-form-field>
+  </div>
+  <br>
       <div class = "center">
         <button mat-button (click) = "addToItemList()"> 
           Add Item
           <!--TODO: add input validation(see login-page example)-->
         </button>
         <button mat-button (click) = "completionAll()"> 
-          Check All Complete
+          All Complete
         </button> 
         <button mat-button (click) = "toStorage()"> 
-          Send To Storage
-        </button> 
-      </div>
-    </div>
-  </mat-card>
-  <div>
-    <ng-template #widescreen>
-      <div class = "center">
-        <mat-form-field>
-          <mat-label>Item Name</mat-label>
-          <input matInput 
-            required
-            [(ngModel)] = "newItem" 
-            type = "text" 
-          /> 
-          <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
-        </mat-form-field>
-
-        <mat-form-field>
-          <mat-label>Number</mat-label>
-          <!--oninput line is input validation, does not allow the entry of any number below 0-->
-          <input matInput
-            required
-            [(ngModel)] = "newQuantity" 
-            type = "number" 
-            min = "0" 
-            max = "1000000" 
-            oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
-          /> 
-          <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
-        </mat-form-field>   
-
-        <mat-form-field>
-          <mat-label>Unit</mat-label>
-          <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
-            <mat-option>-- None --</mat-option>
-            <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
-              <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
-                {{unit.viewValue}}
-              </mat-option>
-            </mat-optgroup>
-          </mat-select>
-          <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
-        </mat-form-field>
-      </div>
-    </ng-template>
-
-    <ng-template #thinscreen>
-      <mat-form-field class = "center">
-        <mat-label>Item Name</mat-label>
-        <input matInput 
-          required
-          [(ngModel)] = "newItem" 
-          type = "text" 
-        /> 
-        <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
-      </mat-form-field>
-      <br>
-      <mat-form-field class = "center">
-        <mat-label>Number</mat-label>
-        <!--oninput line is input validation, does not allow the entry of any number below 0-->
-        <input matInput
-          required
-          [(ngModel)] = "newQuantity" 
-          type = "number" 
-          min = "0" 
-          max = "1000000" 
-          oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
-        /> 
-        <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
-      </mat-form-field>   
-      <br>
-      <mat-form-field class = "center">
-        <mat-label>Unit</mat-label>
-        <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
-          <mat-option>-- None --</mat-option>
-          <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
-            <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
-              {{unit.viewValue}}
-            </mat-option>
-          </mat-optgroup>
-        </mat-select>
-        <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
-      </mat-form-field>
-    </ng-template>
-
-    <div *ngIf="platform.ANDROID || platform.IOS; then mobileDrag else pcDrag">
-      <!-- template will replace this div -->
-   
-    </div>
-
-      <!-- shorter drag time for more responsive reordering-->
-      <ng-template #pcDrag>
-        <div class="center">
-          <mat-card cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-    
-    
-            <div class="example-box" *ngFor="let item of sortedList; let indexOfElement=index; " [cdkDragStartDelay]="25" cdkDrag>
-              <mat-checkbox class="col" (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
-              <mat-checkbox class="col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
-              <mat-chip-list class="col" selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
-              <div class="col">
-              {{item.quantity}}
-              {{item.unit}}
-              </div>
-              <div *ngIf = "item.quantityReserved > 0" class="col">
-                {{item.quantityReserved}} {{item.unit}} reserved
-              </div>
-              <div *ngIf = "item.quantityReserved <= 0" class="col">
-                <!--Empty Spacer-->
-              </div>
-              <div *ngIf="indexEdit == indexOfElement;" class="col">
-                <ng-container *ngTemplateOutlet="editOptions;context:{indexOfElement: indexOfElement}"></ng-container>
-              </div> 
-              <div *ngIf="indexEdit != indexOfElement;" class="col">
-                <ng-container *ngTemplateOutlet="justEdit; context:{indexOfElement: indexOfElement}"></ng-container>
-              </div> 
-            </div>    
-          </mat-card>
-        </div>
-      </ng-template>
-
-      <!--longer drag time for mobile, to allow for scrolling-->
-      <ng-template #mobileDrag>
-        <div class="center">
-          <mat-card cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-    
-    
-            <div class="example-box" *ngFor="let item of sortedList; let indexOfElement=index; " [cdkDragStartDelay]="700" cdkDrag>
-              <mat-checkbox class="col" (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
-              <mat-checkbox class="col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
-              <mat-chip-list class="col" selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>
-              <div class="col">
-              {{item.quantity}}
-              {{item.unit}}
-              </div>
-              <div *ngIf = "item.quantityReserved > 0" class="col">
-                {{item.quantityReserved}} {{item.unit}} reserved
-              </div>
-              <div *ngIf = "item.quantityReserved <= 0" class="col">
-                <!--Empty Spacer-->
-              </div>
-              <div *ngIf="indexEdit == indexOfElement;" class="col">
-                <ng-container *ngTemplateOutlet="editOptions;context:{indexOfElement: indexOfElement}"></ng-container>
-              </div> 
-              <div *ngIf="indexEdit != indexOfElement;" class="col">
-                <ng-container *ngTemplateOutlet="justEdit; context:{indexOfElement: indexOfElement}"></ng-container>
-              </div> 
-            </div>    
-          </mat-card>
-        </div>
-      </ng-template>
-
-<ng-template #justEdit let-indexOfElement="indexOfElement">
-      <div>
-        <button mat-mini-fab color="accent" (click)="setEditIndex(indexOfElement);setQuantityEdit(indexOfElement);" disableRipple>
-          <mat-icon>edit</mat-icon>
+          Checkout
         </button> 
       </div>
 </ng-template>
 
+<ng-template #thinscreen>
+  <mat-form-field class = "center">
+    <mat-label>Item Name</mat-label>
+    <input matInput 
+      required
+      [(ngModel)] = "newItem" 
+      type = "text" 
+    /> 
+    <mat-error *ngIf = "newItem==null">Please enter a value</mat-error>
+  </mat-form-field>
+  <br>
+  <mat-form-field class = "center">
+    <mat-label>Number</mat-label>
+    <!--oninput line is input validation, does not allow the entry of any number below 0-->
+    <input matInput
+      required
+      [(ngModel)] = "newQuantity" 
+      type = "number" 
+      min = "0" 
+      max = "1000000" 
+      oninput="this.value = !!this.value && Math.abs(this.value) >= 0 ? Math.abs(this.value) : null"
+    /> 
+    <mat-error *ngIf = "newQuantity==null">Enter a positive number</mat-error>
+  </mat-form-field>   
+  <br>
+  <mat-form-field class = "center">
+    <mat-label>Unit</mat-label>
+    <mat-select [(ngModel)] = "newUnit" [formControl] = "unitControl" required>
+      <mat-option>-- None --</mat-option>
+      <mat-optgroup *ngFor = "let group of unitGroups" [label] = "group.name" [disabled]="group.disabled">
+        <mat-option *ngFor = "let unit of group.unit" [value] = "unit.value">
+          {{unit.viewValue}}
+        </mat-option>
+      </mat-optgroup>
+    </mat-select>
+    <mat-error *ngIf = "newUnit==null">Please select a unit</mat-error>
+  </mat-form-field>
+  <br>
+      <div class = "center-thin">
+        <button style="width: 100%" mat-button (click) = "addToItemList()"> 
+          Add Item
+          <!--TODO: add input validation(see login-page example)-->
+        </button>
+        <button mat-button (click) = "completionAll()"> 
+          All Complete
+        </button> 
+        <button mat-button (click) = "toStorage()"> 
+          Checkout
+        </button> 
+      </div>
+</ng-template>
+
+
+
+<!-- shorter drag time for more responsive reordering-->
+<ng-template #pcDrag>
+  <div class="center">
+    <mat-card cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+
+
+      <div *ngFor="let item of sortedList; let indexOfElement=index; " [cdkDragStartDelay]="25" cdkDrag>
+        <div [ngClass]="isLarge ? 'outer-box' : 'outer-box-mobile'">
+          <div [ngClass]="isLarge ? 'inner-box' : 'inner-box-mobile'">
+            <mat-checkbox class="col" (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
+            <mat-checkbox class="col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
+            <!--<mat-chip-list class="col" selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>-->
+            <div class="col">
+            {{item.quantity}}
+            {{item.unit}}
+            </div>
+            <div *ngIf = "item.quantityReserved > 0" class="col">
+              {{item.quantityReserved}} reserved
+            </div>
+            <div *ngIf = "item.quantityReserved <= 0" class="col">
+              <!--Empty Spacer-->
+            </div>
+          </div> 
+          <div [ngClass]="isLarge ? 'action-buttons' : 'action-buttons-mobile'">
+            <div *ngIf="indexEdit == indexOfElement;" class="col-right">
+              <ng-container *ngTemplateOutlet="editOptions;context:{indexOfElement: indexOfElement}"></ng-container>
+            </div> 
+            <div *ngIf="indexEdit != indexOfElement;" class="col-right">
+              <ng-container *ngTemplateOutlet="justEdit; context:{indexOfElement: indexOfElement}"></ng-container>
+            </div> 
+          </div>
+        </div>    
+      </div>
+    </mat-card>
+  </div>
+</ng-template>
+
+<!--longer drag time for mobile, to allow for scrolling-->
+<ng-template #mobileDrag>
+  <div class="center">
+    <mat-card cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+
+
+      <div *ngFor="let item of sortedList; let indexOfElement=index; " [cdkDragStartDelay]="600" cdkDrag>
+        <div [ngClass]="isLarge ? 'outer-box' : 'outer-box-mobile'">
+          <div [ngClass]="isLarge ? 'inner-box' : 'inner-box-mobile'">
+            <mat-checkbox class="col" (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
+            <mat-checkbox class="col" class="small-col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
+            <!--<mat-chip-list class="col" selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>-->
+            <div class="col">
+            {{item.quantity}}
+            {{item.unit}}
+            </div>
+          </div> 
+          <div [ngClass]="isLarge ? 'action-buttons' : 'action-buttons-mobile'">
+            <div *ngIf="indexEdit == indexOfElement;" class="col-right">
+              <ng-container *ngTemplateOutlet="editOptions;context:{indexOfElement: indexOfElement}"></ng-container>
+            </div> 
+            <div *ngIf="indexEdit != indexOfElement;" class="col-right">
+              <ng-container *ngTemplateOutlet="justEdit; context:{indexOfElement: indexOfElement}"></ng-container>
+            </div> 
+          </div>
+        </div>    
+      </div>
+    </mat-card>
+  </div>
+</ng-template>
+
+<ng-template #justEdit let-indexOfElement="indexOfElement">
+  <div [ngClass]="isLarge == false ? 'edit-op-mobile': 'edit-op-right'">
+    <button mat-mini-fab color="accent" (click)="setEditIndex(indexOfElement);setQuantityEdit(indexOfElement);" disableRipple>
+      <mat-icon>edit</mat-icon>
+    </button> 
+  </div>    
+</ng-template>
+
 <ng-template #editOptions let-indexOfElement="indexOfElement">
-  <div>
+  <div [ngClass]="isLarge == false ? 'edit-op-mobile': 'edit-op-right'">
     <mat-form-field class="quantityEditField">
       <input matInput
       type="number" 
@@ -194,12 +217,4 @@
   </div>
 </ng-template>
 
-  <!-- opens the modal -->
-  <button mat-raised-button (click)="openModal('custom-modal-1')">Open Modal 1</button>
-</div>
-<!-- this is the modal view which is called based on the modal service calls -->
-<jw-modal id="custom-modal-1">
-    <h1>Remove selected items?</h1>
-    <button mat-button (click)="closeModal('custom-modal-1')">Cancel</button>
-</jw-modal>
 

@@ -1,9 +1,15 @@
-<h1>
+<div class="flex-parent">
+<h1 [ngClass]="isLarge ? '' : 'mobile-title'">
         <a [routerLink]="['/']">MealIt!</a>
 </h1>
 
+<div *ngIf="isLarge">
+  <mat-slide-toggle (click)="toggleDarkMode()" [(ngModel)]="isDarkMode">Dark Mode</mat-slide-toggle>
+</div>
+</div>
+
 <div *ngIf="auth.user$ | async; then authenticated else guest">
-    <!-- template will replace this div -->
+  <!-- template will replace this div -->
 </div>
 
 <ng-template #guest>
@@ -11,12 +17,13 @@
 </ng-template>
 
 <ng-template #authenticated>
-    <button [routerLink]="['/itemList']">Item List</button>
-    <button [routerLink]="['/createRecipe']">Recipe List</button>
-    <button [routerLink]="['/calender']">Calendar</button>
-    <button [routerLink]="['/foodStorage']">Food Storage</button>
+  <div [ngClass]="isLarge ? 'horizontal-button-list' : 'vertical-button-list'" class="equal-margin">
+    <button mat-raised-button color="accent" [routerLink]="['/itemList']">Item List</button>
+    <button mat-raised-button color="accent" [routerLink]="['/createRecipe']">Recipe List</button>
+    <button mat-raised-button color="accent" [routerLink]="['/calender']">Calendar</button>
+    <button mat-raised-button color="accent" [routerLink]="['/foodStorage']">Food Storage</button>
+  </div>
 </ng-template>
 
-<mat-slide-toggle (click)="toggleDarkMode()" [(ngModel)]="isDarkMode">Dark Mode</mat-slide-toggle>
 
-<img src="assets/borger.jpg" />
+
