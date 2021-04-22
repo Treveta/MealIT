@@ -13,6 +13,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {MatCheckboxHarness} from '@angular/material/checkbox/testing';
+import {MatButtonHarness} from '@angular/material/button/testing';
 import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
 
 describe('ItemListComponent', () => {
@@ -63,6 +64,7 @@ describe('ItemListComponent', () => {
   ];
   let debugCompletionCheck;
   let debugOnChangeCheck;
+  let debugOnClickCheck;
 
 
   beforeEach(() => {
@@ -129,6 +131,7 @@ describe('ItemListComponent', () => {
       fixture.detectChanges();
       debugCompletionCheck = fixture.nativeElement.querySelector('mat-checkbox[name=\"completionCheck\"]');
       debugOnChangeCheck = fixture.nativeElement.querySelector('mat-checkbox[name=\"completionCheck\"]');
+      debugOnClickCheck = fixture.nativeElement.querySelector('mat-button[text=\"edit\"]');
     });
   });
   describe('Initial Tests', () => {
@@ -681,51 +684,146 @@ describe('ItemListComponent', () => {
           component.addToStorage(item);
           expect(component.consolidateStorage).toHaveBeenCalled();
         });
-      });
-      /**
+        /**
       * Tests that the consolidateStorage is making the proper calls when true
       */
-      it('consolidateStorage should call the service compareNameUnit when thats true, return true and call updateDocument ', () => {
+        it('consolidateStorage should call the service compareNameUnit when thats true, return true and call updateDocument ', () => {
         // Defining mocks to compare
-        const itemProposed = {
-          isComplete: false,
-          itemName: 'Apples',
-          quantity: 2,
-          unit: 'oz',
-          quantityReserved: 2,
-        };
-        component.sortedStorageList = mockSortedList;
+          const itemProposed = {
+            isComplete: false,
+            itemName: 'Apples',
+            quantity: 2,
+            unit: 'oz',
+            quantityReserved: 2,
+          };
+          component.sortedStorageList = mockSortedList;
 
-        // delcaring a spy to check if compareNameUnit is called
-        spyOn(component.shopList, 'compareNameUnit').and.returnValue(true);
-        spyOn(component, 'updateDocument');
-        component.consolidateStorage(itemProposed);
-        expect(component.shopList.compareNameUnit).toHaveBeenCalled();
-        expect(component.updateDocument).toHaveBeenCalled;
-        // expect return true
-        expect(component.consolidateStorage(itemProposed)).toEqual(true);
-      });
-      /**
+          // delcaring a spy to check if compareNameUnit is called
+          spyOn(component.shopList, 'compareNameUnit').and.returnValue(true);
+          spyOn(component, 'updateDocument');
+          component.consolidateStorage(itemProposed);
+          expect(component.shopList.compareNameUnit).toHaveBeenCalled();
+          expect(component.updateDocument).toHaveBeenCalled;
+          // expect return true
+          expect(component.consolidateStorage(itemProposed)).toEqual(true);
+        });
+        /**
       * Tests that the consolidateStorage is making the proper calls when false
       */
-      it('consolidateStorage should call the service compareNameUnit when thats false, return false and dont call updateDocument ', () => {
+        it('consolidateStorage should call the service compareNameUnit when thats false, return false and dont call updateDocument ', () => {
         // Defining mocks to compare
-        const itemProposed = {
-          isComplete: false,
-          itemName: 'Apples',
-          quantity: 2,
-          unit: 'oz',
-          quantityReserved: 2,
-        };
-        component.sortedStorageList = mockSortedList;
-        // delcaring a spy to check if compareNameUnit is called
-        spyOn(component.shopList, 'compareNameUnit').and.returnValue(false);
-        spyOn(component, 'updateDocument');
-        component.consolidateStorage(itemProposed);
-        expect(component.shopList.compareNameUnit).toHaveBeenCalled();
-        expect(component.updateDocument).not.toHaveBeenCalled;
-        // expect return true
-        expect(component.consolidateStorage(itemProposed)).toEqual(false);
+          const itemProposed = {
+            isComplete: false,
+            itemName: 'Apples',
+            quantity: 2,
+            unit: 'oz',
+            quantityReserved: 2,
+          };
+          component.sortedStorageList = mockSortedList;
+          // delcaring a spy to check if compareNameUnit is called
+          spyOn(component.shopList, 'compareNameUnit').and.returnValue(false);
+          spyOn(component, 'updateDocument');
+          component.consolidateStorage(itemProposed);
+          expect(component.shopList.compareNameUnit).toHaveBeenCalled();
+          expect(component.updateDocument).not.toHaveBeenCalled;
+          // expect return true
+          expect(component.consolidateStorage(itemProposed)).toEqual(false);
+        });
+      });
+      describe('editQuantity Tests', () => {
+        /**
+        * Tests that setEditIndex can properly set the correct variable
+        */
+        it('setEditIndex should set indexEdit to the parameter', () =>{
+          spyOn(component, 'setEditIndex').and.callThrough();
+          component.setEditIndex(1);
+          expect(component.indexEdit).toEqual(1);
+        });
+        /**
+        * Tests that setQuantityEdit can properly set the correct variable to the appropriate value
+        */
+        it('setQuantityEdit should set quantityEdit to an ingredients quantity', () =>{
+          const mockSortedListEditQuantityTest = [
+            {
+              isComplete: false,
+              itemName: 'Apples',
+              quantity: 3,
+              unit: 'oz',
+              quantityReserved: 2,
+            },
+            {
+              isComplete: false,
+              itemName: 'Blueberry',
+              quantity: 5,
+              unit: 'lb',
+              quantityReserved: 0,
+            },
+          ];
+          component.sortedList=mockSortedListEditQuantityTest;
+          spyOn(component, 'setQuantityEdit').and.callThrough();
+          component.setQuantityEdit(0);
+          expect(component.quantityEdit).toEqual(3);
+        });
+        /**
+        * Tests that the material buttons calls setQuantityEdit and setEditIndex on click
+        */
+        xit('edit button should call call its two functions on click', async () => {
+          spyOn(component, 'setQuantityEdit');
+          spyOn(component, 'setEditIndex');
+          const button = await loader.getHarness(MatButtonHarness.with({text: 'edit'}));
+          await button.click();
+          expect(await button.getText()).toBe('edit');
+          expect(component.setQuantityEdit).toHaveBeenCalled();
+          expect(component.setEditIndex).toHaveBeenCalled();
+        });
+        /**
+        * Tests that confirmEdit successfully updates the list and makes expectedCalls
+        */
+        it('setQuantityEdit should set quantityEdit to an ingredients quantity', () =>{
+          const mockSortedListConfirmTest = [
+            {
+              isComplete: false,
+              itemName: 'Apples',
+              quantity: 3,
+              unit: 'oz',
+              quantityReserved: 2,
+            },
+            {
+              isComplete: false,
+              itemName: 'Blueberry',
+              quantity: 5,
+              unit: 'lb',
+              quantityReserved: 0,
+            },
+          ];
+          const updatedConfirmTest = [
+            {
+              isComplete: false,
+              itemName: 'Apples',
+              quantity: 3,
+              unit: 'oz',
+              quantityReserved: 2,
+            },
+            {
+              isComplete: false,
+              itemName: 'Blueberry',
+              quantity: 2,
+              unit: 'lb',
+              quantityReserved: 0,
+            },
+          ];
+          component.sortedList=mockSortedListConfirmTest;
+          component.quantityEdit =2;
+          spyOn(component, 'setEditIndex');
+          spyOn(component, 'confirmEdit').and.callThrough();
+          spyOn(component, 'updateDocument');
+          component.confirmEdit(1);
+          expect(component.sortedList).toEqual(updatedConfirmTest);
+          expect(component.updateDocument).toHaveBeenCalled();
+          expect(component.setEditIndex).toHaveBeenCalled();
+          expect(component.quantityEdit).toEqual(undefined);
+          expect(component.indexEdit).toEqual(-1);
+        });
       });
     });
   });
