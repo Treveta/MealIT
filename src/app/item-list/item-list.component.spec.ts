@@ -767,7 +767,7 @@ describe('ItemListComponent', () => {
         /**
         * Tests that the material buttons calls setQuantityEdit and setEditIndex on click
         */
-        xit('edit button should call call its two functions on click', async () => {
+        it('edit button should call call its two functions on click', async () => {
           spyOn(component, 'setQuantityEdit');
           spyOn(component, 'setEditIndex');
           const button = await loader.getHarness(MatButtonHarness.with({text: 'edit'}));

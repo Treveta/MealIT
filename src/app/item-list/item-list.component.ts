@@ -522,7 +522,13 @@ export class ItemListComponent implements OnDestroy, OnInit {
     /**
      * @function confirmEdit
      * @param {number} index the nuumber to alter in the sortedList
-     * @description runs when a user accepts the changes made (clicking the checkmark)
+     * @description runs when a user accepts the changes made (clicking the checkmark). If the amount the ingredient
+     * has reserved is less than or equal to the amount the user wants to change it to, the change gets accepted
+     * and it updates the list and close out of editing.
+     * But if the amount the ingredient has reserved is greater than the amount the user wants to change it to, it asks
+     * for a confirmation before setting both the quantity and quantity reserved to the new proposed quantity.
+     * @summary @function confirmEdit runs when clicking the checkmark and handles the setting of quantites and issuing
+     * warnings when appropriate
      */
     confirmEdit(index: number) {
       if (this.sortedList[index].quantityReserved <= this.quantityEdit) {

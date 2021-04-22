@@ -169,7 +169,7 @@
 
 <ng-template #justEdit let-indexOfElement="indexOfElement">
       <div>
-        <button mat-mini-fab color="accent" name = "edit" (click)="setEditIndex(indexOfElement);setQuantityEdit(indexOfElement);">
+        <button mat-mini-fab color="accent" (click)="setEditIndex(indexOfElement);setQuantityEdit(indexOfElement);" disableRipple>
           <mat-icon>edit</mat-icon>
         </button> 
       </div>
@@ -185,10 +185,10 @@
       color="warn" 
       [(ngModel)] = "quantityEdit">
       </mat-form-field> 
-    <button mat-mini-fab color="primary" (click)="confirmEdit(indexOfElement)">
+    <button mat-mini-fab color="primary" (click)="confirmEdit(indexOfElement)" disableRipple>
       <mat-icon>done</mat-icon>
     </button> 
-    <button mat-mini-fab color="warn" (click)="setEditIndex(-1)">
+    <button mat-mini-fab color="warn" (click)="setEditIndex(-1)" disableRipple>
       <mat-icon>close</mat-icon>
     </button> 
   </div>
