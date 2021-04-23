@@ -29,11 +29,17 @@ $dark-theme:   mat-dark-theme((
   .mat-card-accent {
     background-color: mat-color($dark-accent, darker);
   }
+  .mat-primary-background {
+    background-color: mat-color($dark-primary);
+  }
 }
 
 .custom-light-theme {
   @include angular-material-theme($light-theme);
   .mat-card-accent {
     background-color: mat-color($light-accent);
+  }
+  .mat-primary-background {
+    background-color: mat-color($light-primary);
   }
 }

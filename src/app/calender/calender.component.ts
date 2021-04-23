@@ -9,7 +9,7 @@ import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
 import {DisplayRecipesComponent} from 'app/display-recipes/display-recipes.component';
-import { ArbiterService } from 'app/services/arbiter-service/arbiter.service';
+import {ArbiterService} from 'app/services/arbiter-service/arbiter.service';
 
 
 @Component({
@@ -188,7 +188,7 @@ export class CalenderComponent implements OnInit {
    * Angular Lifecycle hook
    */
   ngOnInit(): void {
-    
+
   }
 
   /**
@@ -399,7 +399,7 @@ export class CalenderComponent implements OnInit {
   dialogCallEditService(result) {
     if (result.ingredients) {
       result.ingredients.forEach((ingredient) => {
-        this.arbiter.arbiter(ingredient.ingredientName, ingredient.unit, ingredient.quantity);
+        this.arbiter.arbiter(ingredient);
         // this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit, true);
       });
     }
@@ -484,10 +484,8 @@ export class CalenderComponent implements OnInit {
     snackBarRef.onAction().subscribe(() => {
       this.dateToSet = this.recipeLastRemoved.dateToSet;
       this.mealTypeToSet = this.recipeLastRemoved.mealTypeToSet;
-      console.log(this.recipeLastRemoved);
       this.setRecipeInPlan(this.recipeLastRemoved.recipe[0].recipeName, this.recipeLastRemoved.recipe[0].uid);
       this.listSpecificData('users/' + this.userInfo + '/recipeList', this.recipeLastRemoved.recipe[0].uid).then((recipes) => {
-        console.table(recipes[0].ingredients);
         this.dialogCallEditService(recipes[0]);
       });
     });
@@ -716,7 +714,6 @@ export class CalenderComponent implements OnInit {
    * @param {any} uid
    */
   openRecipeDialog(uid) {
-    console.log(uid);
     // Creates a reference to the dialog and declares the component to open and its options
     // eslint-disable-next-line no-unused-vars
     const dialogRef = this.dialog.open(DisplayRecipesComponent, {
