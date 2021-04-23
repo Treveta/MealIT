@@ -1,5 +1,7 @@
 <h1>
-        <a [routerLink]="['/']">MealIt!</a>
+        <a [routerLink]="['/']">
+          <img src="assets/MealItLogo.png" style="width: 200px; height: 150px;" />
+        </a>
 </h1>
 
 <div *ngIf="auth.user$ | async; then authenticated else guest">
@@ -11,10 +13,10 @@
 </ng-template>
 
 <ng-template #authenticated>
-    <button [routerLink]="['/itemList']">Item List</button>
-    <button [routerLink]="['/createRecipe']">Recipe List</button>
-    <button [routerLink]="['/calender']">Calendar</button>
-    <button [routerLink]="['/foodStorage']">Food Storage</button>
+    <button mat-raised-button [routerLink]="['/itemList']">Item List</button>
+    <button mat-raised-button [routerLink]="['/createRecipe']">Recipe List</button>
+    <button mat-raised-button [routerLink]="['/calender']">Calendar</button>
+    <button mat-raised-button [routerLink]="['/foodStorage']">Food Storage</button>
 </ng-template>
 
 <mat-slide-toggle (click)="toggleDarkMode()" [(ngModel)]="isDarkMode">Dark Mode</mat-slide-toggle>
