@@ -534,6 +534,9 @@ export class ItemListComponent implements OnDestroy, OnInit {
       if (this.sortedList[index].quantityReserved <= this.quantityEdit) {
         this.sortedList[index].quantity = this.quantityEdit;
         this.shopList.sortedList = this.sortedList;
+        if (this.sortedList[index].quantity == 0) {
+          this.sortedList.splice(index, 1);
+        }
         this.updateDocument('List', {Items: this.sortedList});
         this.setEditIndex(-1);
         this.quantityEdit = undefined;
@@ -544,6 +547,9 @@ export class ItemListComponent implements OnDestroy, OnInit {
         this.sortedList[index].quantity = this.quantityEdit;
         this.sortedList[index].quantityReserved = this.quantityEdit;
         this.shopList.sortedList = this.sortedList;
+        if (this.sortedList[index].quantity == 0) {
+          this.sortedList.splice(index, 1);
+        }
         this.updateDocument('List', {Items: this.sortedList});
         this.onProceed = false;
         this.setEditIndex(-1);

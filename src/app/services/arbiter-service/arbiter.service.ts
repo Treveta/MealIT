@@ -15,6 +15,8 @@ export class ArbiterService {
   userInfo: unknown;
   storageCollection: any;
   shoppingCollection: any;
+  shoppingListCreated: boolean;
+  sortedList: any[];
   /**
    * Constructor
    */
@@ -28,6 +30,16 @@ export class ArbiterService {
       this.userInfo = uid;
       this.storageCollection = this.afs.collection('users/' + this.userInfo + '/storageList');
       this.shoppingCollection = this.afs.collection('users/' + this.userInfo + '/shoppingList');
+      this.listItems().then((list) => {
+        if (!list) {
+          console.log('List Not Defined');
+          this.shoppingListCreated = false;
+          this.sortedList = [];
+        } else {
+          this.shoppingListCreated = true;
+          this.sortedList = list.Items;
+        }
+      });
     });
   }
 
@@ -46,10 +58,34 @@ export class ArbiterService {
         if (list[i].itemName == nameToMatch && list[i].unit == unitToMatch) {
           const amountToAdd = (amountRequested + list[i].quantityReserved) - list[i].quantity;
           returnData = {amountToAdd: amountToAdd, amountRequested: amountRequested, currentUnreserved: list[i].quantity - list[i].quantityReserved, currentReserved: list[i].quantityReserved};
-          console.table(returnData);
           break;
         } else {
           returnData = {amountToAdd: amountRequested, amountRequested: amountRequested, currentUnreserved: 0, currentReserved: 0};
+        }
+      }
+    });
+    return returnData;
+  }
+
+  /**
+   * 
+   * @param nameToMatch 
+   * @param unitToMatch 
+   * @param amountToRemove 
+   */
+  async determineStorageShopping(nameToMatch, unitToMatch, amountToRemove): Promise<ingredientStatusModelShopping> {
+    let returnData: ingredientStatusModelShopping;
+    await this.listItems().then((list) => {
+      console.log(list)
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].itemName == nameToMatch && list[i].unit == unitToMatch) {
+          const amountToUnreserve = list[i].quantityReserved + amountToRemove;
+          returnData = {amountToUnreserve: amountToUnreserve, amountToRemove: amountToRemove, currentReserved: list[i].quantityReserved, currentUnreserved: list[i].quantity - list[i].quantityReserved};
+          console.table(returnData)
+          break;
+        } else {
+          returnData = {amountToUnreserve: amountToRemove, amountToRemove: amountToRemove, currentReserved: 0, currentUnreserved: 0};
+          console.table(returnData)
         }
       }
     });
@@ -78,13 +114,69 @@ export class ArbiterService {
   }
 
   /**
+   * 
+   * @param amountToUnreserve 
+   * @param amountToRemove 
+   * @param currentUnreserved 
+   * @param currentReserved 
+   * @param ingredient 
+   */
+  subtractOrUnreserve(amountToUnreserve, amountToRemove, currentUnreserved, currentReserved, ingredient) {
+    if (amountToUnreserve < 0) {
+      this.storageList.editReserved(amountToUnreserve, currentReserved, ingredient);
+      if (amountToUnreserve != amountToRemove) {
+        this.shopList.addToShoppingList(ingredient.ingredientName, amountToUnreserve, ingredient.unit, true);
+      }
+    } else {
+      this.shopList.addToShoppingList(ingredient.ingredientName, amountToRemove, ingredient.unit, true);
+    }
+  }
+
+  /**
    * function handles determining the storage status of the ingredient and then running addOrReserve accordingly
    * @param {string} ingredientToMatch the ingredient to determine the storage of
    */
   arbiter(ingredientToMatch) {
     this.determineStorage(ingredientToMatch.ingredientName, ingredientToMatch.unit, ingredientToMatch.quantity).then((ingredientStatus) => {
+      console.log(ingredientStatus.amountToAdd);
       this.addOrReserve(ingredientStatus.amountToAdd, ingredientStatus.amountRequested, ingredientStatus.currentUnreserved, ingredientStatus.currentReserved, ingredientToMatch);
     });
+  }
+
+  /**
+   * 
+   * @param ingredientToMatch 
+   */
+  reverseArbiter(recipeToFindUid) {
+    console.log(recipeToFindUid);
+    this.findRecipeIngredients(recipeToFindUid).then((ingredientList) => {
+      ingredientList.forEach((ingredientToMatch) => {
+        console.table(ingredientToMatch);
+        this.determineStorageShopping(ingredientToMatch.ingredientName, ingredientToMatch.unit, -ingredientToMatch.quantity).then((ingredientStatus) => {
+          console.table(ingredientStatus);
+          this.determineStorage(ingredientToMatch.ingredientName, ingredientToMatch.unit, -ingredientToMatch.quantity).then((ingredientStatusStorage) => {
+            this.subtractOrUnreserve(ingredientStatus.amountToUnreserve, ingredientStatus.amountToRemove, ingredientStatusStorage.currentUnreserved, ingredientStatusStorage.currentReserved, ingredientToMatch);
+          });
+        });
+      });
+    });
+  }
+
+  /**
+   * 
+   * @param uid 
+   */
+  async findRecipeIngredients(uid) {
+    const snapshot = await this.afs.collection('users/' + this.userInfo + '/recipeList', (ref) => ref.where('uid', '==', uid)).get().toPromise();
+    const list = [];
+    // Loops through snapshot and pushes document data to list
+    snapshot.forEach((doc) => {
+      const data = doc.data();
+      data.id = doc.id;
+      list.push(data);
+    });
+    // Returns the now populated list
+    return list[0].ingredients;
   }
 
   /**
@@ -121,9 +213,9 @@ export class ArbiterService {
      */
   async listItems() {
     try {
-      const snapshot = await this.shoppingCollection.doc('List')
+      const snapshot = await this.afs.collection('users/' + this.userInfo + '/shoppingList').doc('List')
           .get().toPromise();
-      return snapshot.data();
+      return snapshot.data().Items;
     } catch (err) {
       console.log('Error getting documents', err);
     }
@@ -153,4 +245,11 @@ export interface ingredientStatusModel {
   amountRequested: any,
   currentUnreserved: any,
   currentReserved: any,
+}
+
+export interface ingredientStatusModelShopping {
+  amountToUnreserve: number,
+  amountToRemove: number,
+  currentUnreserved: number,
+  currentReserved: number,
 }

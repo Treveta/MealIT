@@ -454,12 +454,15 @@ export class CalenderComponent implements OnInit {
               if (this.mealTypeToSet == 'breakfast') {
                 // Removes the recipe from the array at the matching index
                 this.recipeLastRemoved.recipe = partialData.days[j].breakfast.splice(index, 1);
+                this.arbiter.reverseArbiter(this.recipeLastRemoved.recipe[0].uid);
               }
               if (this.mealTypeToSet == 'lunch') {
                 this.recipeLastRemoved.recipe = partialData.days[j].lunch.splice(index, 1);
+                this.arbiter.reverseArbiter(this.recipeLastRemoved.recipe.uid);
               }
               if (this.mealTypeToSet == 'dinner') {
                 this.recipeLastRemoved.recipe = partialData.days[j].dinner.splice(index, 1);
+                this.arbiter.reverseArbiter(this.recipeLastRemoved.recipe.uid);
               }
             }
           }

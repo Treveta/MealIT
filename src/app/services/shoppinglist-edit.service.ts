@@ -128,6 +128,9 @@ export class ShoppinglistEditService {
     for (let i =0; i<n; i++) {
       consolidated = this.compareNameUnit(this.sortedList[i], itemProposed);
       if (consolidated===true) {
+        if (this.sortedList[i].quantity == 0) {
+          this.sortedList.splice(i, 1);
+        }
         this.updateDocument('List', {Items: this.sortedList});
         return true;
       }
