@@ -511,27 +511,25 @@ describe('ItemListComponent', () => {
 
 
       /**
-    * Tests that the mat checkbox will initialize and show up on the page
+    * Tests that the delete button will initialize and show up on the page
     */
-      it('mat checkBox should appear on the page', async () => {
-        const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
-        expect(checkbox).toBeTruthy();
+      it('delete button should appear on the page', async () => {
+        const button = await loader.getHarness(MatButtonHarness.with({text: 'delete'}));
+        expect(button).toBeTruthy();
       });
       /**
     * Tests that the material checkbox should call onCheckBoxChange upon change
     */
-      it('mat checkBox should call call onCheckBoxChange on change', async () => {
+      it('delete button  should call call onCheckBoxChange on click', async () => {
         spyOn(component, 'onCheckBoxChange');
         spyOn(component, 'confirmAction').and.callFake(function() {
           return true;
         });
         console.log(debugOnChangeCheck);
-        const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
-        console.log(checkbox);
-        expect(await checkbox.isChecked()).toBe(false);
-        await checkbox.check();
-        expect(await checkbox.isChecked()).toBe(true);
-        expect(await checkbox.getName()).toBe('checkboxChange');
+        const button = await loader.getHarness(MatButtonHarness.with({text: 'delete'}));
+        console.log(button);
+        await button.click();
+        expect(await button.getText()).toBe('delete');
         expect(component.onCheckBoxChange).toHaveBeenCalled();
       });
     });
@@ -643,28 +641,20 @@ describe('ItemListComponent', () => {
           expect(component.updateDocument).toHaveBeenCalled();
         });
 
+
         /**
-        * Tests that the mat checkbox will initialize and show up on the page
+        * Tests that the delete button should call onCheckBoxChange on click
         */
-        it('mat checkBox should appear on the page', async () => {
-          const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
-          expect(checkbox).toBeTruthy();
-        });
-        /**
-        * Tests that the material checkbox should call onCheckBoxChange upon change
-        */
-        it('mat checkBox should call call onCheckBoxChange on change', async () => {
+        it('delete button should call call onCheckBoxChange on click', async () => {
           spyOn(component, 'onCheckBoxChange');
           spyOn(component, 'confirmAction').and.callFake(function() {
             return true;
           });
-          console.log(debugOnChangeCheck);
-          const checkbox = await loader.getHarness(MatCheckboxHarness.with({name: 'checkboxChange'}));
-          console.log(checkbox);
-          expect(await checkbox.isChecked()).toBe(false);
-          await checkbox.check();
-          expect(await checkbox.isChecked()).toBe(true);
-          expect(await checkbox.getName()).toBe('checkboxChange');
+          // console.log(debugOnChangeCheck);
+          const button = await loader.getHarness(MatButtonHarness.with({text: 'delete'}));
+          // console.log(button);
+          await button.click();
+          expect(await button.getText()).toBe('delete');
           expect(component.onCheckBoxChange).toHaveBeenCalled();
         });
       });
