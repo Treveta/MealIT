@@ -1,14 +1,6 @@
-<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-  <div class="example-box" *ngFor="let item of testSortedList" [cdkDragStartDelay]="25" cdkDrag>
-    <mat-checkbox></mat-checkbox>
-    {{item.name}}{{item.quantity}}{{item.unit}}
-  </div>
-</div>
 <div>
   <div id="food-storage-header">
     <h1>Welcome to your Food Storage Center!</h1>
-    <p>find items you already own</p>
-    <button (click)="openModal('getting-started-modal');">Find your items</button>
   </div>
   <div id="stored-items-list">
     <div *ngFor="let storageItem of sortedStorageList">
