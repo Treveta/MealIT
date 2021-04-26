@@ -16,7 +16,8 @@
         <input *ngIf="editBool" type="checkbox" [value]="storageItem.itemName" (change)="onCheckBoxChange($event)" />
         {{ storageItem.itemName }}
         {{ storageItem.quantity }}
-        {{ storageItem.unit }}
+        {{ storageItem.unit }}, 
+        {{ storageItem.quantityReserved }} reserved
       </li>
     </div> 
   </div>

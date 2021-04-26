@@ -15,6 +15,7 @@ import {shoppingList} from './shoppingList.model';
 
 
 export class ShoppinglistEditService {
+  shoppingListCreated: boolean;
   // need to imort and use authservice and firestore
   /** @constructor
    * @name constructor
@@ -29,7 +30,14 @@ export class ShoppinglistEditService {
       this.shoppingCollection = this.afs.collection<shoppingList>('users/' + this.userInfo + '/shoppingList');
       this.listItems$ = this.shoppingCollection.valueChanges(); // Change to local pull similar to search-recipes, relies on listRecipes style function
       this.listItems().then((list) => {
-        this.sortedList = list.Items;
+        if (!list) {
+          console.log('List Not Defined');
+          this.shoppingListCreated = false;
+          this.sortedList = [];
+        } else {
+          this.shoppingListCreated = true;
+          this.sortedList = list.Items;
+        }
       });
     });
   }
@@ -54,6 +62,12 @@ export class ShoppinglistEditService {
   printANumber() {
     console.log(6);
   }
+  /**
+   * @function createDocument
+   */
+  async createShoppingListDocument() {
+    await this.shoppingCollection.doc('List').set({Items: []});
+  }
   /** @function
      * @name updateDocument
      * @param {string} docName name of the document to update
@@ -67,13 +81,15 @@ export class ShoppinglistEditService {
   // Below are three functions for item consolidation: 2 sub-helper functions, and 1 large helper function of addToItemList
   /** @function
      * @name sumQuantity
-     * @param {any} itemExist the item whose quantity will be updated with the quantity value from @param itemProposed
-     * @param {any} itemProposed the item proposed to be added which will have its quantity used to update @param itemExist
-     * @description sumQuantity combines two item's quantity. param names are for clarity, but this can technically be used between any two items
+     * @param {any} itemExist the item whose quantity will be updated with the quantity values from @param itemProposed
+     * @param {any} itemProposed the item proposed to be added which will have its quantities used to update @param itemExist
+     * @description sumQuantity combines two item's quantity and reserved Quantity. param names are for clarity,
+     * but this can technically be used between any two items
      * this is a helper function for @function compareNameUnit
      */
   sumQuantity(itemExist, itemProposed): void {
     itemExist.quantity+=itemProposed.quantity;
+    itemExist.quantityReserved+=itemProposed.quantityReserved;
   }
 
   /** @function
@@ -112,6 +128,9 @@ export class ShoppinglistEditService {
     for (let i =0; i<n; i++) {
       consolidated = this.compareNameUnit(this.sortedList[i], itemProposed);
       if (consolidated===true) {
+        if (this.sortedList[i].quantity == 0) {
+          this.sortedList.splice(i, 1);
+        }
         this.updateDocument('List', {Items: this.sortedList});
         return true;
       }
@@ -125,7 +144,8 @@ export class ShoppinglistEditService {
      * @param {any} proposedIngredient the name of the ingredient to be added or consolidated
      * @param {any} proposedQuantity the quantity of the ingredient to be added or consolidated
      * @param {any} proposedUnit the unit name of the ingredient to be added or consolidated
-     * @constant addedItem a constant that contains the boolean isComplete as well as fields to accept the class variables
+     * @param {boolean} fromRecipe boolean that when true indicates that the ingredient was added from a recipe
+     * @constant addedItem a constant that contains the boolean isComplete as well as fields to accept the data parameters
      * itemName to store newItem, quantity to store newQuantity, and unit to store newUnit
      * @description addToShoppingList is a void function that first tests if new item is empty.
      * If it is not empty, it creates the constant addedItem that has 4 elements.
@@ -135,17 +155,35 @@ export class ShoppinglistEditService {
      * @summary addToShoppinhList takes info from the parameters and packages it into a constant.
      * It then either pushes that constant to the list or updates the list before updating the list.
      */
-  async addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit) {
+  async addToShoppingList(proposedIngredient, proposedQuantity, proposedUnit, fromRecipe:boolean) {
+    // Checks to ensure the shopping list collection and document are created before attempting to add to them
+    if (!this.shoppingListCreated) {
+      await this.createShoppingListDocument();
+    }
     // if the item name is blank, ignore all this
     if (proposedIngredient === '') {
     } else {
       // construct a proposed item from class variables
-      const addedItem = {
-        isComplete: false,
-        itemName: proposedIngredient,
-        quantity: proposedQuantity,
-        unit: proposedUnit,
-      };
+      let addedItem;
+      // if it's  from a recipe, the reservedQuantity is just the quantity
+      if (fromRecipe === true) {
+        addedItem = {
+          isComplete: false,
+          itemName: proposedIngredient,
+          quantity: proposedQuantity,
+          unit: proposedUnit,
+          quantityReserved: proposedQuantity,
+        };
+      } else {
+        // if it's  not from a recipe, the reservedQuantity is 0
+        addedItem = {
+          isComplete: false,
+          itemName: proposedIngredient,
+          quantity: proposedQuantity,
+          unit: proposedUnit,
+          quantityReserved: 0,
+        };
+      }
       // run consolidateQuantity on the proposed item, and if false add it to the list
       if (this.consolidateQuantity(addedItem)===false) {
         this.sortedList.push(addedItem);

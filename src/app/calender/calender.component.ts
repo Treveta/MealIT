@@ -9,6 +9,7 @@ import {AngularFirestore} from '@angular/fire/firestore';
 import {Observable} from 'rxjs';
 import {ShoppinglistEditService} from 'app/services/shoppinglist-edit.service';
 import {DisplayRecipesComponent} from 'app/display-recipes/display-recipes.component';
+import {ArbiterService} from 'app/services/arbiter-service/arbiter.service';
 
 
 @Component({
@@ -163,7 +164,7 @@ export class CalenderComponent implements OnInit {
    * @param {SearchRecipesComponent} search
    * @param {AuthService} authService
    */
-  constructor(private snackBar: MatSnackBar, public shopListService: ShoppinglistEditService, public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
+  constructor(private arbiter: ArbiterService, private snackBar: MatSnackBar, public shopListService: ShoppinglistEditService, public modalService: ModalService, public search: SearchRecipesComponent, private authService: AuthService, public dialog: MatDialog, public afs: AngularFirestore) {
     this.previousUID = 0;
     this.authService.getUid().then((uid) => {
       this.userInfo = uid;
@@ -196,7 +197,9 @@ export class CalenderComponent implements OnInit {
    * @param {Date} currentDay the currentDay
    */
   checkPlanDates(docs, currentDay) {
-    const orderedPlans = [{}, {}, {}];
+    // Initializes a new array to sort the meal plans into
+    const orderedPlans = new Array<mealPlanWeek>(3);
+    // Sorts the meal plans based on their label
     docs.forEach((plan) => {
       if (plan.label == 'previousWeek') {
         orderedPlans[0] = plan;
@@ -208,37 +211,29 @@ export class CalenderComponent implements OnInit {
         orderedPlans[1] = plan;
       }
     });
-    docs.forEach((plan) => {
-      if (plan.label == 'currentWeek') {
-        const currentStartDay = plan.startDate.toDate();
-        const currentLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 6);
-        const currentNextWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 13);
-        const currentTwoWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 20);
-        console.log(currentStartDay);
-        console.log(currentLastDay);
-        console.log(currentNextWeekLastDay);
-        console.log(currentDay);
-        if (currentDay.getTime() < currentLastDay.getTime()) {
-          // Do nothing, the week is still correct
-          console.log('This shouldnt run');
-        }
-        if (currentDay.getTime() > currentLastDay.getTime() && currentDay.getTime() <= currentNextWeekLastDay.getTime()) {
-          // Shift Week Over by One
-          console.log('Shift Week by One');
-          console.log(orderedPlans);
-          this.shiftWeek(1, orderedPlans);
-        }
-        if (currentDay.getTime() > currentNextWeekLastDay.getTime() && currentDay.getTime() <= currentTwoWeekLastDay.getTime()) {
-          // Shift Week Over by Two
-          console.log('Shift Week by Two');
-          this.shiftWeek(2, orderedPlans);
-        }
-        if (currentDay.getTime() > currentTwoWeekLastDay.getTime()) {
-          console.log('Shift Week by Three');
-          this.shiftWeek(3, orderedPlans);
-        }
+    // Double checks that the plan exists and has been properly sorted before continueing
+    if (orderedPlans[1].label == 'currentWeek') {
+      // Creates all the necessary dates needed to check against based off the current currentWeek startDate
+      const currentStartDay = orderedPlans[1].startDate.toDate();
+      const currentLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 6);
+      const currentNextWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 13);
+      const currentTwoWeekLastDay = new Date(currentStartDay.getFullYear(), currentStartDay.getMonth(), currentStartDay.getDate() + 20);
+      // Determines how many weeks to shift the plans by based on where the currentDay falls compared to the previously set check dates
+      if (currentDay.getTime() < currentLastDay.getTime()) {
+        // Do nothing, the week is still correct
       }
-    });
+      if (currentDay.getTime() > currentLastDay.getTime() && currentDay.getTime() <= currentNextWeekLastDay.getTime()) {
+        // Shift Week Over by One
+        this.shiftWeek(1, orderedPlans);
+      }
+      if (currentDay.getTime() > currentNextWeekLastDay.getTime() && currentDay.getTime() <= currentTwoWeekLastDay.getTime()) {
+        // Shift Week Over by Two
+        this.shiftWeek(2, orderedPlans);
+      }
+      if (currentDay.getTime() > currentTwoWeekLastDay.getTime()) {
+        this.shiftWeek(3, orderedPlans);
+      }
+    }
   }
 
   /**
@@ -398,12 +393,14 @@ export class CalenderComponent implements OnInit {
    * @function dialogCallEditService
    * @param {any} result the subscribe. It is a map that contains 2 maps and an array of maps
    * @description helper function to openDialog that just runs addToShoppingList on each ingredient from result.ingredient,
-   * if result.ingredients is defined, that is. This function is a pain to test so thats why it exists alone here.
+   * if result.ingredients is defined, that is. PPassing in true means that this is from a recipe and is thus "reserved"
+   * This function is a pain to test so thats why it exists alone here.
    */
   dialogCallEditService(result) {
     if (result.ingredients) {
       result.ingredients.forEach((ingredient) => {
-        this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit);
+        this.arbiter.arbiter(ingredient);
+        // this.shopListService.addToShoppingList(ingredient.ingredientName, ingredient.quantity, ingredient.unit, true);
       });
     }
   }
@@ -457,12 +454,15 @@ export class CalenderComponent implements OnInit {
               if (this.mealTypeToSet == 'breakfast') {
                 // Removes the recipe from the array at the matching index
                 this.recipeLastRemoved.recipe = partialData.days[j].breakfast.splice(index, 1);
+                this.arbiter.reverseArbiter(this.recipeLastRemoved.recipe[0].uid);
               }
               if (this.mealTypeToSet == 'lunch') {
                 this.recipeLastRemoved.recipe = partialData.days[j].lunch.splice(index, 1);
+                this.arbiter.reverseArbiter(this.recipeLastRemoved.recipe.uid);
               }
               if (this.mealTypeToSet == 'dinner') {
                 this.recipeLastRemoved.recipe = partialData.days[j].dinner.splice(index, 1);
+                this.arbiter.reverseArbiter(this.recipeLastRemoved.recipe.uid);
               }
             }
           }
@@ -487,8 +487,10 @@ export class CalenderComponent implements OnInit {
     snackBarRef.onAction().subscribe(() => {
       this.dateToSet = this.recipeLastRemoved.dateToSet;
       this.mealTypeToSet = this.recipeLastRemoved.mealTypeToSet;
-      console.log(this.recipeLastRemoved);
       this.setRecipeInPlan(this.recipeLastRemoved.recipe[0].recipeName, this.recipeLastRemoved.recipe[0].uid);
+      this.listSpecificData('users/' + this.userInfo + '/recipeList', this.recipeLastRemoved.recipe[0].uid).then((recipes) => {
+        this.dialogCallEditService(recipes[0]);
+      });
     });
   }
 
@@ -686,11 +688,35 @@ export class CalenderComponent implements OnInit {
   }
 
   /**
+   * Retrieves the mealPlan from the path specified as a list
+   * @param {string} path - The Firestore collection path to retrieve recipes from
+   * @param {string} uidToSearch
+   */
+  async listSpecificData(path: string, uidToSearch) {
+    try {
+      // collects a snapshot of a Firestore collection base on parameter path
+      const snapshot = await this.afs
+          .collection(path, (ref) => ref.where('uid', '==', uidToSearch))
+          .get().toPromise();
+      // Creates an empty list to populate collection data into
+      const list = [];
+      // Loops through snapshot and pushes document data to list
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        list.push(data);
+      });
+      // Returns the now populated list
+      return list;
+    } catch (err) {
+      console.log('Error getting documents', err);
+    }
+  }
+
+  /**
    * A function to open material dialog
    * @param {any} uid
    */
   openRecipeDialog(uid) {
-    console.log(uid);
     // Creates a reference to the dialog and declares the component to open and its options
     // eslint-disable-next-line no-unused-vars
     const dialogRef = this.dialog.open(DisplayRecipesComponent, {

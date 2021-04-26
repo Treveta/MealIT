@@ -113,6 +113,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
   displayedColumns: string[] = ['name', 'quantity', 'unit'];
   public editToggle: boolean = false;
   public isLarge: boolean = true;
+  public indexEdit: number = -1; // for determining what mat card to swap templates
+  public quantityEdit: number; // when taking the input of a user's edit
   public screenWidth: any = window.innerWidth;
 
   /**
@@ -213,7 +215,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * sets the sortedList to the newly updated sortedList from the service, and resets the class variables to empty
      */
     async addToItemList() {
-      this.shopList.addToShoppingList(this.newItem, this.newQuantity, this.newUnit);
+      this.shopList.addToShoppingList(this.newItem, this.newQuantity, this.newUnit, false);
       this.sortedList = this.shopList.sortedList;
       this.newItem = '';
       this.newQuantity = '';
@@ -248,6 +250,20 @@ export class ItemListComponent implements OnDestroy, OnInit {
       }
     }
 
+    /**
+     * Create a confirm option with a message
+     * @param {string} message
+     * @return {boolean}
+     */
+    confirmAction(message): boolean {
+      if (confirm(message)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    onProceed = false; // Boolean to keep track if the fucntion should proceed
     /** @function
      * @name onCheckBoxChange
      * @param {any} item the item to be deleted
@@ -256,9 +272,25 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * Then, it calls @function updateDocument , which updates the shoppingCollection, pushing the change to the database.
      */
     onCheckBoxChange(item): void {
-      const index = this.sortedList.indexOf(item);
-      this.sortedList.splice(index, 1);
-      this.updateDocument('List', {Items: this.sortedList});
+      // In the case of reserved food
+      if (item.quantityReserved > 0) {
+        this.onProceed = this.confirmAction('Are you sure you want to delete this item? The item is reserved.');
+      // In the case of no reserved food
+      } else {
+        this.onProceed = this.confirmAction('Are you sure you want to delete this item?');
+      }
+      // In the case of null, proceed (Mainly here for testing purposes)
+      if (this.onProceed == null) {
+        this.onProceed = true;
+      }
+      // If the confirmation is true
+      if (this.onProceed == true) {
+        const index = this.sortedList.indexOf(item);
+        this.sortedList.splice(index, 1);
+        this.shopList.sortedList = this.sortedList;
+        this.updateDocument('List', {Items: this.sortedList});
+        this.onProceed = false;
+      }
     }
 
     /** @function
@@ -292,7 +324,8 @@ export class ItemListComponent implements OnDestroy, OnInit {
      * Then, it calls @function updateDocument, which updates the shoppingCollection, pushing the change to the database
      */
     completionAll(): void {
-      this.setAllTrue();
+      this.setAllTrue(); // Check to see if all items are complete or not
+      // If all of them are not complete, turn all incomplete to complete
       if (this.allTrue == false) {
         for (let i = 0; i < this.sortedList.length; i++) {
           if (this.sortedList[i].isComplete == false) {
@@ -300,6 +333,7 @@ export class ItemListComponent implements OnDestroy, OnInit {
           }
         }
         this.allTrue = true;
+      // If all of them are complete, turn all complete to incomplete
       } else {
         for (let i = 0; i < this.sortedList.length; i++) {
           if (this.sortedList[i].isComplete == true) {
@@ -308,18 +342,58 @@ export class ItemListComponent implements OnDestroy, OnInit {
         }
         this.allTrue = false;
       }
+      // Update the database
       this.updateDocument('List', {Items: this.sortedList});
     }
 
-    /**
-     * @name toStorage
-     * @description Send completed items from sorted list to the storage list in the database, then update.
+    /** @function
+     * @name consolidateStorage
+     * @param {any} itemProposed the item proposed to be added
+     * @return {boolean} true if a match was found and the functions run. false if no match was found
+     * @description consolidateStorage  is the function that is called whenever a new item is added to the shopping list
+     * It looks through the existing shopping list and calls @function compareNameUnit on every item in the list. Note that it is calling the service function here
+     * (If @function compareNameUnit finds an item that matches, it calls @function sumQuantity that performs the adding of quantity values
+     * in which case, @param itemProposed is NOT added to the list and @function consolidateStorage  returns true, as it has just been consolidated)
+     * after finding a match and calling the appropriate functions,  @function updateDocument is called
+     * if no match is found, proceed with adding the item as usual and return false.
+     * This function is called by @function addToStorage
+     * @summary consolidateStorage  takes a proposed item and checks the shopping list for a match. upon finding one, the quantities are summed,
+     * the item is not added ot the shopping list, the list is updated, and consolidateStorage returns true.
+     *  If no match is found, the item gets added to the list as normal and consolidateStorage  returns false.
      */
+    consolidateStorage(itemProposed): boolean {
+      let consolidated: boolean;
+      const n = this.sortedStorageList.length;
+      for (let i =0; i<n; i++) {
+        consolidated = this.shopList.compareNameUnit(this.sortedStorageList[i], itemProposed);
+        if (consolidated===true) {
+          this.updateDocument('List', {Items: this.sortedStorageList});
+          return true;
+        }
+      }
+      return false;
+    }
+    /**
+   * @name addToStorage
+   * @param {any} ingredient the ingredient to either push or consolidate to the list
+   * @description helper function of toStorage calls consolidateStorageQuantity, If false pushes the item to the array
+   * if true, then considation already happened, no need to add anything
+   */
+    addToStorage(ingredient): void {
+      if (this.consolidateStorage(ingredient)===false) {
+        this.sortedStorageList.push(ingredient);
+      }
+    }
+
+    /**
+   * @name toStorage
+   * @description Send completed items from sorted list to the storage list in the database, then update.
+   */
     toStorage(): void {
       for (let i = this.sortedList.length - 1; i >= 0; i--) {
         if (this.sortedList[i].isComplete == true) {
-          // Send information of completed item to storage list in the database
-          this.sortedStorageList.push(this.sortedList[i]);
+        // Send information of completed item to storage list in the database
+          this.addToStorage(this.sortedList[i]);
           // Remove the item from the sorted list
           this.sortedList.splice(i, 1);
           i = this.sortedList.length - 1;
@@ -327,13 +401,14 @@ export class ItemListComponent implements OnDestroy, OnInit {
       }
       if (this.sortedList.length == 1) {
         if (this.sortedList[0].isComplete == true) {
-          // Send information of completed item to storage list in the database
-          this.sortedStorageList.push(this.sortedList[0]);
+        // Send information of completed item to storage list in the database
+          this.addToStorage(this.sortedList[0]);
           // Remove the item from the sorted list
           this.sortedList.splice(0, 1);
         }
       }
       this.updateStorageDocument('List', {Items: this.sortedStorageList});
+      this.shopList.sortedList = this.sortedList;
       this.updateDocument('List', {Items: this.sortedList});
     }
 
@@ -423,5 +498,62 @@ export class ItemListComponent implements OnDestroy, OnInit {
     drop(event: CdkDragDrop<string[]>) {
       moveItemInArray(this.sortedList, event.previousIndex, event.currentIndex);
       this.shoppingCollection.doc('List').update({Items: this.sortedList});
+      this.indexEdit =-1;
+    }
+    /**
+     * @function setEditIndex
+     * @param {number} htmlIndex the number gotten from the ngFor
+     * @description setEditIndex will set the public index value to the number.
+     * currently used to make sure templates switch properly and to cancel edit
+     */
+    setEditIndex(htmlIndex: number) {
+      this.indexEdit = htmlIndex;
+      // console.log(this.indexEdit);
+    }
+    /**
+     * @function setQuantityEdit
+     * @param {number} index the index of the sortedList whose
+     * quantity quantityEdit will set itself to
+     */
+    setQuantityEdit(index: number) {
+      this.quantityEdit = this.sortedList[index].quantity;
+      console.log(this.quantityEdit);
+    }
+    /**
+     * @function confirmEdit
+     * @param {number} index the nuumber to alter in the sortedList
+     * @description runs when a user accepts the changes made (clicking the checkmark). If the amount the ingredient
+     * has reserved is less than or equal to the amount the user wants to change it to, the change gets accepted
+     * and it updates the list and close out of editing.
+     * But if the amount the ingredient has reserved is greater than the amount the user wants to change it to, it asks
+     * for a confirmation before setting both the quantity and quantity reserved to the new proposed quantity.
+     * @summary @function confirmEdit runs when clicking the checkmark and handles the setting of quantites and issuing
+     * warnings when appropriate
+     */
+    confirmEdit(index: number) {
+      if (this.sortedList[index].quantityReserved <= this.quantityEdit) {
+        this.sortedList[index].quantity = this.quantityEdit;
+        this.shopList.sortedList = this.sortedList;
+        if (this.sortedList[index].quantity == 0) {
+          this.sortedList.splice(index, 1);
+        }
+        this.updateDocument('List', {Items: this.sortedList});
+        this.setEditIndex(-1);
+        this.quantityEdit = undefined;
+      } else if (this.sortedList[index].quantityReserved > this.quantityEdit) {
+        this.onProceed = this.confirmAction('The remaining quantity would be less than what was reserved. Continue?');
+      }
+      if (this.onProceed == true) {
+        this.sortedList[index].quantity = this.quantityEdit;
+        this.sortedList[index].quantityReserved = this.quantityEdit;
+        this.shopList.sortedList = this.sortedList;
+        if (this.sortedList[index].quantity == 0) {
+          this.sortedList.splice(index, 1);
+        }
+        this.updateDocument('List', {Items: this.sortedList});
+        this.onProceed = false;
+        this.setEditIndex(-1);
+        this.quantityEdit = undefined;
+      }
     }
 }
