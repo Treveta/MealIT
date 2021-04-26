@@ -51,12 +51,14 @@ export class FoodstorageEditService {
    * @param {any} ingredient the ingredient that is being reserved
    */
   editReserved(changeQuantity: number, currentReserved: number, ingredient): void {
-    console.log(ingredient.quantityReserved);
-    const foundItem = this.findIngredientInStorage(ingredient);
-    const addedItem = foundItem.info;
-    addedItem.quantityReserved = currentReserved + changeQuantity;
-    this.sortedList.splice(foundItem.index, 1, addedItem);
-    this.updateDocument('List', {Items: this.sortedList});
+    if (currentReserved + changeQuantity > 0) {
+      console.log(ingredient.quantityReserved);
+      const foundItem = this.findIngredientInStorage(ingredient);
+      const addedItem = foundItem.info;
+      addedItem.quantityReserved = currentReserved + changeQuantity;
+      this.sortedList.splice(foundItem.index, 1, addedItem);
+      this.updateDocument('List', {Items: this.sortedList});
+    }
   }
 
   /**
