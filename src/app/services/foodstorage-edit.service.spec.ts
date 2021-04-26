@@ -27,39 +27,82 @@ describe('FoodstorageEditService', () => {
     /**
      * Mock data to run test input catches
      */
-    const mockQuantityReserved = 3;
-    const mockQuantity = 5;
+    const mockSortedList = [
+      {
+        ingredient: 'Apples',
+        quantityReserved: 3,
+        changeQuantity: 2,
+      },
+      {
+        ingredient: 'Bananas',
+        quantityReserved: 5,
+        changeQuantity: -3,
+      },
+      {
+        ingredient: 'Pineapples',
+        quantityReserved: 3,
+        changeQuantity: -4,
+      },
+    ];
+    beforeEach(() => {
+      service.sortedList=mockSortedList;
+    });
     /**
-     * Tests that positive integers are correctly added to the quantityReserved
+     * Tests edit reserved functions properly
      */
-    it('editReserved should add to quantityReserved'), async () => {
-      const changeQuantity = 1;
-      service.editReserved(mockQuantity, changeQuantity, mockQuantityReserved);
-      expect(mockQuantityReserved).toEqual(4);
-    };
-    /**
-     * Tests that negative integers are correctly added to the quantityReserved
-     */
-    it('editReserved should subtract from quantityReserved'), async () => {
-      const changeQuantity = -1;
-      service.editReserved(mockQuantity, changeQuantity, mockQuantityReserved);
-      expect(mockQuantityReserved).toEqual(2);
-    };
-    /**
-     * Tests that positive integers too large are not added to the quantityReserved
-     */
-    it('editReserved should not add to quantityReserved'), async () => {
-      const changeQuantity = 31;
-      service.editReserved(mockQuantity, changeQuantity, mockQuantityReserved);
-      expect(mockQuantityReserved).toEqual(3);
-    };
-    /**
-     * Tests that negative integers too large are not added to the quantityReserved
-     */
-    it('editReserved should not subtract from quantityReserved'), async () => {
-      const changeQuantity = -31;
-      service.editReserved(mockQuantity, changeQuantity, mockQuantityReserved);
-      expect(mockQuantityReserved).toEqual(3);
-    };
+    it('Should correctly add the changed amount', async () => {
+      const mockfoundIngredient = {
+        index: 0,
+        info: mockSortedList[0],
+      };
+      const proposedIngredient = 'Apples';
+      const proposedReserve = 3;
+      const proposedChange = 2;
+      expect(service.sortedList).toEqual(mockSortedList);
+      // creates a spy to check if findIngredientInStorage is called
+      spyOn(service, 'findIngredientInStorage').and.returnValue(mockfoundIngredient);
+      // creates a spy to check if updateDocument is called
+      spyOn(service, 'updateDocument');
+      await service.editReserved(proposedChange, proposedReserve, proposedIngredient);
+      expect(service.findIngredientInStorage).toHaveBeenCalled();
+      expect(service.updateDocument).toHaveBeenCalled();
+      expect(service.sortedList[0].quantityReserved).toEqual(5);
+    });
+    it('Should correctly remove the changed amount', async () => {
+      const mockfoundIngredient = {
+        index: 1,
+        info: mockSortedList[1],
+      };
+      const proposedIngredient = 'Bananas';
+      const proposedReserve = 5;
+      const proposedChange = -3;
+      expect(service.sortedList).toEqual(mockSortedList);
+      // creates a spy to check if findIngredientInStorage is called
+      spyOn(service, 'findIngredientInStorage').and.returnValue(mockfoundIngredient);
+      // creates a spy to check if updateDocument is called
+      spyOn(service, 'updateDocument');
+      await service.editReserved(proposedChange, proposedReserve, proposedIngredient);
+      expect(service.findIngredientInStorage).toHaveBeenCalled();
+      expect(service.updateDocument).toHaveBeenCalled();
+      expect(service.sortedList[1].quantityReserved).toEqual(2);
+    });
+    it('Should not remove the changed amount', async () => {
+      const mockfoundIngredient = {
+        index: 2,
+        info: mockSortedList[2],
+      };
+      const proposedIngredient = 'Pineapples';
+      const proposedReserve = 3;
+      const proposedChange = -4;
+      expect(service.sortedList).toEqual(mockSortedList);
+      // creates a spy to check if findIngredientInStorage is called
+      spyOn(service, 'findIngredientInStorage').and.returnValue(mockfoundIngredient);
+      // creates a spy to check if updateDocument is called
+      spyOn(service, 'updateDocument');
+      await service.editReserved(proposedChange, proposedReserve, proposedIngredient);
+      expect(service.findIngredientInStorage).toHaveBeenCalled();
+      expect(service.updateDocument).toHaveBeenCalled();
+      expect(service.sortedList[2].quantityReserved).toEqual(3);
+    });
   });
 });
