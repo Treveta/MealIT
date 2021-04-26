@@ -100,8 +100,8 @@ describe('FoodstorageEditService', () => {
       // creates a spy to check if updateDocument is called
       spyOn(service, 'updateDocument');
       await service.editReserved(proposedChange, proposedReserve, proposedIngredient);
-      expect(service.findIngredientInStorage).toHaveBeenCalled();
-      expect(service.updateDocument).toHaveBeenCalled();
+      expect(service.findIngredientInStorage).not.toHaveBeenCalled();
+      expect(service.updateDocument).not.toHaveBeenCalled();
       expect(service.sortedList[2].quantityReserved).toEqual(3);
     });
   });

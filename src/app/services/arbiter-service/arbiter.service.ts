@@ -148,12 +148,9 @@ export class ArbiterService {
    * @param ingredientToMatch 
    */
   reverseArbiter(recipeToFindUid) {
-    console.log(recipeToFindUid);
     this.findRecipeIngredients(recipeToFindUid).then((ingredientList) => {
       ingredientList.forEach((ingredientToMatch) => {
-        console.table(ingredientToMatch);
         this.determineStorageShopping(ingredientToMatch.ingredientName, ingredientToMatch.unit, -ingredientToMatch.quantity).then((ingredientStatus) => {
-          console.table(ingredientStatus);
           this.determineStorage(ingredientToMatch.ingredientName, ingredientToMatch.unit, -ingredientToMatch.quantity).then((ingredientStatusStorage) => {
             this.subtractOrUnreserve(ingredientStatus.amountToUnreserve, ingredientStatus.amountToRemove, ingredientStatusStorage.currentUnreserved, ingredientStatusStorage.currentReserved, ingredientToMatch);
           });
