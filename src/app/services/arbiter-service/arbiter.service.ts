@@ -68,10 +68,10 @@ export class ArbiterService {
   }
 
   /**
-   * 
-   * @param nameToMatch 
-   * @param unitToMatch 
-   * @param amountToRemove 
+   * This is the opposite of determine storage. Instead of determining values of the storage list it instead determines values of the shopping list
+   * @param {string} nameToMatch the name of the ingredient to determine the storage of
+   * @param {string} unitToMatch the unit of the ingredient to determine the storage of
+   * @param {number} amountToRemove the amount the recipe is requesting be removed from shopping list or unreserved from food storage
    */
   async determineStorageShopping(nameToMatch, unitToMatch, amountToRemove): Promise<ingredientStatusModelShopping> {
     let returnData: ingredientStatusModelShopping;
@@ -115,11 +115,11 @@ export class ArbiterService {
 
   /**
    * 
-   * @param amountToUnreserve 
-   * @param amountToRemove 
-   * @param currentUnreserved 
-   * @param currentReserved 
-   * @param ingredient 
+   * @param {number} amountToUnreserve amount determined to be unreserved from foodStorage
+   * @param {number} amountToRemove total amount the recipe wants to remove or unreserve
+   * @param {number} currentUnreserved the amount of the ingredient in food storage that has yet to be reserved
+   * @param {number} currentReserved
+   * @param {string} ingredient the ingredient to add or reserve
    */
   subtractOrUnreserve(amountToUnreserve, amountToRemove, currentUnreserved, currentReserved, ingredient) {
     if (amountToUnreserve < 0) {
@@ -138,14 +138,13 @@ export class ArbiterService {
    */
   arbiter(ingredientToMatch) {
     this.determineStorage(ingredientToMatch.ingredientName, ingredientToMatch.unit, ingredientToMatch.quantity).then((ingredientStatus) => {
-      console.log(ingredientStatus.amountToAdd);
       this.addOrReserve(ingredientStatus.amountToAdd, ingredientStatus.amountRequested, ingredientStatus.currentUnreserved, ingredientStatus.currentReserved, ingredientToMatch);
     });
   }
 
   /**
-   * 
-   * @param ingredientToMatch 
+   * This arbiter first finds the ingredients that need to be removed and then determines how much should be removed from shopping list and how much should be unreserved
+   * @param {string} recipeToFindUid the uid of the recipe that is being removed
    */
   reverseArbiter(recipeToFindUid) {
     this.findRecipeIngredients(recipeToFindUid).then((ingredientList) => {
@@ -160,8 +159,8 @@ export class ArbiterService {
   }
 
   /**
-   * 
-   * @param uid 
+   * finds and returns the ingredients of a recipe based on a given uid
+   * @param {string} uid
    */
   async findRecipeIngredients(uid) {
     const snapshot = await this.afs.collection('users/' + this.userInfo + '/recipeList', (ref) => ref.where('uid', '==', uid)).get().toPromise();
