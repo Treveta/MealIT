@@ -132,8 +132,8 @@
         <div [ngClass]="isLarge ? 'outer-box' : 'outer-box-mobile'">
           <div [ngClass]="isLarge ? 'inner-box' : 'inner-box-mobile'">
             <!-- <mat-checkbox class="col" (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox> -->
-            <button mat-mini-fab (click)="onCheckBoxChange(item)" name="checkboxChange" color = warn><mat-icon>delete</mat-icon></button>{{item.itemName}}
-            <mat-checkbox class="col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
+            <mat-checkbox class="col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> {{item.itemName}} </mat-checkbox>
+            <button mat-mini-fab (click)="onCheckBoxChange(item)" name="checkboxChange" color = warn disableRipple><mat-icon>delete</mat-icon></button>
             <!--<mat-chip-list class="col" selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>-->
             <div class="col">
             {{item.quantity}}
@@ -169,8 +169,8 @@
       <div *ngFor="let item of sortedList; let indexOfElement=index; " [cdkDragStartDelay]="600" cdkDrag>
         <div [ngClass]="isLarge ? 'outer-box' : 'outer-box-mobile'">
           <div [ngClass]="isLarge ? 'inner-box' : 'inner-box-mobile'">
-            <mat-checkbox class="col" (change)="onCheckBoxChange(item)" name="checkboxChange" color = primary disableRipple> {{item.itemName}}</mat-checkbox>
-            <mat-checkbox class="col" class="small-col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> </mat-checkbox>
+            <mat-checkbox class="col" (change)="completionToggle(item)" name="completionCheck" color = primary [checked] = "item.isComplete" disableRipple> {{item.itemName}} </mat-checkbox>
+            <button mat-mini-fab (click)="onCheckBoxChange(item)" name="checkboxChange" color = warn disableRipple><mat-icon>delete</mat-icon></button>
             <!--<mat-chip-list class="col" selectable:false aria-label="Tags"><mat-chip>Sample Chip</mat-chip></mat-chip-list>-->
             <div class="col">
             {{item.quantity}}
