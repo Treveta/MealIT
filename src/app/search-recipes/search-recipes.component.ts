@@ -59,12 +59,17 @@ export class SearchRecipesComponent implements OnDestroy, OnInit {
           this.userRecipes = list;
           localStorage.setItem('cachedRecipes', JSON.stringify(list));
           localStorage.setItem('updatePending', 'false');
+          this.fuseResults = this.userRecipes;
+          this.searchTerm = ' ';
+          this.searchFuzzy();
           analytics.logEvent('Cache Update');
         });
       } else {
         this.fetchCache();
+        this.fuseResults = this.userRecipes;
+        this.searchTerm = ' ';
+        this.searchFuzzy();
       }
-      this.fuseResults = this.userRecipes;
     });
   }
 
